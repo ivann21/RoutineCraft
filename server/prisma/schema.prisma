@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id             Int       @id @default(autoincrement())
+  nombre         String
+  email          String    @unique
+  contraseña     String
+  fecha_registro DateTime  @default(now())
+  rutinas        Rutina[]
+  calendario     Calendario[]
+}
+
+model Ejercicio {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  imagenUrl   String?
+  categoria   String?
+  rutinas     RutinaEjercicio[]
+}
+
+model Rutina {
+  id             Int               @id @default(autoincrement())
+  nombre         String
+  descripcion    String?
+  usuario        Usuario           @relation(fields: [usuarioId], references: [id])
+  usuarioId      Int
+  ejercicios     RutinaEjercicio[]
+  calendario     Calendario[]      // 💡 Esta es la parte que faltaba
+  fecha_creacion DateTime          @default(now())
+}
+
+model RutinaEjercicio {
+  id             Int       @id @default(autoincrement())
+  rutina         Rutina    @relation(fields: [rutinaId], references: [id])
+  rutinaId       Int
+  ejercicio      Ejercicio @relation(fields: [ejercicioId], references: [id])
+  ejercicioId    Int
+  series         Int
+  repeticiones   Int
+  descansoSegundos Int
+  orden          Int
+}
+
+model Calendario {
+  id        Int      @id @default(autoincrement())
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+  rutina    Rutina   @relation(fields: [rutinaId], references: [id])
+  rutinaId  Int
+  fecha     DateTime
+}

@@ -1,43 +1,13 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite + React</title>
-</head>
-
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx">
-    import React, { useEffect, useState } from 'react';
-
-    const Rutinas = () => {
-      const [rutinas, setRutinas] = useState([]);
-
-      useEffect(() => {
-        fetch('http://localhost:5000/api/rutinas')
-          .then(response => response.json())
-          .then(data => setRutinas(data))
-          .catch(error => console.error('Error:', error));
-      }, []);
-
-      return (
-        <div>
-          <h1>Rutinas de Ejercicio</h1>
-          <ul>
-            {rutinas.map(rutina => (
-              <li key={rutina.id}>{rutina.nombre}</li>
-            ))}
-          </ul>
-        </div>
-      );
-    };
-
-    export default Rutinas;
-
-  </script>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoutineCraft</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

@@ -4,5 +4,5 @@
 
 /* Opcional: reemplaza bg-gray-50 con valor hexadecimal */
 body {
-  background-color: #000000;
+  background-color: #1a202c; /* Cambiado a un gris oscuro para mejor contraste */
 }

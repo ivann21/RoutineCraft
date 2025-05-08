@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-900 border-t border-gray-800">
@@ -6,7 +8,7 @@ export default function Footer() {
           {/* Columna 1 */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-              GYMPRO
+              ROUTINECRAFT
             </h3>
             <p className="mt-4 text-sm text-gray-300">
               Transformando vidas a través del fitness desde 2015.
@@ -19,16 +21,16 @@ export default function Footer() {
               Enlaces
             </h3>
             <ul className="mt-4 space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Inicio</a></li>
+              <li><Link to="/" className="text-gray-300 hover:text-white text-sm transition-colors">Inicio</Link></li>
               <li><a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Rutinas</a></li>
               <li><a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Precios</a></li>
+              <li><Link to="/register" className="text-gray-300 hover:text-white text-sm transition-colors">Únete ahora</Link></li>
             </ul>
           </div>
 
           {/* Columna 3 */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-              Legal
             </h3>
             <ul className="mt-4 space-y-2">
               <li><a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Privacidad</a></li>

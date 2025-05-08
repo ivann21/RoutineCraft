@@ -1,4 +1,12 @@
+import { useNavigate } from "react-router-dom";
+
 export default function HeroSection() {
+  const navigate = useNavigate();
+
+  const handleViewPlans = () => {
+    navigate("/plans");
+  };
+
   return (
     <section className="relative bg-gray-900 overflow-hidden">
       {/* Efecto de gradiente */}
@@ -17,17 +25,17 @@ export default function HeroSection() {
           
           <div className="mt-10 flex justify-center gap-4">
             <a 
-              href="#" 
+              href="/register" 
               className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-all hover:shadow-lg hover:shadow-blue-500/20"
             >
               Comenzar ahora
             </a>
-            <a 
-              href="#" 
-              className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-100 bg-blue-900/50 hover:bg-blue-800/70 md:py-4 md:text-lg md:px-10 transition-all"
+            <button 
+              onClick={handleViewPlans} 
+              className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 md:py-4 md:text-lg md:px-10 transition-all hover:shadow-lg hover:shadow-orange-500/20"
             >
-              Ver planes
-            </a>
+              Ver Planes
+            </button>
           </div>
         </div>
       </div>

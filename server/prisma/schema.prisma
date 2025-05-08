@@ -15,6 +15,7 @@ model Usuario {
   fecha_registro DateTime  @default(now())
   rutinas        Rutina[]
   calendario     Calendario[]
+  fotoUrl        String?   // Campo opcional para almacenar la URL de la foto de perfil
 }
 
 model Ejercicio {

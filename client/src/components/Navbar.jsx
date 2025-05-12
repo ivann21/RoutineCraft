@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar({ user, setUser }) {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     console.log("Stored user in localStorage:", storedUser); // Agrego un log para verificar el valor en localStorage
@@ -26,7 +28,9 @@ export default function Navbar({ user, setUser }) {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("usuarioId"); // Eliminar el ID del usuario de localStorage
     setUser(null);
+    navigate("/"); // Redirigir a la página de inicio después de cerrar sesión
   };
 
   return (
@@ -46,12 +50,18 @@ export default function Navbar({ user, setUser }) {
               <Link to="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
                 Inicio
               </Link>
-              <a href="#" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
+              <Link to="/rutinas" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
                 Rutinas
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
+              </Link>
+              <Link to="/calendario" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
+                Calendario
+              </Link>
+              <Link to="/entrenadores" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
                 Entrenadores
-              </a>
+              </Link>
+              <Link to="/ejercicios" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
+                Ejercicios
+              </Link>
               {user ? (
                 <div className="flex items-center space-x-4">
                   <Link to="/profile" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">

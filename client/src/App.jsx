@@ -7,6 +7,12 @@ import PlansPage from "./components/PlansPage";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
+import Rutinas from "./Rutinas";
+import AddRutina from "./components/AddRutina";
+import EditRutina from "./components/EditRutina";
+import Ejercicios from "./components/Ejercicios";
+import Entrenadores from "./components/Entrenadores";
+import Calendario from "./components/Calendario";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -20,6 +26,12 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/rutinas" element={<Rutinas />} />
+        <Route path="/add-rutina" element={<AddRutina />} />
+        <Route path="/edit-rutina/:id" element={<EditRutina />} />
+        <Route path="/ejercicios" element={<Ejercicios />} />
+        <Route path="/entrenadores" element={<Entrenadores />} />
+        <Route path="/calendario" element={<Calendario />} />
       </Routes>
       <Footer />
     </div>

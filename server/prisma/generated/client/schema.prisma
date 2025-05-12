@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id             Int            @id @default(autoincrement())
+  nombre         String
+  email          String         @unique
+  contraseña    String
+  fecha_registro DateTime       @default(now())
+  rutinas        Rutina[]
+  calendario     Calendario[]
+  fotoUrl        String? // Campo opcional para almacenar la URL de la foto de perfil
+  contrataciones Contratacion[] // Relación inversa con Contratacion
+}
+
+model Ejercicio {
+  id          Int               @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  imagenUrl   String?
+  categoria   String?
+  rutinas     RutinaEjercicio[]
+}
+
+model Rutina {
+  id             Int               @id @default(autoincrement())
+  nombre         String
+  descripcion    String?
+  usuario        Usuario           @relation(fields: [usuarioId], references: [id])
+  usuarioId      Int
+  ejercicios     RutinaEjercicio[]
+  calendario     Calendario[] // 💡 Esta es la parte que faltaba
+  fecha_creacion DateTime          @default(now())
+}
+
+model RutinaEjercicio {
+  id               Int       @id @default(autoincrement())
+  rutina           Rutina    @relation(fields: [rutinaId], references: [id])
+  rutinaId         Int
+  ejercicio        Ejercicio @relation(fields: [ejercicioId], references: [id])
+  ejercicioId      Int
+  series           Int
+  repeticiones     Int
+  descansoSegundos Int
+  orden            Int
+}
+
+model Calendario {
+  id        Int      @id @default(autoincrement())
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+  rutina    Rutina   @relation(fields: [rutinaId], references: [id])
+  rutinaId  Int
+  fecha     DateTime
+}
+
+model Entrenador {
+  id              Int            @id @default(autoincrement())
+  nombre          String
+  especialidad    String // por ejemplo: "Nutricionista", "Entrenador Personal", etc.
+  descripcion     String
+  experiencia     Int // años de experiencia
+  precio          Float // precio por mes
+  fotoUrl         String?
+  disponible      Boolean        @default(true)
+  calificacion    Float? // calificación promedio
+  contrataciones  Contratacion[]
+  certificaciones String[] // array de certificaciones
+}
+
+model Contratacion {
+  id               Int        @id @default(autoincrement())
+  usuario          Usuario    @relation(fields: [usuarioId], references: [id])
+  usuarioId        Int
+  entrenador       Entrenador @relation(fields: [entrenadorId], references: [id])
+  entrenadorId     Int
+  fechaInicio      DateTime
+  fechaFin         DateTime?
+  estado           String // "activa", "finalizada", "cancelada"
+  planSeleccionado String // "mensual", "trimestral", "anual"
+  precio           Float
+}

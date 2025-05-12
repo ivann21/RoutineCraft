@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/client"
 }
 
 datasource db {
@@ -16,6 +17,7 @@ model Usuario {
   rutinas        Rutina[]
   calendario     Calendario[]
   fotoUrl        String?   // Campo opcional para almacenar la URL de la foto de perfil
+  contrataciones Contratacion[] // Relación inversa con Contratacion
 }
 
 model Ejercicio {
@@ -57,4 +59,31 @@ model Calendario {
   rutina    Rutina   @relation(fields: [rutinaId], references: [id])
   rutinaId  Int
   fecha     DateTime
+}
+
+model Entrenador {
+  id              Int            @id @default(autoincrement())
+  nombre          String
+  especialidad    String         // por ejemplo: "Nutricionista", "Entrenador Personal", etc.
+  descripcion     String
+  experiencia     Int            // años de experiencia
+  precio          Float          // precio por mes
+  fotoUrl         String?
+  disponible      Boolean        @default(true)
+  calificacion    Float?         // calificación promedio
+  contrataciones  Contratacion[]
+  certificaciones String[]       // array de certificaciones
+}
+
+model Contratacion {
+  id            Int         @id @default(autoincrement())
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId     Int
+  entrenador    Entrenador  @relation(fields: [entrenadorId], references: [id])
+  entrenadorId  Int
+  fechaInicio   DateTime
+  fechaFin      DateTime?
+  estado        String      // "activa", "finalizada", "cancelada"
+  planSeleccionado String   // "mensual", "trimestral", "anual"
+  precio        Float
 }

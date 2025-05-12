@@ -29,7 +29,8 @@ export default function Login() {
         const data = await response.json();
         console.log("User data from server:", data.user); // Log para verificar los datos del usuario
         if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user)); // Guardar usuario en localStorage
+          localStorage.setItem("usuarioId", data.user.id); // Guardar el ID del usuario en localStorage
+          localStorage.setItem("user", JSON.stringify(data.user)); // Guardar usuario completo en localStorage
           window.dispatchEvent(new Event("storage")); // Forzar actualización del estado en Navbar
           alert("Inicio de sesión exitoso");
           navigate("/"); // Redirigir al inicio

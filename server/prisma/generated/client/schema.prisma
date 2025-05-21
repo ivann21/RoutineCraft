@@ -23,6 +23,11 @@ model Usuario {
   // Nuevas relaciones
   userChallenges   UserChallenge[]
   userAchievements UserAchievement[]
+
+  // Relaciones añadidas
+  comentarios Comentario[] // Relación con Comentario
+
+  metrics Metric[] // <-- Añade esta línea para la relación inversa
 }
 
 model Ejercicio {
@@ -37,12 +42,24 @@ model Ejercicio {
 model Rutina {
   id             Int               @id @default(autoincrement())
   nombre         String
-  descripcion    String?
+  descripcion    String
   usuario        Usuario           @relation(fields: [usuarioId], references: [id])
   usuarioId      Int
   ejercicios     RutinaEjercicio[]
   calendario     Calendario[] // 💡 Esta es la parte que faltaba
   fecha_creacion DateTime          @default(now())
+  comentarios    Comentario[]
+
+  // Campos eliminados
+  // id          Int          @id @default(autoincrement())
+  // nombre      String
+  // descripcion String
+  // usuarioId   Int
+  // usuario     Usuario      @relation(fields: [usuarioId], references: [id])
+  // ejercicios  RutinaEjercicio[]
+  // likes       Like[]
+  // publica     Boolean      @default(false)
+  // comentarios Comentario[]
 }
 
 model RutinaEjercicio {
@@ -150,4 +167,23 @@ model UserAchievement {
   achievement Achievement @relation(fields: [achievementId], references: [id])
 
   @@unique([userId, achievementId])
+}
+
+model Comentario {
+  id        Int      @id @default(autoincrement())
+  texto     String
+  usuarioId Int
+  rutinaId  Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  rutina    Rutina   @relation(fields: [rutinaId], references: [id])
+  creadoEn  DateTime @default(now())
+}
+
+model Metric {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  tipo    String
+  valor   Float
+  fecha   DateTime
+  usuario Usuario  @relation(fields: [userId], references: [id])
 }

@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import axios from 'axios';
 
 // Registrar los componentes de Chart.js
 ChartJS.register(
@@ -27,51 +28,53 @@ export default function Progress() {
   const [loading, setLoading] = useState(true);
   const [activeMetric, setActiveMetric] = useState('peso');
   const [newEntry, setNewEntry] = useState({ valor: '', fecha: new Date().toISOString().split('T')[0] });
+  const [userId, setUserId] = useState(null);
+
+  // Define solo métricas claras y personales
+  const metricOptions = [
+    { key: 'peso', label: 'Peso (kg)' },
+    { key: 'grasa', label: 'Porcentaje de grasa (%)' },
+    { key: 'musculo', label: 'Masa muscular (kg)' },
+    { key: 'cintura', label: 'Cintura (cm)' },
+    { key: 'cadera', label: 'Cadera (cm)' }
+  ];
 
   useEffect(() => {
-    fetchMetrics();
+    // Obtener el usuario actual
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.id) setUserId(user.id);
+    fetchMetrics(user?.id);
   }, []);
 
-  const fetchMetrics = async () => {
+  const fetchMetrics = async (uid) => {
     setLoading(true);
     try {
-      // Datos de ejemplo para mostrar hasta que implementemos el endpoint
-      const mockMetrics = [
-        { id: 1, tipo: 'peso', valor: 75, fecha: '2023-10-01' },
-        { id: 2, tipo: 'peso', valor: 74.5, fecha: '2023-10-08' },
-        { id: 3, tipo: 'peso', valor: 73.8, fecha: '2023-10-15' },
-        { id: 4, tipo: 'peso', valor: 73.2, fecha: '2023-10-22' },
-        { id: 5, tipo: 'fuerza', valor: 80, fecha: '2023-10-01' },
-        { id: 6, tipo: 'fuerza', valor: 85, fecha: '2023-10-08' },
-        { id: 7, tipo: 'fuerza', valor: 85, fecha: '2023-10-15' },
-        { id: 8, tipo: 'fuerza', valor: 90, fecha: '2023-10-22' },
-        { id: 9, tipo: 'resistencia', valor: 15, fecha: '2023-10-01' },
-        { id: 10, tipo: 'resistencia', valor: 17, fecha: '2023-10-08' },
-        { id: 11, tipo: 'resistencia', valor: 18, fecha: '2023-10-15' },
-        { id: 12, tipo: 'resistencia', valor: 20, fecha: '2023-10-22' },
-      ];
-      
-      setMetrics(mockMetrics);
+      if (!uid) {
+        setMetrics([]);
+        return;
+      }
+      // Llama a la API real para obtener métricas del usuario
+      const response = await axios.get(`http://localhost:5000/api/metrics/${uid}`);
+      setMetrics(response.data);
     } catch (error) {
       console.error('Error al cargar métricas:', error);
+      setMetrics([]);
     } finally {
       setLoading(false);
     }
   };
 
   const addMetric = async () => {
-    if (!newEntry.valor) return;
-    
+    if (!newEntry.valor || !userId) return;
     try {
-      // Simulamos añadir una métrica
-      const newMetric = {
-        id: metrics.length + 1,
+      // Guarda la métrica en la base de datos
+      const response = await axios.post('http://localhost:5000/api/metrics', {
+        userId,
         tipo: activeMetric,
         valor: parseFloat(newEntry.valor),
         fecha: newEntry.fecha
-      };
-      
-      setMetrics([...metrics, newMetric]);
+      });
+      setMetrics([...metrics, response.data]);
       setNewEntry({ valor: '', fecha: new Date().toISOString().split('T')[0] });
     } catch (error) {
       console.error('Error al añadir métrica:', error);
@@ -81,11 +84,11 @@ export default function Progress() {
   const prepareChartData = () => {
     const filteredMetrics = metrics.filter(m => m.tipo === activeMetric);
     filteredMetrics.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-    
+    const metricLabel = metricOptions.find(opt => opt.key === activeMetric)?.label || activeMetric;
     return {
       labels: filteredMetrics.map(m => new Date(m.fecha).toLocaleDateString()),
       datasets: [{
-        label: activeMetric.charAt(0).toUpperCase() + activeMetric.slice(1),
+        label: metricLabel,
         data: filteredMetrics.map(m => m.valor),
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
@@ -96,40 +99,38 @@ export default function Progress() {
   };
 
   if (loading) {
-    return <div className="text-center py-8 text-white">Cargando datos...</div>;
+    return (
+      <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto text-center">
+          <div className="text-center py-8 text-white">Cargando datos...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-gray-800 min-h-screen py-12 px-4">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">Seguimiento de Progreso</h1>
+    <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-8">Seguimiento de Progreso</h1>
         
-        <div className="bg-gray-700 rounded-lg p-6 mb-8">
+        <div className="bg-gray-800 rounded-lg p-6 mb-8">
           <div className="flex flex-wrap gap-4 mb-6">
-            <button 
-              onClick={() => setActiveMetric('peso')}
-              className={`px-4 py-2 rounded ${activeMetric === 'peso' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200'}`}
-            >
-              Peso
-            </button>
-            <button 
-              onClick={() => setActiveMetric('fuerza')}
-              className={`px-4 py-2 rounded ${activeMetric === 'fuerza' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200'}`}
-            >
-              Fuerza
-            </button>
-            <button 
-              onClick={() => setActiveMetric('resistencia')}
-              className={`px-4 py-2 rounded ${activeMetric === 'resistencia' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200'}`}
-            >
-              Resistencia
-            </button>
+            {metricOptions.map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setActiveMetric(opt.key)}
+                className={`px-4 py-2 rounded ${activeMetric === opt.key ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-200'}`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
-          
-          <div className="bg-gray-800 p-4 rounded-lg">
+          <div className="bg-gray-700 p-4 rounded-lg">
             {metrics.filter(m => m.tipo === activeMetric).length > 0 ? (
-              <Line 
-                data={prepareChartData()} 
+              <Line
+                data={prepareChartData()}
                 options={{
                   responsive: true,
                   plugins: {
@@ -171,30 +172,42 @@ export default function Progress() {
           </div>
         </div>
         
-        <div className="bg-gray-700 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-white mb-4">Añadir nuevo registro</h2>
+        <div className="bg-gray-800 rounded-lg p-6">
+          <h2 className="text-2xl font-bold text-white mb-4">Añadir nuevo registro</h2>
           <div className="flex flex-wrap gap-4">
             <div>
+              <label className="block text-gray-300 mb-2">Tipo de métrica</label>
+              <select
+                value={activeMetric}
+                onChange={e => setActiveMetric(e.target.value)}
+                className="bg-gray-800 text-white px-4 py-2 rounded"
+              >
+                {metricOptions.map(opt => (
+                  <option key={opt.key} value={opt.key}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className="block text-gray-300 mb-2">Valor</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 value={newEntry.valor}
-                onChange={(e) => setNewEntry({...newEntry, valor: e.target.value})}
+                onChange={e => setNewEntry({ ...newEntry, valor: e.target.value })}
                 className="bg-gray-800 text-white px-4 py-2 rounded"
                 placeholder="Ingresa el valor"
               />
             </div>
             <div>
               <label className="block text-gray-300 mb-2">Fecha</label>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 value={newEntry.fecha}
-                onChange={(e) => setNewEntry({...newEntry, fecha: e.target.value})}
+                onChange={e => setNewEntry({ ...newEntry, fecha: e.target.value })}
                 className="bg-gray-800 text-white px-4 py-2 rounded"
               />
             </div>
             <div className="flex items-end">
-              <button 
+              <button
                 onClick={addMetric}
                 className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
               >

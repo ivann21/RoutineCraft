@@ -208,8 +208,18 @@ export default function Challenges() {
   };
   
   const fetchUserAchievements = async () => {
-    // No llamar a la API, los logros se calculan localmente en fetchCompletedChallenges
-    // Esta función se mantiene para compatibilidad pero no hace nada
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser.id) {
+        setUserAchievements([]);
+        return;
+      }
+      const response = await axios.get(`http://localhost:5000/api/challenges/achievements/${currentUser.id}`, apiConfig());
+      setUserAchievements(response.data);
+    } catch (error) {
+      console.error('Error al obtener logros:', error);
+      setUserAchievements([]);
+    }
   };
   
   // Actualizar la función joinChallenge para manejar correctamente la respuesta
@@ -435,10 +445,11 @@ export default function Challenges() {
   };
   
   return (
-    <div className="bg-gray-800 min-h-screen py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">Retos y Logros</h1>
+          <h1 className="text-4xl font-bold text-white">Retos y Logros</h1>
           <div className="flex gap-2">
             {/* Botón de recarga */}
             <button
@@ -678,10 +689,10 @@ export default function Challenges() {
         </div>
       </div>
       
-      {/* Modal para actualizar progreso */}
+      {/* Modal para actualizar progreso - change background color to match */}
       {showProgressModal && progressModalChallenge && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-          <div className="bg-gray-900 rounded-lg shadow-lg p-8 w-full max-w-xs">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-8 w-full max-w-xs">
             <h3 className="text-lg font-bold text-white mb-4">
               Actualizar progreso
             </h3>

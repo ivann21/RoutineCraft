@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import defaultProfilePic from "/default-profile.png?url";
 
 export default function Navbar({ user, setUser }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [profilePic, setProfilePic] = useState(defaultProfilePic);
   const userMenuRef = useRef(null);
   const navigate = useNavigate();
 
@@ -14,7 +16,6 @@ export default function Navbar({ user, setUser }) {
     { to: "/ejercicios", text: "Ejercicios" },
     { to: "/calendario", text: "Calendario" },
     { to: "/entrenadores", text: "Entrenadores" },
-    { to: "/community", text: "Comunidad" },
     { to: "/challenges", text: "Retos" },
     { to: "/planes", text: "Planes" },
   ];
@@ -38,6 +39,15 @@ export default function Navbar({ user, setUser }) {
       }
     }
   }, [setUser, user]);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.fotoUrl) {
+      setProfilePic(user.fotoUrl.startsWith("http") ? user.fotoUrl : `http://localhost:5000${user.fotoUrl}`);
+    } else {
+      setProfilePic(defaultProfilePic);
+    }
+  }, []);
 
   // Cerrar menú de usuario al hacer clic fuera
   useEffect(() => {
@@ -107,7 +117,11 @@ export default function Navbar({ user, setUser }) {
                 >
                   <span className="mr-2">{user.nombre}</span>
                   <div className="h-8 w-8 rounded-full bg-gray-600 flex items-center justify-center">
-                    <span className="text-sm">{user.nombre?.charAt(0)}</span>
+                    <img
+                      src={profilePic}
+                      alt="Perfil"
+                      className="w-full h-full rounded-full object-cover"
+                    />
                   </div>
                   <svg
                     className={`w-4 h-4 ml-1 transform transition-transform ${
@@ -232,7 +246,11 @@ export default function Navbar({ user, setUser }) {
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
                   <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center">
-                    <span>{user.nombre?.charAt(0)}</span>
+                    <img
+                      src={profilePic}
+                      alt="Perfil"
+                      className="w-full h-full rounded-full object-cover"
+                    />
                   </div>
                 </div>
                 <div className="ml-3">

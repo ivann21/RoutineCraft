@@ -230,6 +230,22 @@ exports.Prisma.UserAchievementScalarFieldEnum = {
   fechaConseguido: 'fechaConseguido'
 };
 
+exports.Prisma.ComentarioScalarFieldEnum = {
+  id: 'id',
+  texto: 'texto',
+  usuarioId: 'usuarioId',
+  rutinaId: 'rutinaId',
+  creadoEn: 'creadoEn'
+};
+
+exports.Prisma.MetricScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tipo: 'tipo',
+  valor: 'valor',
+  fecha: 'fecha'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -257,7 +273,9 @@ exports.Prisma.ModelName = {
   Challenge: 'Challenge',
   UserChallenge: 'UserChallenge',
   Achievement: 'Achievement',
-  UserAchievement: 'UserAchievement'
+  UserAchievement: 'UserAchievement',
+  Comentario: 'Comentario',
+  Metric: 'Metric'
 };
 
 /**

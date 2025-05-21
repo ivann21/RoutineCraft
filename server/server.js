@@ -69,10 +69,15 @@ app.get('/api/rutinas', async (req, res) => {
 
 // Ruta para obtener rutinas de un usuario específico
 app.get('/api/rutinas/:usuarioId', async (req, res) => {
-  const { usuarioId } = req.params;
+  let { usuarioId } = req.params;
   try {
+    // Validación y conversión segura
+    usuarioId = Number(usuarioId);
+    if (!usuarioId || isNaN(usuarioId)) {
+      return res.status(400).json({ error: 'usuarioId inválido' });
+    }
     const rutinas = await prisma.rutina.findMany({
-      where: { usuarioId: parseInt(usuarioId) },
+      where: { usuarioId }, // usuarioId es un número válido aquí
       include: {
         ejercicios: {
           include: {
@@ -834,15 +839,19 @@ app.post('/api/challenges/join', async (req, res) => {
   }
 });
 
-// Actualizar progreso de un reto
+// Actualizar progreso de un reto (añade logs y devuelve el error exacto)
 app.put('/api/challenges/progress', async (req, res) => {
   const { userId, challengeId, progreso } = req.body;
 
+  console.log('PUT /api/challenges/progress', { userId, challengeId, progreso });
+
   if (userId === undefined || challengeId === undefined || progreso === undefined) {
+    console.error('Faltan parámetros:', { userId, challengeId, progreso });
     return res.status(400).json({ message: 'userId, challengeId y progreso son requeridos.' });
   }
-  if (parseInt(progreso) < 0 || parseInt(progreso) > 100) { // Asumiendo progreso 0-100
-     return res.status(400).json({ message: 'El progreso debe estar entre 0 y 100.' });
+  if (parseInt(progreso) < 0 || parseInt(progreso) > 100) {
+    console.error('Progreso fuera de rango:', progreso);
+    return res.status(400).json({ message: 'El progreso debe estar entre 0 y 100.' });
   }
 
   try {
@@ -856,26 +865,36 @@ app.put('/api/challenges/progress', async (req, res) => {
     });
 
     if (!userChallenge) {
+      console.error('No se encontró userChallenge:', { userId, challengeId });
       return res.status(404).json({ message: 'No se encontró tu participación en este reto.' });
     }
     if (userChallenge.completado) {
+      console.warn('Reto ya completado:', { userId, challengeId });
       return res.status(400).json({ message: 'Este reto ya ha sido completado.' });
     }
 
-    const updatedUserChallenge = await prisma.userChallenge.update({
-      where: {
-        id: userChallenge.id
-      },
-      data: {
-        progreso: parseInt(progreso),
-        ultimoProgreso: new Date(),
-        // Opcional: Marcar como completado si el progreso es 100
-        ...(parseInt(progreso) === 100 && { completado: true }) 
-      },
-      include: {
-        challenge: true
-      }
-    });
+    let updatedUserChallenge;
+    try {
+      updatedUserChallenge = await prisma.userChallenge.update({
+        where: {
+          id: userChallenge.id
+        },
+        data: {
+          progreso: parseInt(progreso),
+          ultimoProgreso: new Date(),
+          ...(parseInt(progreso) === 100 && { completado: true })
+        },
+        include: {
+          challenge: true
+        }
+      });
+    } catch (updateError) {
+      console.error('Error en prisma.userChallenge.update:', updateError);
+      return res.status(500).json({ message: 'Error en update', error: updateError.message, stack: updateError.stack });
+    }
+
+    // Asignar logros si corresponde
+    await checkAndAssignAchievements(parseInt(userId));
 
     res.status(200).json({
       message: 'Progreso actualizado con éxito.',
@@ -883,8 +902,8 @@ app.put('/api/challenges/progress', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error al actualizar el progreso del reto:', error);
-    res.status(500).json({ message: 'Error al actualizar el progreso del reto.', error: error.message });
+    console.error('Error general al actualizar el progreso del reto:', error);
+    res.status(500).json({ message: 'Error general al actualizar el progreso del reto.', error: error.message, stack: error.stack });
   }
 });
 
@@ -936,16 +955,93 @@ app.post('/api/challenges/complete', async (req, res) => {
   }
 });
 
-// Ruta para obtener todos los logros (simulada por ahora, ya que no hay modelo Achievement en el schema proporcionado)
-app.get('/api/challenges/achievements', async (req, res) => {
-  // Esta ruta necesitaría su propia lógica con Prisma si tuvieras un modelo Achievement
-  console.warn("La ruta /api/challenges/achievements es simulada. Implementar con modelo Achievement si es necesario.");
-  res.json([]);
+// Obtener logros del usuario (corrige el campo de filtro: debe ser userId, no usuarioId)
+app.get('/api/challenges/achievements/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    // Busca los logros del usuario (UserAchievement)
+    const userAchievements = await prisma.userAchievement.findMany({
+      where: { userId: Number(userId) }, // <-- CORREGIDO: userId, no usuarioId
+      include: { achievement: true },
+      orderBy: { fechaConseguido: 'desc' }
+    });
+
+    if (!userAchievements || userAchievements.length === 0) {
+      return res.json([]);
+    }
+
+    const achievements = userAchievements
+      .filter(ua => ua.achievement)
+      .map(ua => ({
+        id: ua.achievement.id,
+        titulo: ua.achievement.titulo,
+        descripcion: ua.achievement.descripcion,
+        icono: ua.achievement.icono,
+        tipo: ua.achievement.tipo,
+        criterio: ua.achievement.criterio,
+        valorNecesario: ua.achievement.valorNecesario,
+        fechaConseguido: ua.fechaConseguido
+      }));
+
+    res.json(achievements);
+  } catch (error) {
+    console.error('Error al obtener logros:', error);
+    res.status(500).json({ error: 'Error interno al obtener logros', detalle: error.message });
+  }
 });
 
-// --- FIN DE RUTAS DE CHALLENGES ---
+// Lógica para asignar logros automáticamente al completar retos
+async function checkAndAssignAchievements(userId) {
+  // 1. Primer reto completado
+  const completedCount = await prisma.userChallenge.count({
+    where: { userId, completado: true }
+  });
+  if (completedCount >= 1) {
+    const ach = await prisma.achievement.findFirst({ where: { tipo: 'primer_reto' } });
+    if (ach) {
+      await prisma.userAchievement.upsert({
+        where: { userId_achievementId: { userId, achievementId: ach.id } },
+        update: {},
+        create: { userId, achievementId: ach.id }
+      });
+    }
+  }
+  // 2. Cinco retos completados
+  if (completedCount >= 5) {
+    const ach = await prisma.achievement.findFirst({ where: { tipo: 'cinco_retos' } });
+    if (ach) {
+      await prisma.userAchievement.upsert({
+        where: { userId_achievementId: { userId, achievementId: ach.id } },
+        update: {},
+        create: { userId, achievementId: ach.id }
+      });
+    }
+  }
+  // 3. Cinco retos de una misma categoría
+  const byCategory = await prisma.userChallenge.findMany({
+    where: { userId, completado: true },
+    include: { challenge: true }
+  });
+  const categoryCount = {};
+  byCategory.forEach(uc => {
+    const tipo = uc.challenge?.tipo || 'Otro';
+    categoryCount[tipo] = (categoryCount[tipo] || 0) + 1;
+  });
+  for (const tipo in categoryCount) {
+    if (categoryCount[tipo] >= 5) {
+      const ach = await prisma.achievement.findFirst({ where: { tipo: 'cinco_categoria' } });
+      if (ach) {
+        await prisma.userAchievement.upsert({
+          where: { userId_achievementId: { userId, achievementId: ach.id } },
+          update: {},
+          create: { userId, achievementId: ach.id }
+        });
+      }
+    }
+  }
+}
 
-// Agregar ruta para obtener información del plan del usuario
+// Agregar ruta para obtener información del plan del usuario (asegúrate de que el campo sea userId, no usuarioId)
 app.get('/api/user-plan/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
@@ -959,6 +1055,15 @@ app.get('/api/user-plan/:userId', async (req, res) => {
       }
     });
 
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const PLAN_LIMITS = {
+      free: 10,
+      basic: 50,
+      premium: Infinity
+    };
     const planLimit = PLAN_LIMITS[usuario.plan];
     res.json({
       plan: usuario.plan,
@@ -971,43 +1076,66 @@ app.get('/api/user-plan/:userId', async (req, res) => {
   }
 });
 
-// Ruta para actualizar el plan del usuario
-// Corregir la ruta de /api/update-plan a /api/user-plan para que coincida con PlansPage.jsx
-app.post('/api/user-plan', async (req, res) => {
-  const { userId, newPlan } = req.body;
+// Obtener métricas de progreso de un usuario
+app.get('/api/metrics/:userId', async (req, res) => {
+  const { userId } = req.params;
   try {
-    // Primero, verifica que el usuario exista
-    const userExists = await prisma.usuario.findUnique({
-      where: { id: parseInt(userId) }
+    const metrics = await prisma.metric.findMany({
+      where: { userId: Number(userId) },
+      orderBy: { fecha: 'asc' }
     });
-    if (!userExists) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-
-    const usuario = await prisma.usuario.update({
-      where: { id: parseInt(userId) },
-      data: { plan: newPlan },
-      select: { // Devolver la información necesaria para actualizar el estado en el frontend
-        plan: true,
-        _count: {
-          select: { rutinas: true }
-        }
-      }
-    });
-
-    const planLimit = PLAN_LIMITS[usuario.plan];
-    res.json({
-      message: 'Plan actualizado con éxito',
-      plan: usuario.plan, // plan actualizado
-      rutinasCreadas: usuario._count.rutinas,
-      limite: planLimit,
-      puedeCrearMas: usuario._count.rutinas < planLimit
-    });
+    res.json(metrics);
   } catch (error) {
-    console.error('Error al actualizar el plan:', error);
-    res.status(500).json({ error: 'Error al actualizar el plan' });
+    console.error('Error al obtener métricas:', error);
+    res.status(500).json({ error: 'Error al obtener métricas' });
   }
 });
+
+// Añadir una nueva métrica de progreso
+app.post('/api/metrics', async (req, res) => {
+  const { userId, tipo, valor, fecha } = req.body;
+  try {
+    const metric = await prisma.metric.create({
+      data: {
+        userId: Number(userId),
+        tipo,
+        valor: Number(valor),
+        fecha: new Date(fecha)
+      }
+    });
+    res.status(201).json(metric);
+  } catch (error) {
+    console.error('Error al añadir métrica:', error);
+    res.status(500).json({ error: 'Error al añadir métrica' });
+  }
+});
+
+// Elimina o comenta la ruta de rutinas públicas de comunidad
+// app.get('/api/rutinas/publicas', async (req, res) => {
+//   try {
+//     const sort = req.query.sort || 'recent';
+//     let orderBy;
+//     if (sort === 'popular') {
+//       orderBy = { id: 'desc' };
+//     } else if (sort === 'name') {
+//       orderBy = { nombre: 'asc' };
+//     } else {
+//       orderBy = { id: 'desc' };
+//     }
+//     const rutinas = await prisma.rutina.findMany({
+//       where: { publica: true },
+//       include: {
+//         usuario: { select: { nombre: true } },
+//         likes: true,
+//       },
+//       orderBy
+//     });
+//     res.json(rutinas);
+//   } catch (error) {
+//     console.error('Error al obtener rutinas públicas:', error);
+//     res.status(200).json([]); // Nunca devuelvas 400, responde lista vacía si hay error
+//   }
+// });
 
 // Iniciar servidor
 app.listen(port, () => {

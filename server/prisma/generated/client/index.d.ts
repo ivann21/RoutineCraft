@@ -68,6 +68,16 @@ export type Achievement = $Result.DefaultSelection<Prisma.$AchievementPayload>
  * 
  */
 export type UserAchievement = $Result.DefaultSelection<Prisma.$UserAchievementPayload>
+/**
+ * Model Comentario
+ * 
+ */
+export type Comentario = $Result.DefaultSelection<Prisma.$ComentarioPayload>
+/**
+ * Model Metric
+ * 
+ */
+export type Metric = $Result.DefaultSelection<Prisma.$MetricPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -303,6 +313,26 @@ export class PrismaClient<
     * ```
     */
   get userAchievement(): Prisma.UserAchievementDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.comentario`: Exposes CRUD operations for the **Comentario** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Comentarios
+    * const comentarios = await prisma.comentario.findMany()
+    * ```
+    */
+  get comentario(): Prisma.ComentarioDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.metric`: Exposes CRUD operations for the **Metric** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Metrics
+    * const metrics = await prisma.metric.findMany()
+    * ```
+    */
+  get metric(): Prisma.MetricDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -753,7 +783,9 @@ export namespace Prisma {
     Challenge: 'Challenge',
     UserChallenge: 'UserChallenge',
     Achievement: 'Achievement',
-    UserAchievement: 'UserAchievement'
+    UserAchievement: 'UserAchievement',
+    Comentario: 'Comentario',
+    Metric: 'Metric'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -772,7 +804,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "usuario" | "ejercicio" | "rutina" | "rutinaEjercicio" | "calendario" | "entrenador" | "contratacion" | "challenge" | "userChallenge" | "achievement" | "userAchievement"
+      modelProps: "usuario" | "ejercicio" | "rutina" | "rutinaEjercicio" | "calendario" | "entrenador" | "contratacion" | "challenge" | "userChallenge" | "achievement" | "userAchievement" | "comentario" | "metric"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1590,6 +1622,154 @@ export namespace Prisma {
           }
         }
       }
+      Comentario: {
+        payload: Prisma.$ComentarioPayload<ExtArgs>
+        fields: Prisma.ComentarioFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ComentarioFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ComentarioFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>
+          }
+          findFirst: {
+            args: Prisma.ComentarioFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ComentarioFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>
+          }
+          findMany: {
+            args: Prisma.ComentarioFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>[]
+          }
+          create: {
+            args: Prisma.ComentarioCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>
+          }
+          createMany: {
+            args: Prisma.ComentarioCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ComentarioCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>[]
+          }
+          delete: {
+            args: Prisma.ComentarioDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>
+          }
+          update: {
+            args: Prisma.ComentarioUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>
+          }
+          deleteMany: {
+            args: Prisma.ComentarioDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ComentarioUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ComentarioUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>[]
+          }
+          upsert: {
+            args: Prisma.ComentarioUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ComentarioPayload>
+          }
+          aggregate: {
+            args: Prisma.ComentarioAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateComentario>
+          }
+          groupBy: {
+            args: Prisma.ComentarioGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ComentarioGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ComentarioCountArgs<ExtArgs>
+            result: $Utils.Optional<ComentarioCountAggregateOutputType> | number
+          }
+        }
+      }
+      Metric: {
+        payload: Prisma.$MetricPayload<ExtArgs>
+        fields: Prisma.MetricFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MetricFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MetricFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>
+          }
+          findFirst: {
+            args: Prisma.MetricFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MetricFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>
+          }
+          findMany: {
+            args: Prisma.MetricFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>[]
+          }
+          create: {
+            args: Prisma.MetricCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>
+          }
+          createMany: {
+            args: Prisma.MetricCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MetricCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>[]
+          }
+          delete: {
+            args: Prisma.MetricDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>
+          }
+          update: {
+            args: Prisma.MetricUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>
+          }
+          deleteMany: {
+            args: Prisma.MetricDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MetricUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MetricUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>[]
+          }
+          upsert: {
+            args: Prisma.MetricUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetricPayload>
+          }
+          aggregate: {
+            args: Prisma.MetricAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMetric>
+          }
+          groupBy: {
+            args: Prisma.MetricGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MetricGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MetricCountArgs<ExtArgs>
+            result: $Utils.Optional<MetricCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1685,6 +1865,8 @@ export namespace Prisma {
     userChallenge?: UserChallengeOmit
     achievement?: AchievementOmit
     userAchievement?: UserAchievementOmit
+    comentario?: ComentarioOmit
+    metric?: MetricOmit
   }
 
   /* Types for Logging */
@@ -1784,6 +1966,8 @@ export namespace Prisma {
     contrataciones: number
     userChallenges: number
     userAchievements: number
+    comentarios: number
+    metrics: number
   }
 
   export type UsuarioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1792,6 +1976,8 @@ export namespace Prisma {
     contrataciones?: boolean | UsuarioCountOutputTypeCountContratacionesArgs
     userChallenges?: boolean | UsuarioCountOutputTypeCountUserChallengesArgs
     userAchievements?: boolean | UsuarioCountOutputTypeCountUserAchievementsArgs
+    comentarios?: boolean | UsuarioCountOutputTypeCountComentariosArgs
+    metrics?: boolean | UsuarioCountOutputTypeCountMetricsArgs
   }
 
   // Custom InputTypes
@@ -1840,6 +2026,20 @@ export namespace Prisma {
     where?: UserAchievementWhereInput
   }
 
+  /**
+   * UsuarioCountOutputType without action
+   */
+  export type UsuarioCountOutputTypeCountComentariosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ComentarioWhereInput
+  }
+
+  /**
+   * UsuarioCountOutputType without action
+   */
+  export type UsuarioCountOutputTypeCountMetricsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MetricWhereInput
+  }
+
 
   /**
    * Count Type EjercicioCountOutputType
@@ -1879,11 +2079,13 @@ export namespace Prisma {
   export type RutinaCountOutputType = {
     ejercicios: number
     calendario: number
+    comentarios: number
   }
 
   export type RutinaCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ejercicios?: boolean | RutinaCountOutputTypeCountEjerciciosArgs
     calendario?: boolean | RutinaCountOutputTypeCountCalendarioArgs
+    comentarios?: boolean | RutinaCountOutputTypeCountComentariosArgs
   }
 
   // Custom InputTypes
@@ -1909,6 +2111,13 @@ export namespace Prisma {
    */
   export type RutinaCountOutputTypeCountCalendarioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CalendarioWhereInput
+  }
+
+  /**
+   * RutinaCountOutputType without action
+   */
+  export type RutinaCountOutputTypeCountComentariosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ComentarioWhereInput
   }
 
 
@@ -2228,6 +2437,8 @@ export namespace Prisma {
     contrataciones?: boolean | Usuario$contratacionesArgs<ExtArgs>
     userChallenges?: boolean | Usuario$userChallengesArgs<ExtArgs>
     userAchievements?: boolean | Usuario$userAchievementsArgs<ExtArgs>
+    comentarios?: boolean | Usuario$comentariosArgs<ExtArgs>
+    metrics?: boolean | Usuario$metricsArgs<ExtArgs>
     _count?: boolean | UsuarioCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["usuario"]>
 
@@ -2268,6 +2479,8 @@ export namespace Prisma {
     contrataciones?: boolean | Usuario$contratacionesArgs<ExtArgs>
     userChallenges?: boolean | Usuario$userChallengesArgs<ExtArgs>
     userAchievements?: boolean | Usuario$userAchievementsArgs<ExtArgs>
+    comentarios?: boolean | Usuario$comentariosArgs<ExtArgs>
+    metrics?: boolean | Usuario$metricsArgs<ExtArgs>
     _count?: boolean | UsuarioCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UsuarioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2281,6 +2494,8 @@ export namespace Prisma {
       contrataciones: Prisma.$ContratacionPayload<ExtArgs>[]
       userChallenges: Prisma.$UserChallengePayload<ExtArgs>[]
       userAchievements: Prisma.$UserAchievementPayload<ExtArgs>[]
+      comentarios: Prisma.$ComentarioPayload<ExtArgs>[]
+      metrics: Prisma.$MetricPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2689,6 +2904,8 @@ export namespace Prisma {
     contrataciones<T extends Usuario$contratacionesArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$contratacionesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContratacionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userChallenges<T extends Usuario$userChallengesArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$userChallengesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserChallengePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userAchievements<T extends Usuario$userAchievementsArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$userAchievementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    comentarios<T extends Usuario$comentariosArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$comentariosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    metrics<T extends Usuario$metricsArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$metricsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3230,6 +3447,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
+  }
+
+  /**
+   * Usuario.comentarios
+   */
+  export type Usuario$comentariosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    where?: ComentarioWhereInput
+    orderBy?: ComentarioOrderByWithRelationInput | ComentarioOrderByWithRelationInput[]
+    cursor?: ComentarioWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ComentarioScalarFieldEnum | ComentarioScalarFieldEnum[]
+  }
+
+  /**
+   * Usuario.metrics
+   */
+  export type Usuario$metricsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    where?: MetricWhereInput
+    orderBy?: MetricOrderByWithRelationInput | MetricOrderByWithRelationInput[]
+    cursor?: MetricWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MetricScalarFieldEnum | MetricScalarFieldEnum[]
   }
 
   /**
@@ -4527,7 +4792,7 @@ export namespace Prisma {
   export type RutinaGroupByOutputType = {
     id: number
     nombre: string
-    descripcion: string | null
+    descripcion: string
     usuarioId: number
     fecha_creacion: Date
     _count: RutinaCountAggregateOutputType | null
@@ -4560,6 +4825,7 @@ export namespace Prisma {
     usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
     ejercicios?: boolean | Rutina$ejerciciosArgs<ExtArgs>
     calendario?: boolean | Rutina$calendarioArgs<ExtArgs>
+    comentarios?: boolean | Rutina$comentariosArgs<ExtArgs>
     _count?: boolean | RutinaCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["rutina"]>
 
@@ -4594,6 +4860,7 @@ export namespace Prisma {
     usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
     ejercicios?: boolean | Rutina$ejerciciosArgs<ExtArgs>
     calendario?: boolean | Rutina$calendarioArgs<ExtArgs>
+    comentarios?: boolean | Rutina$comentariosArgs<ExtArgs>
     _count?: boolean | RutinaCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type RutinaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4609,11 +4876,12 @@ export namespace Prisma {
       usuario: Prisma.$UsuarioPayload<ExtArgs>
       ejercicios: Prisma.$RutinaEjercicioPayload<ExtArgs>[]
       calendario: Prisma.$CalendarioPayload<ExtArgs>[]
+      comentarios: Prisma.$ComentarioPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       nombre: string
-      descripcion: string | null
+      descripcion: string
       usuarioId: number
       fecha_creacion: Date
     }, ExtArgs["result"]["rutina"]>
@@ -5013,6 +5281,7 @@ export namespace Prisma {
     usuario<T extends UsuarioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsuarioDefaultArgs<ExtArgs>>): Prisma__UsuarioClient<$Result.GetResult<Prisma.$UsuarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     ejercicios<T extends Rutina$ejerciciosArgs<ExtArgs> = {}>(args?: Subset<T, Rutina$ejerciciosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RutinaEjercicioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     calendario<T extends Rutina$calendarioArgs<ExtArgs> = {}>(args?: Subset<T, Rutina$calendarioArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CalendarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    comentarios<T extends Rutina$comentariosArgs<ExtArgs> = {}>(args?: Subset<T, Rutina$comentariosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5488,6 +5757,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CalendarioScalarFieldEnum | CalendarioScalarFieldEnum[]
+  }
+
+  /**
+   * Rutina.comentarios
+   */
+  export type Rutina$comentariosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    where?: ComentarioWhereInput
+    orderBy?: ComentarioOrderByWithRelationInput | ComentarioOrderByWithRelationInput[]
+    cursor?: ComentarioWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ComentarioScalarFieldEnum | ComentarioScalarFieldEnum[]
   }
 
   /**
@@ -14658,6 +14951,2214 @@ export namespace Prisma {
 
 
   /**
+   * Model Comentario
+   */
+
+  export type AggregateComentario = {
+    _count: ComentarioCountAggregateOutputType | null
+    _avg: ComentarioAvgAggregateOutputType | null
+    _sum: ComentarioSumAggregateOutputType | null
+    _min: ComentarioMinAggregateOutputType | null
+    _max: ComentarioMaxAggregateOutputType | null
+  }
+
+  export type ComentarioAvgAggregateOutputType = {
+    id: number | null
+    usuarioId: number | null
+    rutinaId: number | null
+  }
+
+  export type ComentarioSumAggregateOutputType = {
+    id: number | null
+    usuarioId: number | null
+    rutinaId: number | null
+  }
+
+  export type ComentarioMinAggregateOutputType = {
+    id: number | null
+    texto: string | null
+    usuarioId: number | null
+    rutinaId: number | null
+    creadoEn: Date | null
+  }
+
+  export type ComentarioMaxAggregateOutputType = {
+    id: number | null
+    texto: string | null
+    usuarioId: number | null
+    rutinaId: number | null
+    creadoEn: Date | null
+  }
+
+  export type ComentarioCountAggregateOutputType = {
+    id: number
+    texto: number
+    usuarioId: number
+    rutinaId: number
+    creadoEn: number
+    _all: number
+  }
+
+
+  export type ComentarioAvgAggregateInputType = {
+    id?: true
+    usuarioId?: true
+    rutinaId?: true
+  }
+
+  export type ComentarioSumAggregateInputType = {
+    id?: true
+    usuarioId?: true
+    rutinaId?: true
+  }
+
+  export type ComentarioMinAggregateInputType = {
+    id?: true
+    texto?: true
+    usuarioId?: true
+    rutinaId?: true
+    creadoEn?: true
+  }
+
+  export type ComentarioMaxAggregateInputType = {
+    id?: true
+    texto?: true
+    usuarioId?: true
+    rutinaId?: true
+    creadoEn?: true
+  }
+
+  export type ComentarioCountAggregateInputType = {
+    id?: true
+    texto?: true
+    usuarioId?: true
+    rutinaId?: true
+    creadoEn?: true
+    _all?: true
+  }
+
+  export type ComentarioAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Comentario to aggregate.
+     */
+    where?: ComentarioWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comentarios to fetch.
+     */
+    orderBy?: ComentarioOrderByWithRelationInput | ComentarioOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ComentarioWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comentarios from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comentarios.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Comentarios
+    **/
+    _count?: true | ComentarioCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ComentarioAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ComentarioSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ComentarioMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ComentarioMaxAggregateInputType
+  }
+
+  export type GetComentarioAggregateType<T extends ComentarioAggregateArgs> = {
+        [P in keyof T & keyof AggregateComentario]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateComentario[P]>
+      : GetScalarType<T[P], AggregateComentario[P]>
+  }
+
+
+
+
+  export type ComentarioGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ComentarioWhereInput
+    orderBy?: ComentarioOrderByWithAggregationInput | ComentarioOrderByWithAggregationInput[]
+    by: ComentarioScalarFieldEnum[] | ComentarioScalarFieldEnum
+    having?: ComentarioScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ComentarioCountAggregateInputType | true
+    _avg?: ComentarioAvgAggregateInputType
+    _sum?: ComentarioSumAggregateInputType
+    _min?: ComentarioMinAggregateInputType
+    _max?: ComentarioMaxAggregateInputType
+  }
+
+  export type ComentarioGroupByOutputType = {
+    id: number
+    texto: string
+    usuarioId: number
+    rutinaId: number
+    creadoEn: Date
+    _count: ComentarioCountAggregateOutputType | null
+    _avg: ComentarioAvgAggregateOutputType | null
+    _sum: ComentarioSumAggregateOutputType | null
+    _min: ComentarioMinAggregateOutputType | null
+    _max: ComentarioMaxAggregateOutputType | null
+  }
+
+  type GetComentarioGroupByPayload<T extends ComentarioGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ComentarioGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ComentarioGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ComentarioGroupByOutputType[P]>
+            : GetScalarType<T[P], ComentarioGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ComentarioSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    texto?: boolean
+    usuarioId?: boolean
+    rutinaId?: boolean
+    creadoEn?: boolean
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+    rutina?: boolean | RutinaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["comentario"]>
+
+  export type ComentarioSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    texto?: boolean
+    usuarioId?: boolean
+    rutinaId?: boolean
+    creadoEn?: boolean
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+    rutina?: boolean | RutinaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["comentario"]>
+
+  export type ComentarioSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    texto?: boolean
+    usuarioId?: boolean
+    rutinaId?: boolean
+    creadoEn?: boolean
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+    rutina?: boolean | RutinaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["comentario"]>
+
+  export type ComentarioSelectScalar = {
+    id?: boolean
+    texto?: boolean
+    usuarioId?: boolean
+    rutinaId?: boolean
+    creadoEn?: boolean
+  }
+
+  export type ComentarioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "texto" | "usuarioId" | "rutinaId" | "creadoEn", ExtArgs["result"]["comentario"]>
+  export type ComentarioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+    rutina?: boolean | RutinaDefaultArgs<ExtArgs>
+  }
+  export type ComentarioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+    rutina?: boolean | RutinaDefaultArgs<ExtArgs>
+  }
+  export type ComentarioIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+    rutina?: boolean | RutinaDefaultArgs<ExtArgs>
+  }
+
+  export type $ComentarioPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Comentario"
+    objects: {
+      usuario: Prisma.$UsuarioPayload<ExtArgs>
+      rutina: Prisma.$RutinaPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      texto: string
+      usuarioId: number
+      rutinaId: number
+      creadoEn: Date
+    }, ExtArgs["result"]["comentario"]>
+    composites: {}
+  }
+
+  type ComentarioGetPayload<S extends boolean | null | undefined | ComentarioDefaultArgs> = $Result.GetResult<Prisma.$ComentarioPayload, S>
+
+  type ComentarioCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ComentarioFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ComentarioCountAggregateInputType | true
+    }
+
+  export interface ComentarioDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Comentario'], meta: { name: 'Comentario' } }
+    /**
+     * Find zero or one Comentario that matches the filter.
+     * @param {ComentarioFindUniqueArgs} args - Arguments to find a Comentario
+     * @example
+     * // Get one Comentario
+     * const comentario = await prisma.comentario.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ComentarioFindUniqueArgs>(args: SelectSubset<T, ComentarioFindUniqueArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Comentario that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ComentarioFindUniqueOrThrowArgs} args - Arguments to find a Comentario
+     * @example
+     * // Get one Comentario
+     * const comentario = await prisma.comentario.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ComentarioFindUniqueOrThrowArgs>(args: SelectSubset<T, ComentarioFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Comentario that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComentarioFindFirstArgs} args - Arguments to find a Comentario
+     * @example
+     * // Get one Comentario
+     * const comentario = await prisma.comentario.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ComentarioFindFirstArgs>(args?: SelectSubset<T, ComentarioFindFirstArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Comentario that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComentarioFindFirstOrThrowArgs} args - Arguments to find a Comentario
+     * @example
+     * // Get one Comentario
+     * const comentario = await prisma.comentario.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ComentarioFindFirstOrThrowArgs>(args?: SelectSubset<T, ComentarioFindFirstOrThrowArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Comentarios that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComentarioFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Comentarios
+     * const comentarios = await prisma.comentario.findMany()
+     * 
+     * // Get first 10 Comentarios
+     * const comentarios = await prisma.comentario.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const comentarioWithIdOnly = await prisma.comentario.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ComentarioFindManyArgs>(args?: SelectSubset<T, ComentarioFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Comentario.
+     * @param {ComentarioCreateArgs} args - Arguments to create a Comentario.
+     * @example
+     * // Create one Comentario
+     * const Comentario = await prisma.comentario.create({
+     *   data: {
+     *     // ... data to create a Comentario
+     *   }
+     * })
+     * 
+     */
+    create<T extends ComentarioCreateArgs>(args: SelectSubset<T, ComentarioCreateArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Comentarios.
+     * @param {ComentarioCreateManyArgs} args - Arguments to create many Comentarios.
+     * @example
+     * // Create many Comentarios
+     * const comentario = await prisma.comentario.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ComentarioCreateManyArgs>(args?: SelectSubset<T, ComentarioCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Comentarios and returns the data saved in the database.
+     * @param {ComentarioCreateManyAndReturnArgs} args - Arguments to create many Comentarios.
+     * @example
+     * // Create many Comentarios
+     * const comentario = await prisma.comentario.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Comentarios and only return the `id`
+     * const comentarioWithIdOnly = await prisma.comentario.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ComentarioCreateManyAndReturnArgs>(args?: SelectSubset<T, ComentarioCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Comentario.
+     * @param {ComentarioDeleteArgs} args - Arguments to delete one Comentario.
+     * @example
+     * // Delete one Comentario
+     * const Comentario = await prisma.comentario.delete({
+     *   where: {
+     *     // ... filter to delete one Comentario
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ComentarioDeleteArgs>(args: SelectSubset<T, ComentarioDeleteArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Comentario.
+     * @param {ComentarioUpdateArgs} args - Arguments to update one Comentario.
+     * @example
+     * // Update one Comentario
+     * const comentario = await prisma.comentario.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ComentarioUpdateArgs>(args: SelectSubset<T, ComentarioUpdateArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Comentarios.
+     * @param {ComentarioDeleteManyArgs} args - Arguments to filter Comentarios to delete.
+     * @example
+     * // Delete a few Comentarios
+     * const { count } = await prisma.comentario.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ComentarioDeleteManyArgs>(args?: SelectSubset<T, ComentarioDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Comentarios.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComentarioUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Comentarios
+     * const comentario = await prisma.comentario.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ComentarioUpdateManyArgs>(args: SelectSubset<T, ComentarioUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Comentarios and returns the data updated in the database.
+     * @param {ComentarioUpdateManyAndReturnArgs} args - Arguments to update many Comentarios.
+     * @example
+     * // Update many Comentarios
+     * const comentario = await prisma.comentario.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Comentarios and only return the `id`
+     * const comentarioWithIdOnly = await prisma.comentario.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ComentarioUpdateManyAndReturnArgs>(args: SelectSubset<T, ComentarioUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Comentario.
+     * @param {ComentarioUpsertArgs} args - Arguments to update or create a Comentario.
+     * @example
+     * // Update or create a Comentario
+     * const comentario = await prisma.comentario.upsert({
+     *   create: {
+     *     // ... data to create a Comentario
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Comentario we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ComentarioUpsertArgs>(args: SelectSubset<T, ComentarioUpsertArgs<ExtArgs>>): Prisma__ComentarioClient<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Comentarios.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComentarioCountArgs} args - Arguments to filter Comentarios to count.
+     * @example
+     * // Count the number of Comentarios
+     * const count = await prisma.comentario.count({
+     *   where: {
+     *     // ... the filter for the Comentarios we want to count
+     *   }
+     * })
+    **/
+    count<T extends ComentarioCountArgs>(
+      args?: Subset<T, ComentarioCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ComentarioCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Comentario.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComentarioAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ComentarioAggregateArgs>(args: Subset<T, ComentarioAggregateArgs>): Prisma.PrismaPromise<GetComentarioAggregateType<T>>
+
+    /**
+     * Group by Comentario.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComentarioGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ComentarioGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ComentarioGroupByArgs['orderBy'] }
+        : { orderBy?: ComentarioGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ComentarioGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetComentarioGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Comentario model
+   */
+  readonly fields: ComentarioFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Comentario.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ComentarioClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    usuario<T extends UsuarioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsuarioDefaultArgs<ExtArgs>>): Prisma__UsuarioClient<$Result.GetResult<Prisma.$UsuarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    rutina<T extends RutinaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RutinaDefaultArgs<ExtArgs>>): Prisma__RutinaClient<$Result.GetResult<Prisma.$RutinaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Comentario model
+   */
+  interface ComentarioFieldRefs {
+    readonly id: FieldRef<"Comentario", 'Int'>
+    readonly texto: FieldRef<"Comentario", 'String'>
+    readonly usuarioId: FieldRef<"Comentario", 'Int'>
+    readonly rutinaId: FieldRef<"Comentario", 'Int'>
+    readonly creadoEn: FieldRef<"Comentario", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Comentario findUnique
+   */
+  export type ComentarioFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * Filter, which Comentario to fetch.
+     */
+    where: ComentarioWhereUniqueInput
+  }
+
+  /**
+   * Comentario findUniqueOrThrow
+   */
+  export type ComentarioFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * Filter, which Comentario to fetch.
+     */
+    where: ComentarioWhereUniqueInput
+  }
+
+  /**
+   * Comentario findFirst
+   */
+  export type ComentarioFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * Filter, which Comentario to fetch.
+     */
+    where?: ComentarioWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comentarios to fetch.
+     */
+    orderBy?: ComentarioOrderByWithRelationInput | ComentarioOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Comentarios.
+     */
+    cursor?: ComentarioWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comentarios from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comentarios.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Comentarios.
+     */
+    distinct?: ComentarioScalarFieldEnum | ComentarioScalarFieldEnum[]
+  }
+
+  /**
+   * Comentario findFirstOrThrow
+   */
+  export type ComentarioFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * Filter, which Comentario to fetch.
+     */
+    where?: ComentarioWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comentarios to fetch.
+     */
+    orderBy?: ComentarioOrderByWithRelationInput | ComentarioOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Comentarios.
+     */
+    cursor?: ComentarioWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comentarios from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comentarios.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Comentarios.
+     */
+    distinct?: ComentarioScalarFieldEnum | ComentarioScalarFieldEnum[]
+  }
+
+  /**
+   * Comentario findMany
+   */
+  export type ComentarioFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * Filter, which Comentarios to fetch.
+     */
+    where?: ComentarioWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comentarios to fetch.
+     */
+    orderBy?: ComentarioOrderByWithRelationInput | ComentarioOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Comentarios.
+     */
+    cursor?: ComentarioWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comentarios from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comentarios.
+     */
+    skip?: number
+    distinct?: ComentarioScalarFieldEnum | ComentarioScalarFieldEnum[]
+  }
+
+  /**
+   * Comentario create
+   */
+  export type ComentarioCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Comentario.
+     */
+    data: XOR<ComentarioCreateInput, ComentarioUncheckedCreateInput>
+  }
+
+  /**
+   * Comentario createMany
+   */
+  export type ComentarioCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Comentarios.
+     */
+    data: ComentarioCreateManyInput | ComentarioCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Comentario createManyAndReturn
+   */
+  export type ComentarioCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * The data used to create many Comentarios.
+     */
+    data: ComentarioCreateManyInput | ComentarioCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Comentario update
+   */
+  export type ComentarioUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Comentario.
+     */
+    data: XOR<ComentarioUpdateInput, ComentarioUncheckedUpdateInput>
+    /**
+     * Choose, which Comentario to update.
+     */
+    where: ComentarioWhereUniqueInput
+  }
+
+  /**
+   * Comentario updateMany
+   */
+  export type ComentarioUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Comentarios.
+     */
+    data: XOR<ComentarioUpdateManyMutationInput, ComentarioUncheckedUpdateManyInput>
+    /**
+     * Filter which Comentarios to update
+     */
+    where?: ComentarioWhereInput
+    /**
+     * Limit how many Comentarios to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Comentario updateManyAndReturn
+   */
+  export type ComentarioUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * The data used to update Comentarios.
+     */
+    data: XOR<ComentarioUpdateManyMutationInput, ComentarioUncheckedUpdateManyInput>
+    /**
+     * Filter which Comentarios to update
+     */
+    where?: ComentarioWhereInput
+    /**
+     * Limit how many Comentarios to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Comentario upsert
+   */
+  export type ComentarioUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Comentario to update in case it exists.
+     */
+    where: ComentarioWhereUniqueInput
+    /**
+     * In case the Comentario found by the `where` argument doesn't exist, create a new Comentario with this data.
+     */
+    create: XOR<ComentarioCreateInput, ComentarioUncheckedCreateInput>
+    /**
+     * In case the Comentario was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ComentarioUpdateInput, ComentarioUncheckedUpdateInput>
+  }
+
+  /**
+   * Comentario delete
+   */
+  export type ComentarioDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+    /**
+     * Filter which Comentario to delete.
+     */
+    where: ComentarioWhereUniqueInput
+  }
+
+  /**
+   * Comentario deleteMany
+   */
+  export type ComentarioDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Comentarios to delete
+     */
+    where?: ComentarioWhereInput
+    /**
+     * Limit how many Comentarios to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Comentario without action
+   */
+  export type ComentarioDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comentario
+     */
+    select?: ComentarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comentario
+     */
+    omit?: ComentarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComentarioInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Metric
+   */
+
+  export type AggregateMetric = {
+    _count: MetricCountAggregateOutputType | null
+    _avg: MetricAvgAggregateOutputType | null
+    _sum: MetricSumAggregateOutputType | null
+    _min: MetricMinAggregateOutputType | null
+    _max: MetricMaxAggregateOutputType | null
+  }
+
+  export type MetricAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    valor: number | null
+  }
+
+  export type MetricSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    valor: number | null
+  }
+
+  export type MetricMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    tipo: string | null
+    valor: number | null
+    fecha: Date | null
+  }
+
+  export type MetricMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    tipo: string | null
+    valor: number | null
+    fecha: Date | null
+  }
+
+  export type MetricCountAggregateOutputType = {
+    id: number
+    userId: number
+    tipo: number
+    valor: number
+    fecha: number
+    _all: number
+  }
+
+
+  export type MetricAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    valor?: true
+  }
+
+  export type MetricSumAggregateInputType = {
+    id?: true
+    userId?: true
+    valor?: true
+  }
+
+  export type MetricMinAggregateInputType = {
+    id?: true
+    userId?: true
+    tipo?: true
+    valor?: true
+    fecha?: true
+  }
+
+  export type MetricMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    tipo?: true
+    valor?: true
+    fecha?: true
+  }
+
+  export type MetricCountAggregateInputType = {
+    id?: true
+    userId?: true
+    tipo?: true
+    valor?: true
+    fecha?: true
+    _all?: true
+  }
+
+  export type MetricAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Metric to aggregate.
+     */
+    where?: MetricWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Metrics to fetch.
+     */
+    orderBy?: MetricOrderByWithRelationInput | MetricOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MetricWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Metrics from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Metrics.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Metrics
+    **/
+    _count?: true | MetricCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MetricAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MetricSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MetricMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MetricMaxAggregateInputType
+  }
+
+  export type GetMetricAggregateType<T extends MetricAggregateArgs> = {
+        [P in keyof T & keyof AggregateMetric]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMetric[P]>
+      : GetScalarType<T[P], AggregateMetric[P]>
+  }
+
+
+
+
+  export type MetricGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MetricWhereInput
+    orderBy?: MetricOrderByWithAggregationInput | MetricOrderByWithAggregationInput[]
+    by: MetricScalarFieldEnum[] | MetricScalarFieldEnum
+    having?: MetricScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MetricCountAggregateInputType | true
+    _avg?: MetricAvgAggregateInputType
+    _sum?: MetricSumAggregateInputType
+    _min?: MetricMinAggregateInputType
+    _max?: MetricMaxAggregateInputType
+  }
+
+  export type MetricGroupByOutputType = {
+    id: number
+    userId: number
+    tipo: string
+    valor: number
+    fecha: Date
+    _count: MetricCountAggregateOutputType | null
+    _avg: MetricAvgAggregateOutputType | null
+    _sum: MetricSumAggregateOutputType | null
+    _min: MetricMinAggregateOutputType | null
+    _max: MetricMaxAggregateOutputType | null
+  }
+
+  type GetMetricGroupByPayload<T extends MetricGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MetricGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MetricGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MetricGroupByOutputType[P]>
+            : GetScalarType<T[P], MetricGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MetricSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    tipo?: boolean
+    valor?: boolean
+    fecha?: boolean
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["metric"]>
+
+  export type MetricSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    tipo?: boolean
+    valor?: boolean
+    fecha?: boolean
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["metric"]>
+
+  export type MetricSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    tipo?: boolean
+    valor?: boolean
+    fecha?: boolean
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["metric"]>
+
+  export type MetricSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    tipo?: boolean
+    valor?: boolean
+    fecha?: boolean
+  }
+
+  export type MetricOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "tipo" | "valor" | "fecha", ExtArgs["result"]["metric"]>
+  export type MetricInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+  }
+  export type MetricIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+  }
+  export type MetricIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | UsuarioDefaultArgs<ExtArgs>
+  }
+
+  export type $MetricPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Metric"
+    objects: {
+      usuario: Prisma.$UsuarioPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      tipo: string
+      valor: number
+      fecha: Date
+    }, ExtArgs["result"]["metric"]>
+    composites: {}
+  }
+
+  type MetricGetPayload<S extends boolean | null | undefined | MetricDefaultArgs> = $Result.GetResult<Prisma.$MetricPayload, S>
+
+  type MetricCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MetricFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MetricCountAggregateInputType | true
+    }
+
+  export interface MetricDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Metric'], meta: { name: 'Metric' } }
+    /**
+     * Find zero or one Metric that matches the filter.
+     * @param {MetricFindUniqueArgs} args - Arguments to find a Metric
+     * @example
+     * // Get one Metric
+     * const metric = await prisma.metric.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MetricFindUniqueArgs>(args: SelectSubset<T, MetricFindUniqueArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Metric that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MetricFindUniqueOrThrowArgs} args - Arguments to find a Metric
+     * @example
+     * // Get one Metric
+     * const metric = await prisma.metric.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MetricFindUniqueOrThrowArgs>(args: SelectSubset<T, MetricFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Metric that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetricFindFirstArgs} args - Arguments to find a Metric
+     * @example
+     * // Get one Metric
+     * const metric = await prisma.metric.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MetricFindFirstArgs>(args?: SelectSubset<T, MetricFindFirstArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Metric that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetricFindFirstOrThrowArgs} args - Arguments to find a Metric
+     * @example
+     * // Get one Metric
+     * const metric = await prisma.metric.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MetricFindFirstOrThrowArgs>(args?: SelectSubset<T, MetricFindFirstOrThrowArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Metrics that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetricFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Metrics
+     * const metrics = await prisma.metric.findMany()
+     * 
+     * // Get first 10 Metrics
+     * const metrics = await prisma.metric.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const metricWithIdOnly = await prisma.metric.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MetricFindManyArgs>(args?: SelectSubset<T, MetricFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Metric.
+     * @param {MetricCreateArgs} args - Arguments to create a Metric.
+     * @example
+     * // Create one Metric
+     * const Metric = await prisma.metric.create({
+     *   data: {
+     *     // ... data to create a Metric
+     *   }
+     * })
+     * 
+     */
+    create<T extends MetricCreateArgs>(args: SelectSubset<T, MetricCreateArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Metrics.
+     * @param {MetricCreateManyArgs} args - Arguments to create many Metrics.
+     * @example
+     * // Create many Metrics
+     * const metric = await prisma.metric.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MetricCreateManyArgs>(args?: SelectSubset<T, MetricCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Metrics and returns the data saved in the database.
+     * @param {MetricCreateManyAndReturnArgs} args - Arguments to create many Metrics.
+     * @example
+     * // Create many Metrics
+     * const metric = await prisma.metric.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Metrics and only return the `id`
+     * const metricWithIdOnly = await prisma.metric.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MetricCreateManyAndReturnArgs>(args?: SelectSubset<T, MetricCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Metric.
+     * @param {MetricDeleteArgs} args - Arguments to delete one Metric.
+     * @example
+     * // Delete one Metric
+     * const Metric = await prisma.metric.delete({
+     *   where: {
+     *     // ... filter to delete one Metric
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MetricDeleteArgs>(args: SelectSubset<T, MetricDeleteArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Metric.
+     * @param {MetricUpdateArgs} args - Arguments to update one Metric.
+     * @example
+     * // Update one Metric
+     * const metric = await prisma.metric.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MetricUpdateArgs>(args: SelectSubset<T, MetricUpdateArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Metrics.
+     * @param {MetricDeleteManyArgs} args - Arguments to filter Metrics to delete.
+     * @example
+     * // Delete a few Metrics
+     * const { count } = await prisma.metric.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MetricDeleteManyArgs>(args?: SelectSubset<T, MetricDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Metrics.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetricUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Metrics
+     * const metric = await prisma.metric.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MetricUpdateManyArgs>(args: SelectSubset<T, MetricUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Metrics and returns the data updated in the database.
+     * @param {MetricUpdateManyAndReturnArgs} args - Arguments to update many Metrics.
+     * @example
+     * // Update many Metrics
+     * const metric = await prisma.metric.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Metrics and only return the `id`
+     * const metricWithIdOnly = await prisma.metric.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MetricUpdateManyAndReturnArgs>(args: SelectSubset<T, MetricUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Metric.
+     * @param {MetricUpsertArgs} args - Arguments to update or create a Metric.
+     * @example
+     * // Update or create a Metric
+     * const metric = await prisma.metric.upsert({
+     *   create: {
+     *     // ... data to create a Metric
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Metric we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MetricUpsertArgs>(args: SelectSubset<T, MetricUpsertArgs<ExtArgs>>): Prisma__MetricClient<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Metrics.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetricCountArgs} args - Arguments to filter Metrics to count.
+     * @example
+     * // Count the number of Metrics
+     * const count = await prisma.metric.count({
+     *   where: {
+     *     // ... the filter for the Metrics we want to count
+     *   }
+     * })
+    **/
+    count<T extends MetricCountArgs>(
+      args?: Subset<T, MetricCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MetricCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Metric.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetricAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MetricAggregateArgs>(args: Subset<T, MetricAggregateArgs>): Prisma.PrismaPromise<GetMetricAggregateType<T>>
+
+    /**
+     * Group by Metric.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetricGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MetricGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MetricGroupByArgs['orderBy'] }
+        : { orderBy?: MetricGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MetricGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMetricGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Metric model
+   */
+  readonly fields: MetricFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Metric.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MetricClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    usuario<T extends UsuarioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsuarioDefaultArgs<ExtArgs>>): Prisma__UsuarioClient<$Result.GetResult<Prisma.$UsuarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Metric model
+   */
+  interface MetricFieldRefs {
+    readonly id: FieldRef<"Metric", 'Int'>
+    readonly userId: FieldRef<"Metric", 'Int'>
+    readonly tipo: FieldRef<"Metric", 'String'>
+    readonly valor: FieldRef<"Metric", 'Float'>
+    readonly fecha: FieldRef<"Metric", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Metric findUnique
+   */
+  export type MetricFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * Filter, which Metric to fetch.
+     */
+    where: MetricWhereUniqueInput
+  }
+
+  /**
+   * Metric findUniqueOrThrow
+   */
+  export type MetricFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * Filter, which Metric to fetch.
+     */
+    where: MetricWhereUniqueInput
+  }
+
+  /**
+   * Metric findFirst
+   */
+  export type MetricFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * Filter, which Metric to fetch.
+     */
+    where?: MetricWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Metrics to fetch.
+     */
+    orderBy?: MetricOrderByWithRelationInput | MetricOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Metrics.
+     */
+    cursor?: MetricWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Metrics from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Metrics.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Metrics.
+     */
+    distinct?: MetricScalarFieldEnum | MetricScalarFieldEnum[]
+  }
+
+  /**
+   * Metric findFirstOrThrow
+   */
+  export type MetricFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * Filter, which Metric to fetch.
+     */
+    where?: MetricWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Metrics to fetch.
+     */
+    orderBy?: MetricOrderByWithRelationInput | MetricOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Metrics.
+     */
+    cursor?: MetricWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Metrics from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Metrics.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Metrics.
+     */
+    distinct?: MetricScalarFieldEnum | MetricScalarFieldEnum[]
+  }
+
+  /**
+   * Metric findMany
+   */
+  export type MetricFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * Filter, which Metrics to fetch.
+     */
+    where?: MetricWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Metrics to fetch.
+     */
+    orderBy?: MetricOrderByWithRelationInput | MetricOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Metrics.
+     */
+    cursor?: MetricWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Metrics from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Metrics.
+     */
+    skip?: number
+    distinct?: MetricScalarFieldEnum | MetricScalarFieldEnum[]
+  }
+
+  /**
+   * Metric create
+   */
+  export type MetricCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Metric.
+     */
+    data: XOR<MetricCreateInput, MetricUncheckedCreateInput>
+  }
+
+  /**
+   * Metric createMany
+   */
+  export type MetricCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Metrics.
+     */
+    data: MetricCreateManyInput | MetricCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Metric createManyAndReturn
+   */
+  export type MetricCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * The data used to create many Metrics.
+     */
+    data: MetricCreateManyInput | MetricCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Metric update
+   */
+  export type MetricUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Metric.
+     */
+    data: XOR<MetricUpdateInput, MetricUncheckedUpdateInput>
+    /**
+     * Choose, which Metric to update.
+     */
+    where: MetricWhereUniqueInput
+  }
+
+  /**
+   * Metric updateMany
+   */
+  export type MetricUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Metrics.
+     */
+    data: XOR<MetricUpdateManyMutationInput, MetricUncheckedUpdateManyInput>
+    /**
+     * Filter which Metrics to update
+     */
+    where?: MetricWhereInput
+    /**
+     * Limit how many Metrics to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Metric updateManyAndReturn
+   */
+  export type MetricUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * The data used to update Metrics.
+     */
+    data: XOR<MetricUpdateManyMutationInput, MetricUncheckedUpdateManyInput>
+    /**
+     * Filter which Metrics to update
+     */
+    where?: MetricWhereInput
+    /**
+     * Limit how many Metrics to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Metric upsert
+   */
+  export type MetricUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Metric to update in case it exists.
+     */
+    where: MetricWhereUniqueInput
+    /**
+     * In case the Metric found by the `where` argument doesn't exist, create a new Metric with this data.
+     */
+    create: XOR<MetricCreateInput, MetricUncheckedCreateInput>
+    /**
+     * In case the Metric was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MetricUpdateInput, MetricUncheckedUpdateInput>
+  }
+
+  /**
+   * Metric delete
+   */
+  export type MetricDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+    /**
+     * Filter which Metric to delete.
+     */
+    where: MetricWhereUniqueInput
+  }
+
+  /**
+   * Metric deleteMany
+   */
+  export type MetricDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Metrics to delete
+     */
+    where?: MetricWhereInput
+    /**
+     * Limit how many Metrics to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Metric without action
+   */
+  export type MetricDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Metric
+     */
+    select?: MetricSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Metric
+     */
+    omit?: MetricOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetricInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -14814,6 +17315,28 @@ export namespace Prisma {
   export type UserAchievementScalarFieldEnum = (typeof UserAchievementScalarFieldEnum)[keyof typeof UserAchievementScalarFieldEnum]
 
 
+  export const ComentarioScalarFieldEnum: {
+    id: 'id',
+    texto: 'texto',
+    usuarioId: 'usuarioId',
+    rutinaId: 'rutinaId',
+    creadoEn: 'creadoEn'
+  };
+
+  export type ComentarioScalarFieldEnum = (typeof ComentarioScalarFieldEnum)[keyof typeof ComentarioScalarFieldEnum]
+
+
+  export const MetricScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    tipo: 'tipo',
+    valor: 'valor',
+    fecha: 'fecha'
+  };
+
+  export type MetricScalarFieldEnum = (typeof MetricScalarFieldEnum)[keyof typeof MetricScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -14925,6 +17448,8 @@ export namespace Prisma {
     contrataciones?: ContratacionListRelationFilter
     userChallenges?: UserChallengeListRelationFilter
     userAchievements?: UserAchievementListRelationFilter
+    comentarios?: ComentarioListRelationFilter
+    metrics?: MetricListRelationFilter
   }
 
   export type UsuarioOrderByWithRelationInput = {
@@ -14940,6 +17465,8 @@ export namespace Prisma {
     contrataciones?: ContratacionOrderByRelationAggregateInput
     userChallenges?: UserChallengeOrderByRelationAggregateInput
     userAchievements?: UserAchievementOrderByRelationAggregateInput
+    comentarios?: ComentarioOrderByRelationAggregateInput
+    metrics?: MetricOrderByRelationAggregateInput
   }
 
   export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
@@ -14958,6 +17485,8 @@ export namespace Prisma {
     contrataciones?: ContratacionListRelationFilter
     userChallenges?: UserChallengeListRelationFilter
     userAchievements?: UserAchievementListRelationFilter
+    comentarios?: ComentarioListRelationFilter
+    metrics?: MetricListRelationFilter
   }, "id" | "email">
 
   export type UsuarioOrderByWithAggregationInput = {
@@ -15051,23 +17580,25 @@ export namespace Prisma {
     NOT?: RutinaWhereInput | RutinaWhereInput[]
     id?: IntFilter<"Rutina"> | number
     nombre?: StringFilter<"Rutina"> | string
-    descripcion?: StringNullableFilter<"Rutina"> | string | null
+    descripcion?: StringFilter<"Rutina"> | string
     usuarioId?: IntFilter<"Rutina"> | number
     fecha_creacion?: DateTimeFilter<"Rutina"> | Date | string
     usuario?: XOR<UsuarioScalarRelationFilter, UsuarioWhereInput>
     ejercicios?: RutinaEjercicioListRelationFilter
     calendario?: CalendarioListRelationFilter
+    comentarios?: ComentarioListRelationFilter
   }
 
   export type RutinaOrderByWithRelationInput = {
     id?: SortOrder
     nombre?: SortOrder
-    descripcion?: SortOrderInput | SortOrder
+    descripcion?: SortOrder
     usuarioId?: SortOrder
     fecha_creacion?: SortOrder
     usuario?: UsuarioOrderByWithRelationInput
     ejercicios?: RutinaEjercicioOrderByRelationAggregateInput
     calendario?: CalendarioOrderByRelationAggregateInput
+    comentarios?: ComentarioOrderByRelationAggregateInput
   }
 
   export type RutinaWhereUniqueInput = Prisma.AtLeast<{
@@ -15076,18 +17607,19 @@ export namespace Prisma {
     OR?: RutinaWhereInput[]
     NOT?: RutinaWhereInput | RutinaWhereInput[]
     nombre?: StringFilter<"Rutina"> | string
-    descripcion?: StringNullableFilter<"Rutina"> | string | null
+    descripcion?: StringFilter<"Rutina"> | string
     usuarioId?: IntFilter<"Rutina"> | number
     fecha_creacion?: DateTimeFilter<"Rutina"> | Date | string
     usuario?: XOR<UsuarioScalarRelationFilter, UsuarioWhereInput>
     ejercicios?: RutinaEjercicioListRelationFilter
     calendario?: CalendarioListRelationFilter
+    comentarios?: ComentarioListRelationFilter
   }, "id">
 
   export type RutinaOrderByWithAggregationInput = {
     id?: SortOrder
     nombre?: SortOrder
-    descripcion?: SortOrderInput | SortOrder
+    descripcion?: SortOrder
     usuarioId?: SortOrder
     fecha_creacion?: SortOrder
     _count?: RutinaCountOrderByAggregateInput
@@ -15103,7 +17635,7 @@ export namespace Prisma {
     NOT?: RutinaScalarWhereWithAggregatesInput | RutinaScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Rutina"> | number
     nombre?: StringWithAggregatesFilter<"Rutina"> | string
-    descripcion?: StringNullableWithAggregatesFilter<"Rutina"> | string | null
+    descripcion?: StringWithAggregatesFilter<"Rutina"> | string
     usuarioId?: IntWithAggregatesFilter<"Rutina"> | number
     fecha_creacion?: DateTimeWithAggregatesFilter<"Rutina"> | Date | string
   }
@@ -15681,6 +18213,123 @@ export namespace Prisma {
     fechaConseguido?: DateTimeWithAggregatesFilter<"UserAchievement"> | Date | string
   }
 
+  export type ComentarioWhereInput = {
+    AND?: ComentarioWhereInput | ComentarioWhereInput[]
+    OR?: ComentarioWhereInput[]
+    NOT?: ComentarioWhereInput | ComentarioWhereInput[]
+    id?: IntFilter<"Comentario"> | number
+    texto?: StringFilter<"Comentario"> | string
+    usuarioId?: IntFilter<"Comentario"> | number
+    rutinaId?: IntFilter<"Comentario"> | number
+    creadoEn?: DateTimeFilter<"Comentario"> | Date | string
+    usuario?: XOR<UsuarioScalarRelationFilter, UsuarioWhereInput>
+    rutina?: XOR<RutinaScalarRelationFilter, RutinaWhereInput>
+  }
+
+  export type ComentarioOrderByWithRelationInput = {
+    id?: SortOrder
+    texto?: SortOrder
+    usuarioId?: SortOrder
+    rutinaId?: SortOrder
+    creadoEn?: SortOrder
+    usuario?: UsuarioOrderByWithRelationInput
+    rutina?: RutinaOrderByWithRelationInput
+  }
+
+  export type ComentarioWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ComentarioWhereInput | ComentarioWhereInput[]
+    OR?: ComentarioWhereInput[]
+    NOT?: ComentarioWhereInput | ComentarioWhereInput[]
+    texto?: StringFilter<"Comentario"> | string
+    usuarioId?: IntFilter<"Comentario"> | number
+    rutinaId?: IntFilter<"Comentario"> | number
+    creadoEn?: DateTimeFilter<"Comentario"> | Date | string
+    usuario?: XOR<UsuarioScalarRelationFilter, UsuarioWhereInput>
+    rutina?: XOR<RutinaScalarRelationFilter, RutinaWhereInput>
+  }, "id">
+
+  export type ComentarioOrderByWithAggregationInput = {
+    id?: SortOrder
+    texto?: SortOrder
+    usuarioId?: SortOrder
+    rutinaId?: SortOrder
+    creadoEn?: SortOrder
+    _count?: ComentarioCountOrderByAggregateInput
+    _avg?: ComentarioAvgOrderByAggregateInput
+    _max?: ComentarioMaxOrderByAggregateInput
+    _min?: ComentarioMinOrderByAggregateInput
+    _sum?: ComentarioSumOrderByAggregateInput
+  }
+
+  export type ComentarioScalarWhereWithAggregatesInput = {
+    AND?: ComentarioScalarWhereWithAggregatesInput | ComentarioScalarWhereWithAggregatesInput[]
+    OR?: ComentarioScalarWhereWithAggregatesInput[]
+    NOT?: ComentarioScalarWhereWithAggregatesInput | ComentarioScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Comentario"> | number
+    texto?: StringWithAggregatesFilter<"Comentario"> | string
+    usuarioId?: IntWithAggregatesFilter<"Comentario"> | number
+    rutinaId?: IntWithAggregatesFilter<"Comentario"> | number
+    creadoEn?: DateTimeWithAggregatesFilter<"Comentario"> | Date | string
+  }
+
+  export type MetricWhereInput = {
+    AND?: MetricWhereInput | MetricWhereInput[]
+    OR?: MetricWhereInput[]
+    NOT?: MetricWhereInput | MetricWhereInput[]
+    id?: IntFilter<"Metric"> | number
+    userId?: IntFilter<"Metric"> | number
+    tipo?: StringFilter<"Metric"> | string
+    valor?: FloatFilter<"Metric"> | number
+    fecha?: DateTimeFilter<"Metric"> | Date | string
+    usuario?: XOR<UsuarioScalarRelationFilter, UsuarioWhereInput>
+  }
+
+  export type MetricOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    tipo?: SortOrder
+    valor?: SortOrder
+    fecha?: SortOrder
+    usuario?: UsuarioOrderByWithRelationInput
+  }
+
+  export type MetricWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: MetricWhereInput | MetricWhereInput[]
+    OR?: MetricWhereInput[]
+    NOT?: MetricWhereInput | MetricWhereInput[]
+    userId?: IntFilter<"Metric"> | number
+    tipo?: StringFilter<"Metric"> | string
+    valor?: FloatFilter<"Metric"> | number
+    fecha?: DateTimeFilter<"Metric"> | Date | string
+    usuario?: XOR<UsuarioScalarRelationFilter, UsuarioWhereInput>
+  }, "id">
+
+  export type MetricOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    tipo?: SortOrder
+    valor?: SortOrder
+    fecha?: SortOrder
+    _count?: MetricCountOrderByAggregateInput
+    _avg?: MetricAvgOrderByAggregateInput
+    _max?: MetricMaxOrderByAggregateInput
+    _min?: MetricMinOrderByAggregateInput
+    _sum?: MetricSumOrderByAggregateInput
+  }
+
+  export type MetricScalarWhereWithAggregatesInput = {
+    AND?: MetricScalarWhereWithAggregatesInput | MetricScalarWhereWithAggregatesInput[]
+    OR?: MetricScalarWhereWithAggregatesInput[]
+    NOT?: MetricScalarWhereWithAggregatesInput | MetricScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Metric"> | number
+    userId?: IntWithAggregatesFilter<"Metric"> | number
+    tipo?: StringWithAggregatesFilter<"Metric"> | string
+    valor?: FloatWithAggregatesFilter<"Metric"> | number
+    fecha?: DateTimeWithAggregatesFilter<"Metric"> | Date | string
+  }
+
   export type UsuarioCreateInput = {
     nombre: string
     email: string
@@ -15693,6 +18342,8 @@ export namespace Prisma {
     contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateInput = {
@@ -15708,6 +18359,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUpdateInput = {
@@ -15722,6 +18375,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateInput = {
@@ -15737,6 +18392,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioCreateManyInput = {
@@ -15827,60 +18484,64 @@ export namespace Prisma {
 
   export type RutinaCreateInput = {
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     fecha_creacion?: Date | string
     usuario: UsuarioCreateNestedOneWithoutRutinasInput
     ejercicios?: RutinaEjercicioCreateNestedManyWithoutRutinaInput
     calendario?: CalendarioCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaUncheckedCreateInput = {
     id?: number
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     usuarioId: number
     fecha_creacion?: Date | string
     ejercicios?: RutinaEjercicioUncheckedCreateNestedManyWithoutRutinaInput
     calendario?: CalendarioUncheckedCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaUpdateInput = {
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     usuario?: UsuarioUpdateOneRequiredWithoutRutinasNestedInput
     ejercicios?: RutinaEjercicioUpdateManyWithoutRutinaNestedInput
     calendario?: CalendarioUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUpdateManyWithoutRutinaNestedInput
   }
 
   export type RutinaUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     usuarioId?: IntFieldUpdateOperationsInput | number
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     ejercicios?: RutinaEjercicioUncheckedUpdateManyWithoutRutinaNestedInput
     calendario?: CalendarioUncheckedUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutRutinaNestedInput
   }
 
   export type RutinaCreateManyInput = {
     id?: number
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     usuarioId: number
     fecha_creacion?: Date | string
   }
 
   export type RutinaUpdateManyMutationInput = {
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RutinaUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     usuarioId?: IntFieldUpdateOperationsInput | number
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16451,6 +19112,109 @@ export namespace Prisma {
     fechaConseguido?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ComentarioCreateInput = {
+    texto: string
+    creadoEn?: Date | string
+    usuario: UsuarioCreateNestedOneWithoutComentariosInput
+    rutina: RutinaCreateNestedOneWithoutComentariosInput
+  }
+
+  export type ComentarioUncheckedCreateInput = {
+    id?: number
+    texto: string
+    usuarioId: number
+    rutinaId: number
+    creadoEn?: Date | string
+  }
+
+  export type ComentarioUpdateInput = {
+    texto?: StringFieldUpdateOperationsInput | string
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+    usuario?: UsuarioUpdateOneRequiredWithoutComentariosNestedInput
+    rutina?: RutinaUpdateOneRequiredWithoutComentariosNestedInput
+  }
+
+  export type ComentarioUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    texto?: StringFieldUpdateOperationsInput | string
+    usuarioId?: IntFieldUpdateOperationsInput | number
+    rutinaId?: IntFieldUpdateOperationsInput | number
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ComentarioCreateManyInput = {
+    id?: number
+    texto: string
+    usuarioId: number
+    rutinaId: number
+    creadoEn?: Date | string
+  }
+
+  export type ComentarioUpdateManyMutationInput = {
+    texto?: StringFieldUpdateOperationsInput | string
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ComentarioUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    texto?: StringFieldUpdateOperationsInput | string
+    usuarioId?: IntFieldUpdateOperationsInput | number
+    rutinaId?: IntFieldUpdateOperationsInput | number
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetricCreateInput = {
+    tipo: string
+    valor: number
+    fecha: Date | string
+    usuario: UsuarioCreateNestedOneWithoutMetricsInput
+  }
+
+  export type MetricUncheckedCreateInput = {
+    id?: number
+    userId: number
+    tipo: string
+    valor: number
+    fecha: Date | string
+  }
+
+  export type MetricUpdateInput = {
+    tipo?: StringFieldUpdateOperationsInput | string
+    valor?: FloatFieldUpdateOperationsInput | number
+    fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+    usuario?: UsuarioUpdateOneRequiredWithoutMetricsNestedInput
+  }
+
+  export type MetricUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    tipo?: StringFieldUpdateOperationsInput | string
+    valor?: FloatFieldUpdateOperationsInput | number
+    fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetricCreateManyInput = {
+    id?: number
+    userId: number
+    tipo: string
+    valor: number
+    fecha: Date | string
+  }
+
+  export type MetricUpdateManyMutationInput = {
+    tipo?: StringFieldUpdateOperationsInput | string
+    valor?: FloatFieldUpdateOperationsInput | number
+    fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetricUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    tipo?: StringFieldUpdateOperationsInput | string
+    valor?: FloatFieldUpdateOperationsInput | number
+    fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -16533,6 +19297,18 @@ export namespace Prisma {
     none?: UserAchievementWhereInput
   }
 
+  export type ComentarioListRelationFilter = {
+    every?: ComentarioWhereInput
+    some?: ComentarioWhereInput
+    none?: ComentarioWhereInput
+  }
+
+  export type MetricListRelationFilter = {
+    every?: MetricWhereInput
+    some?: MetricWhereInput
+    none?: MetricWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -16555,6 +19331,14 @@ export namespace Prisma {
   }
 
   export type UserAchievementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ComentarioOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MetricOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -17232,6 +20016,78 @@ export namespace Prisma {
     achievementId?: SortOrder
   }
 
+  export type ComentarioCountOrderByAggregateInput = {
+    id?: SortOrder
+    texto?: SortOrder
+    usuarioId?: SortOrder
+    rutinaId?: SortOrder
+    creadoEn?: SortOrder
+  }
+
+  export type ComentarioAvgOrderByAggregateInput = {
+    id?: SortOrder
+    usuarioId?: SortOrder
+    rutinaId?: SortOrder
+  }
+
+  export type ComentarioMaxOrderByAggregateInput = {
+    id?: SortOrder
+    texto?: SortOrder
+    usuarioId?: SortOrder
+    rutinaId?: SortOrder
+    creadoEn?: SortOrder
+  }
+
+  export type ComentarioMinOrderByAggregateInput = {
+    id?: SortOrder
+    texto?: SortOrder
+    usuarioId?: SortOrder
+    rutinaId?: SortOrder
+    creadoEn?: SortOrder
+  }
+
+  export type ComentarioSumOrderByAggregateInput = {
+    id?: SortOrder
+    usuarioId?: SortOrder
+    rutinaId?: SortOrder
+  }
+
+  export type MetricCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    tipo?: SortOrder
+    valor?: SortOrder
+    fecha?: SortOrder
+  }
+
+  export type MetricAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    valor?: SortOrder
+  }
+
+  export type MetricMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    tipo?: SortOrder
+    valor?: SortOrder
+    fecha?: SortOrder
+  }
+
+  export type MetricMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    tipo?: SortOrder
+    valor?: SortOrder
+    fecha?: SortOrder
+  }
+
+  export type MetricSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    valor?: SortOrder
+  }
+
   export type RutinaCreateNestedManyWithoutUsuarioInput = {
     create?: XOR<RutinaCreateWithoutUsuarioInput, RutinaUncheckedCreateWithoutUsuarioInput> | RutinaCreateWithoutUsuarioInput[] | RutinaUncheckedCreateWithoutUsuarioInput[]
     connectOrCreate?: RutinaCreateOrConnectWithoutUsuarioInput | RutinaCreateOrConnectWithoutUsuarioInput[]
@@ -17267,6 +20123,20 @@ export namespace Prisma {
     connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
 
+  export type ComentarioCreateNestedManyWithoutUsuarioInput = {
+    create?: XOR<ComentarioCreateWithoutUsuarioInput, ComentarioUncheckedCreateWithoutUsuarioInput> | ComentarioCreateWithoutUsuarioInput[] | ComentarioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutUsuarioInput | ComentarioCreateOrConnectWithoutUsuarioInput[]
+    createMany?: ComentarioCreateManyUsuarioInputEnvelope
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+  }
+
+  export type MetricCreateNestedManyWithoutUsuarioInput = {
+    create?: XOR<MetricCreateWithoutUsuarioInput, MetricUncheckedCreateWithoutUsuarioInput> | MetricCreateWithoutUsuarioInput[] | MetricUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: MetricCreateOrConnectWithoutUsuarioInput | MetricCreateOrConnectWithoutUsuarioInput[]
+    createMany?: MetricCreateManyUsuarioInputEnvelope
+    connect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+  }
+
   export type RutinaUncheckedCreateNestedManyWithoutUsuarioInput = {
     create?: XOR<RutinaCreateWithoutUsuarioInput, RutinaUncheckedCreateWithoutUsuarioInput> | RutinaCreateWithoutUsuarioInput[] | RutinaUncheckedCreateWithoutUsuarioInput[]
     connectOrCreate?: RutinaCreateOrConnectWithoutUsuarioInput | RutinaCreateOrConnectWithoutUsuarioInput[]
@@ -17300,6 +20170,20 @@ export namespace Prisma {
     connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
     createMany?: UserAchievementCreateManyUserInputEnvelope
     connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
+  }
+
+  export type ComentarioUncheckedCreateNestedManyWithoutUsuarioInput = {
+    create?: XOR<ComentarioCreateWithoutUsuarioInput, ComentarioUncheckedCreateWithoutUsuarioInput> | ComentarioCreateWithoutUsuarioInput[] | ComentarioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutUsuarioInput | ComentarioCreateOrConnectWithoutUsuarioInput[]
+    createMany?: ComentarioCreateManyUsuarioInputEnvelope
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+  }
+
+  export type MetricUncheckedCreateNestedManyWithoutUsuarioInput = {
+    create?: XOR<MetricCreateWithoutUsuarioInput, MetricUncheckedCreateWithoutUsuarioInput> | MetricCreateWithoutUsuarioInput[] | MetricUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: MetricCreateOrConnectWithoutUsuarioInput | MetricCreateOrConnectWithoutUsuarioInput[]
+    createMany?: MetricCreateManyUsuarioInputEnvelope
+    connect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -17384,6 +20268,34 @@ export namespace Prisma {
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
 
+  export type ComentarioUpdateManyWithoutUsuarioNestedInput = {
+    create?: XOR<ComentarioCreateWithoutUsuarioInput, ComentarioUncheckedCreateWithoutUsuarioInput> | ComentarioCreateWithoutUsuarioInput[] | ComentarioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutUsuarioInput | ComentarioCreateOrConnectWithoutUsuarioInput[]
+    upsert?: ComentarioUpsertWithWhereUniqueWithoutUsuarioInput | ComentarioUpsertWithWhereUniqueWithoutUsuarioInput[]
+    createMany?: ComentarioCreateManyUsuarioInputEnvelope
+    set?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    disconnect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    delete?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    update?: ComentarioUpdateWithWhereUniqueWithoutUsuarioInput | ComentarioUpdateWithWhereUniqueWithoutUsuarioInput[]
+    updateMany?: ComentarioUpdateManyWithWhereWithoutUsuarioInput | ComentarioUpdateManyWithWhereWithoutUsuarioInput[]
+    deleteMany?: ComentarioScalarWhereInput | ComentarioScalarWhereInput[]
+  }
+
+  export type MetricUpdateManyWithoutUsuarioNestedInput = {
+    create?: XOR<MetricCreateWithoutUsuarioInput, MetricUncheckedCreateWithoutUsuarioInput> | MetricCreateWithoutUsuarioInput[] | MetricUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: MetricCreateOrConnectWithoutUsuarioInput | MetricCreateOrConnectWithoutUsuarioInput[]
+    upsert?: MetricUpsertWithWhereUniqueWithoutUsuarioInput | MetricUpsertWithWhereUniqueWithoutUsuarioInput[]
+    createMany?: MetricCreateManyUsuarioInputEnvelope
+    set?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    disconnect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    delete?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    connect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    update?: MetricUpdateWithWhereUniqueWithoutUsuarioInput | MetricUpdateWithWhereUniqueWithoutUsuarioInput[]
+    updateMany?: MetricUpdateManyWithWhereWithoutUsuarioInput | MetricUpdateManyWithWhereWithoutUsuarioInput[]
+    deleteMany?: MetricScalarWhereInput | MetricScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -17462,6 +20374,34 @@ export namespace Prisma {
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
 
+  export type ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput = {
+    create?: XOR<ComentarioCreateWithoutUsuarioInput, ComentarioUncheckedCreateWithoutUsuarioInput> | ComentarioCreateWithoutUsuarioInput[] | ComentarioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutUsuarioInput | ComentarioCreateOrConnectWithoutUsuarioInput[]
+    upsert?: ComentarioUpsertWithWhereUniqueWithoutUsuarioInput | ComentarioUpsertWithWhereUniqueWithoutUsuarioInput[]
+    createMany?: ComentarioCreateManyUsuarioInputEnvelope
+    set?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    disconnect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    delete?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    update?: ComentarioUpdateWithWhereUniqueWithoutUsuarioInput | ComentarioUpdateWithWhereUniqueWithoutUsuarioInput[]
+    updateMany?: ComentarioUpdateManyWithWhereWithoutUsuarioInput | ComentarioUpdateManyWithWhereWithoutUsuarioInput[]
+    deleteMany?: ComentarioScalarWhereInput | ComentarioScalarWhereInput[]
+  }
+
+  export type MetricUncheckedUpdateManyWithoutUsuarioNestedInput = {
+    create?: XOR<MetricCreateWithoutUsuarioInput, MetricUncheckedCreateWithoutUsuarioInput> | MetricCreateWithoutUsuarioInput[] | MetricUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: MetricCreateOrConnectWithoutUsuarioInput | MetricCreateOrConnectWithoutUsuarioInput[]
+    upsert?: MetricUpsertWithWhereUniqueWithoutUsuarioInput | MetricUpsertWithWhereUniqueWithoutUsuarioInput[]
+    createMany?: MetricCreateManyUsuarioInputEnvelope
+    set?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    disconnect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    delete?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    connect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+    update?: MetricUpdateWithWhereUniqueWithoutUsuarioInput | MetricUpdateWithWhereUniqueWithoutUsuarioInput[]
+    updateMany?: MetricUpdateManyWithWhereWithoutUsuarioInput | MetricUpdateManyWithWhereWithoutUsuarioInput[]
+    deleteMany?: MetricScalarWhereInput | MetricScalarWhereInput[]
+  }
+
   export type RutinaEjercicioCreateNestedManyWithoutEjercicioInput = {
     create?: XOR<RutinaEjercicioCreateWithoutEjercicioInput, RutinaEjercicioUncheckedCreateWithoutEjercicioInput> | RutinaEjercicioCreateWithoutEjercicioInput[] | RutinaEjercicioUncheckedCreateWithoutEjercicioInput[]
     connectOrCreate?: RutinaEjercicioCreateOrConnectWithoutEjercicioInput | RutinaEjercicioCreateOrConnectWithoutEjercicioInput[]
@@ -17524,6 +20464,13 @@ export namespace Prisma {
     connect?: CalendarioWhereUniqueInput | CalendarioWhereUniqueInput[]
   }
 
+  export type ComentarioCreateNestedManyWithoutRutinaInput = {
+    create?: XOR<ComentarioCreateWithoutRutinaInput, ComentarioUncheckedCreateWithoutRutinaInput> | ComentarioCreateWithoutRutinaInput[] | ComentarioUncheckedCreateWithoutRutinaInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutRutinaInput | ComentarioCreateOrConnectWithoutRutinaInput[]
+    createMany?: ComentarioCreateManyRutinaInputEnvelope
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+  }
+
   export type RutinaEjercicioUncheckedCreateNestedManyWithoutRutinaInput = {
     create?: XOR<RutinaEjercicioCreateWithoutRutinaInput, RutinaEjercicioUncheckedCreateWithoutRutinaInput> | RutinaEjercicioCreateWithoutRutinaInput[] | RutinaEjercicioUncheckedCreateWithoutRutinaInput[]
     connectOrCreate?: RutinaEjercicioCreateOrConnectWithoutRutinaInput | RutinaEjercicioCreateOrConnectWithoutRutinaInput[]
@@ -17536,6 +20483,13 @@ export namespace Prisma {
     connectOrCreate?: CalendarioCreateOrConnectWithoutRutinaInput | CalendarioCreateOrConnectWithoutRutinaInput[]
     createMany?: CalendarioCreateManyRutinaInputEnvelope
     connect?: CalendarioWhereUniqueInput | CalendarioWhereUniqueInput[]
+  }
+
+  export type ComentarioUncheckedCreateNestedManyWithoutRutinaInput = {
+    create?: XOR<ComentarioCreateWithoutRutinaInput, ComentarioUncheckedCreateWithoutRutinaInput> | ComentarioCreateWithoutRutinaInput[] | ComentarioUncheckedCreateWithoutRutinaInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutRutinaInput | ComentarioCreateOrConnectWithoutRutinaInput[]
+    createMany?: ComentarioCreateManyRutinaInputEnvelope
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
   }
 
   export type UsuarioUpdateOneRequiredWithoutRutinasNestedInput = {
@@ -17574,6 +20528,20 @@ export namespace Prisma {
     deleteMany?: CalendarioScalarWhereInput | CalendarioScalarWhereInput[]
   }
 
+  export type ComentarioUpdateManyWithoutRutinaNestedInput = {
+    create?: XOR<ComentarioCreateWithoutRutinaInput, ComentarioUncheckedCreateWithoutRutinaInput> | ComentarioCreateWithoutRutinaInput[] | ComentarioUncheckedCreateWithoutRutinaInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutRutinaInput | ComentarioCreateOrConnectWithoutRutinaInput[]
+    upsert?: ComentarioUpsertWithWhereUniqueWithoutRutinaInput | ComentarioUpsertWithWhereUniqueWithoutRutinaInput[]
+    createMany?: ComentarioCreateManyRutinaInputEnvelope
+    set?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    disconnect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    delete?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    update?: ComentarioUpdateWithWhereUniqueWithoutRutinaInput | ComentarioUpdateWithWhereUniqueWithoutRutinaInput[]
+    updateMany?: ComentarioUpdateManyWithWhereWithoutRutinaInput | ComentarioUpdateManyWithWhereWithoutRutinaInput[]
+    deleteMany?: ComentarioScalarWhereInput | ComentarioScalarWhereInput[]
+  }
+
   export type RutinaEjercicioUncheckedUpdateManyWithoutRutinaNestedInput = {
     create?: XOR<RutinaEjercicioCreateWithoutRutinaInput, RutinaEjercicioUncheckedCreateWithoutRutinaInput> | RutinaEjercicioCreateWithoutRutinaInput[] | RutinaEjercicioUncheckedCreateWithoutRutinaInput[]
     connectOrCreate?: RutinaEjercicioCreateOrConnectWithoutRutinaInput | RutinaEjercicioCreateOrConnectWithoutRutinaInput[]
@@ -17600,6 +20568,20 @@ export namespace Prisma {
     update?: CalendarioUpdateWithWhereUniqueWithoutRutinaInput | CalendarioUpdateWithWhereUniqueWithoutRutinaInput[]
     updateMany?: CalendarioUpdateManyWithWhereWithoutRutinaInput | CalendarioUpdateManyWithWhereWithoutRutinaInput[]
     deleteMany?: CalendarioScalarWhereInput | CalendarioScalarWhereInput[]
+  }
+
+  export type ComentarioUncheckedUpdateManyWithoutRutinaNestedInput = {
+    create?: XOR<ComentarioCreateWithoutRutinaInput, ComentarioUncheckedCreateWithoutRutinaInput> | ComentarioCreateWithoutRutinaInput[] | ComentarioUncheckedCreateWithoutRutinaInput[]
+    connectOrCreate?: ComentarioCreateOrConnectWithoutRutinaInput | ComentarioCreateOrConnectWithoutRutinaInput[]
+    upsert?: ComentarioUpsertWithWhereUniqueWithoutRutinaInput | ComentarioUpsertWithWhereUniqueWithoutRutinaInput[]
+    createMany?: ComentarioCreateManyRutinaInputEnvelope
+    set?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    disconnect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    delete?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    connect?: ComentarioWhereUniqueInput | ComentarioWhereUniqueInput[]
+    update?: ComentarioUpdateWithWhereUniqueWithoutRutinaInput | ComentarioUpdateWithWhereUniqueWithoutRutinaInput[]
+    updateMany?: ComentarioUpdateManyWithWhereWithoutRutinaInput | ComentarioUpdateManyWithWhereWithoutRutinaInput[]
+    deleteMany?: ComentarioScalarWhereInput | ComentarioScalarWhereInput[]
   }
 
   export type RutinaCreateNestedOneWithoutEjerciciosInput = {
@@ -17910,6 +20892,48 @@ export namespace Prisma {
     update?: XOR<XOR<AchievementUpdateToOneWithWhereWithoutUserAchievementsInput, AchievementUpdateWithoutUserAchievementsInput>, AchievementUncheckedUpdateWithoutUserAchievementsInput>
   }
 
+  export type UsuarioCreateNestedOneWithoutComentariosInput = {
+    create?: XOR<UsuarioCreateWithoutComentariosInput, UsuarioUncheckedCreateWithoutComentariosInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutComentariosInput
+    connect?: UsuarioWhereUniqueInput
+  }
+
+  export type RutinaCreateNestedOneWithoutComentariosInput = {
+    create?: XOR<RutinaCreateWithoutComentariosInput, RutinaUncheckedCreateWithoutComentariosInput>
+    connectOrCreate?: RutinaCreateOrConnectWithoutComentariosInput
+    connect?: RutinaWhereUniqueInput
+  }
+
+  export type UsuarioUpdateOneRequiredWithoutComentariosNestedInput = {
+    create?: XOR<UsuarioCreateWithoutComentariosInput, UsuarioUncheckedCreateWithoutComentariosInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutComentariosInput
+    upsert?: UsuarioUpsertWithoutComentariosInput
+    connect?: UsuarioWhereUniqueInput
+    update?: XOR<XOR<UsuarioUpdateToOneWithWhereWithoutComentariosInput, UsuarioUpdateWithoutComentariosInput>, UsuarioUncheckedUpdateWithoutComentariosInput>
+  }
+
+  export type RutinaUpdateOneRequiredWithoutComentariosNestedInput = {
+    create?: XOR<RutinaCreateWithoutComentariosInput, RutinaUncheckedCreateWithoutComentariosInput>
+    connectOrCreate?: RutinaCreateOrConnectWithoutComentariosInput
+    upsert?: RutinaUpsertWithoutComentariosInput
+    connect?: RutinaWhereUniqueInput
+    update?: XOR<XOR<RutinaUpdateToOneWithWhereWithoutComentariosInput, RutinaUpdateWithoutComentariosInput>, RutinaUncheckedUpdateWithoutComentariosInput>
+  }
+
+  export type UsuarioCreateNestedOneWithoutMetricsInput = {
+    create?: XOR<UsuarioCreateWithoutMetricsInput, UsuarioUncheckedCreateWithoutMetricsInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutMetricsInput
+    connect?: UsuarioWhereUniqueInput
+  }
+
+  export type UsuarioUpdateOneRequiredWithoutMetricsNestedInput = {
+    create?: XOR<UsuarioCreateWithoutMetricsInput, UsuarioUncheckedCreateWithoutMetricsInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutMetricsInput
+    upsert?: UsuarioUpsertWithoutMetricsInput
+    connect?: UsuarioWhereUniqueInput
+    update?: XOR<XOR<UsuarioUpdateToOneWithWhereWithoutMetricsInput, UsuarioUpdateWithoutMetricsInput>, UsuarioUncheckedUpdateWithoutMetricsInput>
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -18129,19 +21153,21 @@ export namespace Prisma {
 
   export type RutinaCreateWithoutUsuarioInput = {
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     fecha_creacion?: Date | string
     ejercicios?: RutinaEjercicioCreateNestedManyWithoutRutinaInput
     calendario?: CalendarioCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaUncheckedCreateWithoutUsuarioInput = {
     id?: number
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     fecha_creacion?: Date | string
     ejercicios?: RutinaEjercicioUncheckedCreateNestedManyWithoutRutinaInput
     calendario?: CalendarioUncheckedCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaCreateOrConnectWithoutUsuarioInput = {
@@ -18252,6 +21278,52 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ComentarioCreateWithoutUsuarioInput = {
+    texto: string
+    creadoEn?: Date | string
+    rutina: RutinaCreateNestedOneWithoutComentariosInput
+  }
+
+  export type ComentarioUncheckedCreateWithoutUsuarioInput = {
+    id?: number
+    texto: string
+    rutinaId: number
+    creadoEn?: Date | string
+  }
+
+  export type ComentarioCreateOrConnectWithoutUsuarioInput = {
+    where: ComentarioWhereUniqueInput
+    create: XOR<ComentarioCreateWithoutUsuarioInput, ComentarioUncheckedCreateWithoutUsuarioInput>
+  }
+
+  export type ComentarioCreateManyUsuarioInputEnvelope = {
+    data: ComentarioCreateManyUsuarioInput | ComentarioCreateManyUsuarioInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MetricCreateWithoutUsuarioInput = {
+    tipo: string
+    valor: number
+    fecha: Date | string
+  }
+
+  export type MetricUncheckedCreateWithoutUsuarioInput = {
+    id?: number
+    tipo: string
+    valor: number
+    fecha: Date | string
+  }
+
+  export type MetricCreateOrConnectWithoutUsuarioInput = {
+    where: MetricWhereUniqueInput
+    create: XOR<MetricCreateWithoutUsuarioInput, MetricUncheckedCreateWithoutUsuarioInput>
+  }
+
+  export type MetricCreateManyUsuarioInputEnvelope = {
+    data: MetricCreateManyUsuarioInput | MetricCreateManyUsuarioInput[]
+    skipDuplicates?: boolean
+  }
+
   export type RutinaUpsertWithWhereUniqueWithoutUsuarioInput = {
     where: RutinaWhereUniqueInput
     update: XOR<RutinaUpdateWithoutUsuarioInput, RutinaUncheckedUpdateWithoutUsuarioInput>
@@ -18274,7 +21346,7 @@ export namespace Prisma {
     NOT?: RutinaScalarWhereInput | RutinaScalarWhereInput[]
     id?: IntFilter<"Rutina"> | number
     nombre?: StringFilter<"Rutina"> | string
-    descripcion?: StringNullableFilter<"Rutina"> | string | null
+    descripcion?: StringFilter<"Rutina"> | string
     usuarioId?: IntFilter<"Rutina"> | number
     fecha_creacion?: DateTimeFilter<"Rutina"> | Date | string
   }
@@ -18390,6 +21462,60 @@ export namespace Prisma {
     fechaConseguido?: DateTimeFilter<"UserAchievement"> | Date | string
   }
 
+  export type ComentarioUpsertWithWhereUniqueWithoutUsuarioInput = {
+    where: ComentarioWhereUniqueInput
+    update: XOR<ComentarioUpdateWithoutUsuarioInput, ComentarioUncheckedUpdateWithoutUsuarioInput>
+    create: XOR<ComentarioCreateWithoutUsuarioInput, ComentarioUncheckedCreateWithoutUsuarioInput>
+  }
+
+  export type ComentarioUpdateWithWhereUniqueWithoutUsuarioInput = {
+    where: ComentarioWhereUniqueInput
+    data: XOR<ComentarioUpdateWithoutUsuarioInput, ComentarioUncheckedUpdateWithoutUsuarioInput>
+  }
+
+  export type ComentarioUpdateManyWithWhereWithoutUsuarioInput = {
+    where: ComentarioScalarWhereInput
+    data: XOR<ComentarioUpdateManyMutationInput, ComentarioUncheckedUpdateManyWithoutUsuarioInput>
+  }
+
+  export type ComentarioScalarWhereInput = {
+    AND?: ComentarioScalarWhereInput | ComentarioScalarWhereInput[]
+    OR?: ComentarioScalarWhereInput[]
+    NOT?: ComentarioScalarWhereInput | ComentarioScalarWhereInput[]
+    id?: IntFilter<"Comentario"> | number
+    texto?: StringFilter<"Comentario"> | string
+    usuarioId?: IntFilter<"Comentario"> | number
+    rutinaId?: IntFilter<"Comentario"> | number
+    creadoEn?: DateTimeFilter<"Comentario"> | Date | string
+  }
+
+  export type MetricUpsertWithWhereUniqueWithoutUsuarioInput = {
+    where: MetricWhereUniqueInput
+    update: XOR<MetricUpdateWithoutUsuarioInput, MetricUncheckedUpdateWithoutUsuarioInput>
+    create: XOR<MetricCreateWithoutUsuarioInput, MetricUncheckedCreateWithoutUsuarioInput>
+  }
+
+  export type MetricUpdateWithWhereUniqueWithoutUsuarioInput = {
+    where: MetricWhereUniqueInput
+    data: XOR<MetricUpdateWithoutUsuarioInput, MetricUncheckedUpdateWithoutUsuarioInput>
+  }
+
+  export type MetricUpdateManyWithWhereWithoutUsuarioInput = {
+    where: MetricScalarWhereInput
+    data: XOR<MetricUpdateManyMutationInput, MetricUncheckedUpdateManyWithoutUsuarioInput>
+  }
+
+  export type MetricScalarWhereInput = {
+    AND?: MetricScalarWhereInput | MetricScalarWhereInput[]
+    OR?: MetricScalarWhereInput[]
+    NOT?: MetricScalarWhereInput | MetricScalarWhereInput[]
+    id?: IntFilter<"Metric"> | number
+    userId?: IntFilter<"Metric"> | number
+    tipo?: StringFilter<"Metric"> | string
+    valor?: FloatFilter<"Metric"> | number
+    fecha?: DateTimeFilter<"Metric"> | Date | string
+  }
+
   export type RutinaEjercicioCreateWithoutEjercicioInput = {
     series: number
     repeticiones: number
@@ -18457,6 +21583,8 @@ export namespace Prisma {
     contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutRutinasInput = {
@@ -18471,6 +21599,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutRutinasInput = {
@@ -18526,6 +21656,29 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ComentarioCreateWithoutRutinaInput = {
+    texto: string
+    creadoEn?: Date | string
+    usuario: UsuarioCreateNestedOneWithoutComentariosInput
+  }
+
+  export type ComentarioUncheckedCreateWithoutRutinaInput = {
+    id?: number
+    texto: string
+    usuarioId: number
+    creadoEn?: Date | string
+  }
+
+  export type ComentarioCreateOrConnectWithoutRutinaInput = {
+    where: ComentarioWhereUniqueInput
+    create: XOR<ComentarioCreateWithoutRutinaInput, ComentarioUncheckedCreateWithoutRutinaInput>
+  }
+
+  export type ComentarioCreateManyRutinaInputEnvelope = {
+    data: ComentarioCreateManyRutinaInput | ComentarioCreateManyRutinaInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UsuarioUpsertWithoutRutinasInput = {
     update: XOR<UsuarioUpdateWithoutRutinasInput, UsuarioUncheckedUpdateWithoutRutinasInput>
     create: XOR<UsuarioCreateWithoutRutinasInput, UsuarioUncheckedCreateWithoutRutinasInput>
@@ -18548,6 +21701,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutRutinasInput = {
@@ -18562,6 +21717,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type RutinaEjercicioUpsertWithWhereUniqueWithoutRutinaInput = {
@@ -18596,21 +21753,39 @@ export namespace Prisma {
     data: XOR<CalendarioUpdateManyMutationInput, CalendarioUncheckedUpdateManyWithoutRutinaInput>
   }
 
+  export type ComentarioUpsertWithWhereUniqueWithoutRutinaInput = {
+    where: ComentarioWhereUniqueInput
+    update: XOR<ComentarioUpdateWithoutRutinaInput, ComentarioUncheckedUpdateWithoutRutinaInput>
+    create: XOR<ComentarioCreateWithoutRutinaInput, ComentarioUncheckedCreateWithoutRutinaInput>
+  }
+
+  export type ComentarioUpdateWithWhereUniqueWithoutRutinaInput = {
+    where: ComentarioWhereUniqueInput
+    data: XOR<ComentarioUpdateWithoutRutinaInput, ComentarioUncheckedUpdateWithoutRutinaInput>
+  }
+
+  export type ComentarioUpdateManyWithWhereWithoutRutinaInput = {
+    where: ComentarioScalarWhereInput
+    data: XOR<ComentarioUpdateManyMutationInput, ComentarioUncheckedUpdateManyWithoutRutinaInput>
+  }
+
   export type RutinaCreateWithoutEjerciciosInput = {
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     fecha_creacion?: Date | string
     usuario: UsuarioCreateNestedOneWithoutRutinasInput
     calendario?: CalendarioCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaUncheckedCreateWithoutEjerciciosInput = {
     id?: number
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     usuarioId: number
     fecha_creacion?: Date | string
     calendario?: CalendarioUncheckedCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaCreateOrConnectWithoutEjerciciosInput = {
@@ -18651,19 +21826,21 @@ export namespace Prisma {
 
   export type RutinaUpdateWithoutEjerciciosInput = {
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     usuario?: UsuarioUpdateOneRequiredWithoutRutinasNestedInput
     calendario?: CalendarioUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUpdateManyWithoutRutinaNestedInput
   }
 
   export type RutinaUncheckedUpdateWithoutEjerciciosInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     usuarioId?: IntFieldUpdateOperationsInput | number
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     calendario?: CalendarioUncheckedUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutRutinaNestedInput
   }
 
   export type EjercicioUpsertWithoutRutinasInput = {
@@ -18703,6 +21880,8 @@ export namespace Prisma {
     contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutCalendarioInput = {
@@ -18717,6 +21896,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutCalendarioInput = {
@@ -18726,19 +21907,21 @@ export namespace Prisma {
 
   export type RutinaCreateWithoutCalendarioInput = {
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     fecha_creacion?: Date | string
     usuario: UsuarioCreateNestedOneWithoutRutinasInput
     ejercicios?: RutinaEjercicioCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaUncheckedCreateWithoutCalendarioInput = {
     id?: number
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     usuarioId: number
     fecha_creacion?: Date | string
     ejercicios?: RutinaEjercicioUncheckedCreateNestedManyWithoutRutinaInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutRutinaInput
   }
 
   export type RutinaCreateOrConnectWithoutCalendarioInput = {
@@ -18768,6 +21951,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutCalendarioInput = {
@@ -18782,6 +21967,8 @@ export namespace Prisma {
     contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type RutinaUpsertWithoutCalendarioInput = {
@@ -18797,19 +21984,21 @@ export namespace Prisma {
 
   export type RutinaUpdateWithoutCalendarioInput = {
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     usuario?: UsuarioUpdateOneRequiredWithoutRutinasNestedInput
     ejercicios?: RutinaEjercicioUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUpdateManyWithoutRutinaNestedInput
   }
 
   export type RutinaUncheckedUpdateWithoutCalendarioInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     usuarioId?: IntFieldUpdateOperationsInput | number
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     ejercicios?: RutinaEjercicioUncheckedUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutRutinaNestedInput
   }
 
   export type ContratacionCreateWithoutEntrenadorInput = {
@@ -18868,6 +22057,8 @@ export namespace Prisma {
     calendario?: CalendarioCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutContratacionesInput = {
@@ -18882,6 +22073,8 @@ export namespace Prisma {
     calendario?: CalendarioUncheckedCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutContratacionesInput = {
@@ -18941,6 +22134,8 @@ export namespace Prisma {
     calendario?: CalendarioUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutContratacionesInput = {
@@ -18955,6 +22150,8 @@ export namespace Prisma {
     calendario?: CalendarioUncheckedUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type EntrenadorUpsertWithoutContratacionesInput = {
@@ -19047,6 +22244,8 @@ export namespace Prisma {
     calendario?: CalendarioCreateNestedManyWithoutUsuarioInput
     contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutUserChallengesInput = {
@@ -19061,6 +22260,8 @@ export namespace Prisma {
     calendario?: CalendarioUncheckedCreateNestedManyWithoutUsuarioInput
     contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutUserChallengesInput = {
@@ -19126,6 +22327,8 @@ export namespace Prisma {
     calendario?: CalendarioUpdateManyWithoutUsuarioNestedInput
     contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutUserChallengesInput = {
@@ -19140,6 +22343,8 @@ export namespace Prisma {
     calendario?: CalendarioUncheckedUpdateManyWithoutUsuarioNestedInput
     contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type ChallengeUpsertWithoutUserChallengesInput = {
@@ -19232,6 +22437,8 @@ export namespace Prisma {
     calendario?: CalendarioCreateNestedManyWithoutUsuarioInput
     contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutUserAchievementsInput = {
@@ -19246,6 +22453,8 @@ export namespace Prisma {
     calendario?: CalendarioUncheckedCreateNestedManyWithoutUsuarioInput
     contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutUserAchievementsInput = {
@@ -19299,6 +22508,8 @@ export namespace Prisma {
     calendario?: CalendarioUpdateManyWithoutUsuarioNestedInput
     contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutUserAchievementsInput = {
@@ -19313,6 +22524,8 @@ export namespace Prisma {
     calendario?: CalendarioUncheckedUpdateManyWithoutUsuarioNestedInput
     contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type AchievementUpsertWithoutUserAchievementsInput = {
@@ -19345,10 +22558,220 @@ export namespace Prisma {
     valorNecesario?: IntFieldUpdateOperationsInput | number
   }
 
+  export type UsuarioCreateWithoutComentariosInput = {
+    nombre: string
+    email: string
+    contraseña: string
+    fecha_registro?: Date | string
+    fotoUrl?: string | null
+    plan?: string
+    rutinas?: RutinaCreateNestedManyWithoutUsuarioInput
+    calendario?: CalendarioCreateNestedManyWithoutUsuarioInput
+    contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
+    userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioUncheckedCreateWithoutComentariosInput = {
+    id?: number
+    nombre: string
+    email: string
+    contraseña: string
+    fecha_registro?: Date | string
+    fotoUrl?: string | null
+    plan?: string
+    rutinas?: RutinaUncheckedCreateNestedManyWithoutUsuarioInput
+    calendario?: CalendarioUncheckedCreateNestedManyWithoutUsuarioInput
+    contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
+    userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioCreateOrConnectWithoutComentariosInput = {
+    where: UsuarioWhereUniqueInput
+    create: XOR<UsuarioCreateWithoutComentariosInput, UsuarioUncheckedCreateWithoutComentariosInput>
+  }
+
+  export type RutinaCreateWithoutComentariosInput = {
+    nombre: string
+    descripcion: string
+    fecha_creacion?: Date | string
+    usuario: UsuarioCreateNestedOneWithoutRutinasInput
+    ejercicios?: RutinaEjercicioCreateNestedManyWithoutRutinaInput
+    calendario?: CalendarioCreateNestedManyWithoutRutinaInput
+  }
+
+  export type RutinaUncheckedCreateWithoutComentariosInput = {
+    id?: number
+    nombre: string
+    descripcion: string
+    usuarioId: number
+    fecha_creacion?: Date | string
+    ejercicios?: RutinaEjercicioUncheckedCreateNestedManyWithoutRutinaInput
+    calendario?: CalendarioUncheckedCreateNestedManyWithoutRutinaInput
+  }
+
+  export type RutinaCreateOrConnectWithoutComentariosInput = {
+    where: RutinaWhereUniqueInput
+    create: XOR<RutinaCreateWithoutComentariosInput, RutinaUncheckedCreateWithoutComentariosInput>
+  }
+
+  export type UsuarioUpsertWithoutComentariosInput = {
+    update: XOR<UsuarioUpdateWithoutComentariosInput, UsuarioUncheckedUpdateWithoutComentariosInput>
+    create: XOR<UsuarioCreateWithoutComentariosInput, UsuarioUncheckedCreateWithoutComentariosInput>
+    where?: UsuarioWhereInput
+  }
+
+  export type UsuarioUpdateToOneWithWhereWithoutComentariosInput = {
+    where?: UsuarioWhereInput
+    data: XOR<UsuarioUpdateWithoutComentariosInput, UsuarioUncheckedUpdateWithoutComentariosInput>
+  }
+
+  export type UsuarioUpdateWithoutComentariosInput = {
+    nombre?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    contraseña?: StringFieldUpdateOperationsInput | string
+    fecha_registro?: DateTimeFieldUpdateOperationsInput | Date | string
+    fotoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    rutinas?: RutinaUpdateManyWithoutUsuarioNestedInput
+    calendario?: CalendarioUpdateManyWithoutUsuarioNestedInput
+    contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
+    userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+  }
+
+  export type UsuarioUncheckedUpdateWithoutComentariosInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    nombre?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    contraseña?: StringFieldUpdateOperationsInput | string
+    fecha_registro?: DateTimeFieldUpdateOperationsInput | Date | string
+    fotoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    rutinas?: RutinaUncheckedUpdateManyWithoutUsuarioNestedInput
+    calendario?: CalendarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
+    userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+  }
+
+  export type RutinaUpsertWithoutComentariosInput = {
+    update: XOR<RutinaUpdateWithoutComentariosInput, RutinaUncheckedUpdateWithoutComentariosInput>
+    create: XOR<RutinaCreateWithoutComentariosInput, RutinaUncheckedCreateWithoutComentariosInput>
+    where?: RutinaWhereInput
+  }
+
+  export type RutinaUpdateToOneWithWhereWithoutComentariosInput = {
+    where?: RutinaWhereInput
+    data: XOR<RutinaUpdateWithoutComentariosInput, RutinaUncheckedUpdateWithoutComentariosInput>
+  }
+
+  export type RutinaUpdateWithoutComentariosInput = {
+    nombre?: StringFieldUpdateOperationsInput | string
+    descripcion?: StringFieldUpdateOperationsInput | string
+    fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
+    usuario?: UsuarioUpdateOneRequiredWithoutRutinasNestedInput
+    ejercicios?: RutinaEjercicioUpdateManyWithoutRutinaNestedInput
+    calendario?: CalendarioUpdateManyWithoutRutinaNestedInput
+  }
+
+  export type RutinaUncheckedUpdateWithoutComentariosInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    nombre?: StringFieldUpdateOperationsInput | string
+    descripcion?: StringFieldUpdateOperationsInput | string
+    usuarioId?: IntFieldUpdateOperationsInput | number
+    fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
+    ejercicios?: RutinaEjercicioUncheckedUpdateManyWithoutRutinaNestedInput
+    calendario?: CalendarioUncheckedUpdateManyWithoutRutinaNestedInput
+  }
+
+  export type UsuarioCreateWithoutMetricsInput = {
+    nombre: string
+    email: string
+    contraseña: string
+    fecha_registro?: Date | string
+    fotoUrl?: string | null
+    plan?: string
+    rutinas?: RutinaCreateNestedManyWithoutUsuarioInput
+    calendario?: CalendarioCreateNestedManyWithoutUsuarioInput
+    contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
+    userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioUncheckedCreateWithoutMetricsInput = {
+    id?: number
+    nombre: string
+    email: string
+    contraseña: string
+    fecha_registro?: Date | string
+    fotoUrl?: string | null
+    plan?: string
+    rutinas?: RutinaUncheckedCreateNestedManyWithoutUsuarioInput
+    calendario?: CalendarioUncheckedCreateNestedManyWithoutUsuarioInput
+    contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
+    userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioCreateOrConnectWithoutMetricsInput = {
+    where: UsuarioWhereUniqueInput
+    create: XOR<UsuarioCreateWithoutMetricsInput, UsuarioUncheckedCreateWithoutMetricsInput>
+  }
+
+  export type UsuarioUpsertWithoutMetricsInput = {
+    update: XOR<UsuarioUpdateWithoutMetricsInput, UsuarioUncheckedUpdateWithoutMetricsInput>
+    create: XOR<UsuarioCreateWithoutMetricsInput, UsuarioUncheckedCreateWithoutMetricsInput>
+    where?: UsuarioWhereInput
+  }
+
+  export type UsuarioUpdateToOneWithWhereWithoutMetricsInput = {
+    where?: UsuarioWhereInput
+    data: XOR<UsuarioUpdateWithoutMetricsInput, UsuarioUncheckedUpdateWithoutMetricsInput>
+  }
+
+  export type UsuarioUpdateWithoutMetricsInput = {
+    nombre?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    contraseña?: StringFieldUpdateOperationsInput | string
+    fecha_registro?: DateTimeFieldUpdateOperationsInput | Date | string
+    fotoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    rutinas?: RutinaUpdateManyWithoutUsuarioNestedInput
+    calendario?: CalendarioUpdateManyWithoutUsuarioNestedInput
+    contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
+    userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+  }
+
+  export type UsuarioUncheckedUpdateWithoutMetricsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    nombre?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    contraseña?: StringFieldUpdateOperationsInput | string
+    fecha_registro?: DateTimeFieldUpdateOperationsInput | Date | string
+    fotoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    rutinas?: RutinaUncheckedUpdateManyWithoutUsuarioNestedInput
+    calendario?: CalendarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
+    userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+  }
+
   export type RutinaCreateManyUsuarioInput = {
     id?: number
     nombre: string
-    descripcion?: string | null
+    descripcion: string
     fecha_creacion?: Date | string
   }
 
@@ -19383,27 +22806,43 @@ export namespace Prisma {
     fechaConseguido?: Date | string
   }
 
+  export type ComentarioCreateManyUsuarioInput = {
+    id?: number
+    texto: string
+    rutinaId: number
+    creadoEn?: Date | string
+  }
+
+  export type MetricCreateManyUsuarioInput = {
+    id?: number
+    tipo: string
+    valor: number
+    fecha: Date | string
+  }
+
   export type RutinaUpdateWithoutUsuarioInput = {
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     ejercicios?: RutinaEjercicioUpdateManyWithoutRutinaNestedInput
     calendario?: CalendarioUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUpdateManyWithoutRutinaNestedInput
   }
 
   export type RutinaUncheckedUpdateWithoutUsuarioInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
     ejercicios?: RutinaEjercicioUncheckedUpdateManyWithoutRutinaNestedInput
     calendario?: CalendarioUncheckedUpdateManyWithoutRutinaNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutRutinaNestedInput
   }
 
   export type RutinaUncheckedUpdateManyWithoutUsuarioInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
-    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    descripcion?: StringFieldUpdateOperationsInput | string
     fecha_creacion?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19496,6 +22935,46 @@ export namespace Prisma {
     fechaConseguido?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ComentarioUpdateWithoutUsuarioInput = {
+    texto?: StringFieldUpdateOperationsInput | string
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+    rutina?: RutinaUpdateOneRequiredWithoutComentariosNestedInput
+  }
+
+  export type ComentarioUncheckedUpdateWithoutUsuarioInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    texto?: StringFieldUpdateOperationsInput | string
+    rutinaId?: IntFieldUpdateOperationsInput | number
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ComentarioUncheckedUpdateManyWithoutUsuarioInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    texto?: StringFieldUpdateOperationsInput | string
+    rutinaId?: IntFieldUpdateOperationsInput | number
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetricUpdateWithoutUsuarioInput = {
+    tipo?: StringFieldUpdateOperationsInput | string
+    valor?: FloatFieldUpdateOperationsInput | number
+    fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetricUncheckedUpdateWithoutUsuarioInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    tipo?: StringFieldUpdateOperationsInput | string
+    valor?: FloatFieldUpdateOperationsInput | number
+    fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetricUncheckedUpdateManyWithoutUsuarioInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    tipo?: StringFieldUpdateOperationsInput | string
+    valor?: FloatFieldUpdateOperationsInput | number
+    fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type RutinaEjercicioCreateManyEjercicioInput = {
     id?: number
     rutinaId: number
@@ -19546,6 +23025,13 @@ export namespace Prisma {
     fecha: Date | string
   }
 
+  export type ComentarioCreateManyRutinaInput = {
+    id?: number
+    texto: string
+    usuarioId: number
+    creadoEn?: Date | string
+  }
+
   export type RutinaEjercicioUpdateWithoutRutinaInput = {
     series?: IntFieldUpdateOperationsInput | number
     repeticiones?: IntFieldUpdateOperationsInput | number
@@ -19587,6 +23073,26 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     usuarioId?: IntFieldUpdateOperationsInput | number
     fecha?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ComentarioUpdateWithoutRutinaInput = {
+    texto?: StringFieldUpdateOperationsInput | string
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+    usuario?: UsuarioUpdateOneRequiredWithoutComentariosNestedInput
+  }
+
+  export type ComentarioUncheckedUpdateWithoutRutinaInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    texto?: StringFieldUpdateOperationsInput | string
+    usuarioId?: IntFieldUpdateOperationsInput | number
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ComentarioUncheckedUpdateManyWithoutRutinaInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    texto?: StringFieldUpdateOperationsInput | string
+    usuarioId?: IntFieldUpdateOperationsInput | number
+    creadoEn?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ContratacionCreateManyEntrenadorInput = {

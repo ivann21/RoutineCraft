@@ -75,28 +75,31 @@ export default function PlansPage() {
 
   if (loading) {
     return (
-      <section className="bg-gray-800 py-16 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto text-center">
           <p className="text-white text-center">Cargando información del plan...</p>
         </div>
-      </section>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <section className="bg-gray-800 py-16 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto text-center">
           <p className="text-red-500 text-center">{error}</p>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="bg-gray-800 py-16 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-extrabold text-white text-center mb-12">Nuestros Planes</h2>
+    <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
+        <h2 className="text-4xl font-bold text-white text-center mb-12">Nuestros Planes</h2>
         {planInfo && (
           <div className="text-center mb-8 text-white">
             <p>Plan actual: {planInfo.plan.toUpperCase()}</p>
@@ -105,7 +108,7 @@ export default function PlansPage() {
         )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Plan Gratis */}
-          <div className="bg-gray-700 rounded-lg shadow-lg p-6 text-center">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 text-center">
             <h3 className="text-xl font-bold text-white mb-4">Gratis</h3>
             <p className="text-gray-300 mb-6">Crea hasta 10 rutinas</p>
             <p className="text-4xl font-extrabold text-white mb-6">$0</p>
@@ -118,7 +121,7 @@ export default function PlansPage() {
           </div>
 
           {/* Plan Básico */}
-          <div className="bg-gray-700 rounded-lg shadow-lg p-6 text-center">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 text-center">
             <h3 className="text-xl font-bold text-white mb-4">Básico</h3>
             <p className="text-gray-300 mb-6">Crea hasta 50 rutinas</p>
             <p className="text-4xl font-extrabold text-white mb-6">€5/mes</p>
@@ -131,7 +134,7 @@ export default function PlansPage() {
           </div>
 
           {/* Plan Premium */}
-          <div className="bg-gray-700 rounded-lg shadow-lg p-6 text-center">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 text-center">
             <h3 className="text-xl font-bold text-white mb-4">Premium</h3>
             <p className="text-gray-300 mb-6">Rutinas ilimitadas</p>
             <p className="text-4xl font-extrabold text-white mb-6">€10/mes</p>
@@ -144,6 +147,6 @@ export default function PlansPage() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

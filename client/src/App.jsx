@@ -14,7 +14,6 @@ import Ejercicios from "./components/Ejercicios";
 import Entrenadores from "./components/Entrenadores";
 import Calendario from "./components/Calendario";
 import Progress from "./components/Progress"; // Importar componente Progress
-import Community from "./components/Community"; // Importar componente Community
 import Challenges from "./components/Challenges"; // Importar componente Challenges
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsOfService from "./components/TermsOfService";
@@ -53,7 +52,6 @@ export default function App() {
         <Route path="/cookies" element={<CookiesPage />} />
         {/* Nuevas rutas */}
         <Route path="/progress" element={<Progress />} />
-        <Route path="/community" element={<Community />} />
         <Route path="/challenges" element={<Challenges />} />
       </Routes>
       <Footer />

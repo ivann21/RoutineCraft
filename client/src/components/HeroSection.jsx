@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function HeroSection() {
@@ -6,7 +6,8 @@ export default function HeroSection() {
   const [activeQuestion, setActiveQuestion] = useState(null);
 
   const handleViewPlans = () => {
-    navigate("/plans");
+    window.scrollTo(0, 0); // Asegurar que la página suba al inicio
+    navigate("/planes");
   };
 
   const faqs = [
@@ -46,18 +47,20 @@ export default function HeroSection() {
             </p>
             
             <div className="mt-10 flex justify-center gap-4">
-              <a 
-                href="/register" 
+              <Link 
+                to="/register" 
+                onClick={() => window.scrollTo(0, 0)}
                 className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-all hover:shadow-lg hover:shadow-blue-500/20"
               >
                 Comenzar ahora
-              </a>
-              <button 
-                onClick={handleViewPlans} 
+              </Link>
+              <Link 
+                to="/planes" 
+                onClick={() => window.scrollTo(0, 0)}
                 className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 md:py-4 md:text-lg md:px-10 transition-all hover:shadow-lg hover:shadow-orange-500/20"
               >
                 Ver Planes
-              </button>
+              </Link>
             </div>
           </div>
         </div>

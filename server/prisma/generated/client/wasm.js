@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.7.0
- * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
+ * Prisma Client JS version: 6.8.2
+ * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
  */
 Prisma.prismaVersion = {
-  client: "6.7.0",
-  engine: "3cff47a7f5d65c3ea74883f1d736e41d68ce91ed"
+  client: "6.8.2",
+  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -126,7 +126,8 @@ exports.Prisma.UsuarioScalarFieldEnum = {
   email: 'email',
   contraseña: 'contraseña',
   fecha_registro: 'fecha_registro',
-  fotoUrl: 'fotoUrl'
+  fotoUrl: 'fotoUrl',
+  plan: 'plan'
 };
 
 exports.Prisma.EjercicioScalarFieldEnum = {
@@ -186,6 +187,49 @@ exports.Prisma.ContratacionScalarFieldEnum = {
   precio: 'precio'
 };
 
+exports.Prisma.ChallengeScalarFieldEnum = {
+  id: 'id',
+  titulo: 'titulo',
+  descripcion: 'descripcion',
+  activo: 'activo',
+  fechaInicio: 'fechaInicio',
+  fechaFin: 'fechaFin',
+  participantes: 'participantes',
+  nivel: 'nivel',
+  tipo: 'tipo',
+  objetivos: 'objetivos',
+  recompensa: 'recompensa',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserChallengeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  challengeId: 'challengeId',
+  progreso: 'progreso',
+  completado: 'completado',
+  fechaInicio: 'fechaInicio',
+  ultimoProgreso: 'ultimoProgreso'
+};
+
+exports.Prisma.AchievementScalarFieldEnum = {
+  id: 'id',
+  titulo: 'titulo',
+  descripcion: 'descripcion',
+  tipo: 'tipo',
+  icono: 'icono',
+  criterio: 'criterio',
+  valorNecesario: 'valorNecesario'
+};
+
+exports.Prisma.UserAchievementScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  achievementId: 'achievementId',
+  fechaConseguido: 'fechaConseguido'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -209,7 +253,11 @@ exports.Prisma.ModelName = {
   RutinaEjercicio: 'RutinaEjercicio',
   Calendario: 'Calendario',
   Entrenador: 'Entrenador',
-  Contratacion: 'Contratacion'
+  Contratacion: 'Contratacion',
+  Challenge: 'Challenge',
+  UserChallenge: 'UserChallenge',
+  Achievement: 'Achievement',
+  UserAchievement: 'UserAchievement'
 };
 
 /**

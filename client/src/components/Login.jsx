@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Login({ setUser }) {
   const [formData, setFormData] = useState({
     email: "",
     contraseña: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -16,6 +18,9 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
+
     try {
       const response = await fetch("http://localhost:5000/login", {
         method: "POST",
@@ -25,24 +30,24 @@ export default function Login() {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("User data from server:", data.user); // Log para verificar los datos del usuario
-        if (data.user) {
-          localStorage.setItem("usuarioId", data.user.id); // Guardar el ID del usuario en localStorage
-          localStorage.setItem("user", JSON.stringify(data.user)); // Guardar usuario completo en localStorage
-          window.dispatchEvent(new Event("storage")); // Forzar actualización del estado en Navbar
-          alert("Inicio de sesión exitoso");
-          navigate("/"); // Redirigir al inicio
-        } else {
-          alert("Error: No se recibieron datos del usuario.");
-        }
-      } else {
-        alert("Credenciales incorrectas");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al iniciar sesión");
       }
+
+      // Guardar el usuario en localStorage
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Actualizar el estado global del usuario
+      setUser(data.user);
+
+      // Navegar a la página de inicio
+      navigate("/");
     } catch (error) {
-      console.error("Error en el inicio de sesión:", error);
-      alert("Error en el servidor");
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +58,12 @@ export default function Login() {
         className="bg-gray-800 p-8 rounded shadow-md w-full max-w-md border border-gray-700"
       >
         <h2 className="text-2xl font-bold mb-6 text-white">Iniciar Sesión</h2>
+
+        {error && (
+          <div className="mb-4 text-red-500 text-sm">
+            {error}
+          </div>
+        )}
 
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-300">
@@ -87,8 +98,9 @@ export default function Login() {
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          disabled={loading}
         >
-          Iniciar Sesión
+          {loading ? "Cargando..." : "Iniciar Sesión"}
         </button>
       </form>
     </div>

@@ -5,6 +5,8 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({ nombre: "", email: "", contraseña: "", foto: "" });
+  const [planInfo, setPlanInfo] = useState(null);
+  const [contrataciones, setContrataciones] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -34,6 +36,34 @@ export default function Profile() {
         };
 
         fetchUserProfile();
+
+        // Añadir fetch para plan y contrataciones
+        const fetchPlanInfo = async (userId) => {
+          try {
+            const response = await fetch(`http://localhost:5000/api/user-plan/${userId}`);
+            if (response.ok) {
+              const data = await response.json();
+              setPlanInfo(data);
+            }
+          } catch (error) {
+            console.error('Error al obtener información del plan:', error);
+          }
+        };
+
+        const fetchContrataciones = async (userId) => {
+          try {
+            const response = await fetch(`http://localhost:5000/api/contrataciones/usuario/${userId}`);
+            if (response.ok) {
+              const data = await response.json();
+              setContrataciones(data);
+            }
+          } catch (error) {
+            console.error('Error al obtener contrataciones:', error);
+          }
+        };
+
+        fetchPlanInfo(parsedUser.id);
+        fetchContrataciones(parsedUser.id);
       } catch (error) {
         console.error("Error parsing user from localStorage:", error);
       }
@@ -97,6 +127,30 @@ export default function Profile() {
     setUser(updatedUser);
     setEditing(false);
     alert("Perfil actualizado con éxito.");
+  };
+
+  const handlePlanChange = async (newPlan) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/update-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          newPlan
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPlanInfo(prev => ({ ...prev, plan: data.plan }));
+        alert('Plan actualizado con éxito');
+      }
+    } catch (error) {
+      console.error('Error al actualizar el plan:', error);
+      alert('Error al actualizar el plan');
+    }
   };
 
   if (!user) {
@@ -194,6 +248,56 @@ export default function Profile() {
               Editar Perfil
             </button>
           </>
+        )}
+
+        {/* Plan Information */}
+        {planInfo && (
+          <div className="mt-6 border-t border-gray-700 pt-6">
+            <h3 className="text-xl font-bold text-white mb-4">Plan Actual</h3>
+            <div className="text-gray-300 mb-4">
+              <p>Plan: {planInfo.plan.toUpperCase()}</p>
+              <p>Rutinas: {planInfo.rutinasCreadas} de {planInfo.limite === Infinity ? '∞' : planInfo.limite}</p>
+            </div>
+            <div className="flex gap-2 mb-6">
+              <button
+                onClick={() => handlePlanChange('free')}
+                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+              >
+                Gratis
+              </button>
+              <button
+                onClick={() => handlePlanChange('basic')}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Básico
+              </button>
+              <button
+                onClick={() => handlePlanChange('premium')}
+                className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+              >
+                Premium
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Entrenadores Contratados */}
+        {contrataciones.length > 0 && (
+          <div className="mt-6 border-t border-gray-700 pt-6">
+            <h3 className="text-xl font-bold text-white mb-4">Entrenadores Contratados</h3>
+            <div className="space-y-4">
+              {contrataciones.map((contratacion) => (
+                <div key={contratacion.id} className="bg-gray-700 p-4 rounded">
+                  <p className="text-white font-bold">{contratacion.entrenador.nombre}</p>
+                  <p className="text-gray-300">Plan: {contratacion.planSeleccionado}</p>
+                  <p className="text-gray-300">Estado: {contratacion.estado}</p>
+                  <p className="text-gray-300">
+                    Válido hasta: {new Date(contratacion.fechaFin).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

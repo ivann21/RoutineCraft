@@ -1,91 +1,300 @@
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar({ user, setUser }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    console.log("Stored user in localStorage:", storedUser); // Agrego un log para verificar el valor en localStorage
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error parsing user from localStorage:", error);
-      }
-    }
-
-    const handleStorageChange = () => {
-      const updatedUser = localStorage.getItem("user");
-      setUser(updatedUser ? JSON.parse(updatedUser) : null);
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [setUser]);
+  // Enlaces simplificados - sin menús desplegables
+  const mainLinks = [
+    { to: "/", text: "Inicio" },
+    { to: "/rutinas", text: "Rutinas" },
+    { to: "/ejercicios", text: "Ejercicios" },
+    { to: "/calendario", text: "Calendario" },
+    { to: "/entrenadores", text: "Entrenadores" },
+    { to: "/community", text: "Comunidad" },
+    { to: "/challenges", text: "Retos" },
+    { to: "/planes", text: "Planes" },
+  ];
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("usuarioId"); // Eliminar el ID del usuario de localStorage
     setUser(null);
-    navigate("/"); // Redirigir a la página de inicio después de cerrar sesión
+    navigate("/");
   };
 
+  // Cargar usuario desde localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && !user) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error);
+        localStorage.removeItem("user"); // Eliminar datos corruptos
+      }
+    }
+  }, [setUser, user]);
+
+  // Cerrar menú de usuario al hacer clic fuera
+  useEffect(() => {
+    // Creamos una función específica para manejar los clics en los enlaces del menú
+    const handleMenuItemClick = (e) => {
+      // Si el clic fue en un elemento del menú, permitimos la navegación
+      if (e.target.closest('.dropdown-menu-item')) {
+        // Cerramos el menú después de un pequeño delay para permitir que la navegación ocurra primero
+        setTimeout(() => {
+          setUserMenuOpen(false);
+        }, 100);
+      }
+    };
+
+    const handleClickOutside = (event) => {
+      // Solo cerramos el menú si el clic fue fuera del menú y su botón
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target)
+      ) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleMenuItemClick);
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleMenuItemClick);
+    };
+  }, []);
+
   return (
-    <nav className="bg-gray-900 border-b border-blue-500/20 sticky top-0 z-50">
+    <nav className="bg-gray-800 border-b border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        {/* Barra de navegación principal */}
+        <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <span className="text-2xl font-extrabold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-              ROUTINE<span className="text-orange-400">CRAFT</span>
-            </span>
+            <Link to="/" className="text-white text-xl font-bold">
+              RoutineCraft
+            </Link>
           </div>
 
-          {/* Menú Desktop */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-8">
-              <Link to="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
-                Inicio
+          {/* Enlaces principales (visible solo en desktop) */}
+          <div className="hidden md:flex md:items-center md:space-x-2">
+            {mainLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                {link.text}
               </Link>
-              <Link to="/rutinas" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
-                Rutinas
-              </Link>
-              <Link to="/calendario" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
-                Calendario
-              </Link>
-              <Link to="/entrenadores" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
-                Entrenadores
-              </Link>
-              <Link to="/ejercicios" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
-                Ejercicios
-              </Link>
-              {user ? (
-                <div className="flex items-center space-x-4">
-                  <Link to="/profile" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
-                    Perfil
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-red-800/30"
-                  >
-                    Cerrar Sesión
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Link to="/login" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all hover:bg-blue-800/30">
-                    Iniciar Sesión
-                  </Link>
-                  <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                    Únete ahora
-                  </Link>
-                </>
-              )}
-            </div>
+            ))}
           </div>
+
+          {/* Sección de usuario (desktop) */}
+          <div className="hidden md:flex md:items-center">
+            {user ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  className="flex items-center text-gray-300 hover:text-white cursor-pointer px-3 py-2 rounded-md"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  aria-expanded={userMenuOpen}
+                >
+                  <span className="mr-2">{user.nombre}</span>
+                  <div className="h-8 w-8 rounded-full bg-gray-600 flex items-center justify-center">
+                    <span className="text-sm">{user.nombre?.charAt(0)}</span>
+                  </div>
+                  <svg
+                    className={`w-4 h-4 ml-1 transform transition-transform ${
+                      userMenuOpen ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {/* Dropdown menu - usando Portal para renderizarlo fuera del flow normal */}
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg overflow-hidden z-50 dropdown-menu">
+                    <a
+                      href="/profile"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white dropdown-menu-item"
+                    >
+                      Perfil
+                    </a>
+                    <a
+                      href="/progress"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white dropdown-menu-item"
+                    >
+                      Mi Progreso
+                    </a>
+                    <a
+                      href="/planes"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white dropdown-menu-item"
+                    >
+                      Mi Plan
+                    </a>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white dropdown-menu-item"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link
+                  to="/login"
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+                >
+                  Registrarse
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Botón menú móvil */}
+          <div className="flex items-center md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
+            >
+              <svg
+                className={`${isMenuOpen ? "hidden" : "block"} h-6 w-6`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              <svg
+                className={`${isMenuOpen ? "block" : "hidden"} h-6 w-6`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Menú móvil */}
+      <div className={`${isMenuOpen ? "block" : "hidden"} md:hidden`}>
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          {mainLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {link.text}
+            </Link>
+          ))}
+        </div>
+
+        {/* Sección de usuario en móvil */}
+        <div className="pt-4 pb-3 border-t border-gray-700">
+          {user ? (
+            <>
+              <div className="flex items-center px-5">
+                <div className="flex-shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center">
+                    <span>{user.nombre?.charAt(0)}</span>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <div className="text-base font-medium text-white">
+                    {user.nombre}
+                  </div>
+                  <div className="text-sm font-medium text-gray-400">
+                    {user.email}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 px-2 space-y-1">
+                <Link
+                  to="/profile"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Perfil
+                </Link>
+                <Link
+                  to="/progress"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Mi Progreso
+                </Link>
+                <Link
+                  to="/planes"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Mi Plan
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                >
+                  Cerrar Sesión
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="px-2 space-y-1">
+              <Link
+                to="/login"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Iniciar Sesión
+              </Link>
+              <Link
+                to="/register"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Registrarse
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>

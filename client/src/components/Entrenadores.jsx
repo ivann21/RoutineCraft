@@ -147,16 +147,6 @@ const Entrenadores = () => {
                 key={contratacion.id}
                 className="bg-gray-800 rounded-lg p-6 shadow-lg border-2 border-blue-500"
               >
-                <div className="relative aspect-square mb-4 overflow-hidden rounded-lg bg-gray-700">
-                  <img
-                    src={contratacion.entrenador.fotoUrl || 'https://via.placeholder.com/300x300.png?text=Entrenador'}
-                    alt={contratacion.entrenador.nombre}
-                    className="object-cover w-full h-full"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/300x300.png?text=Entrenador';
-                    }}
-                  />
-                </div>
                 <h2 className="text-xl font-semibold text-white mb-2">{contratacion.entrenador.nombre}</h2>
                 <p className="text-blue-400 mb-2">{contratacion.entrenador.especialidad}</p>
                 <div className="space-y-2 text-gray-300">
@@ -197,16 +187,7 @@ const Entrenadores = () => {
               <div
                 key={entrenador.id}
                 className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow"
-              >                <div className="relative aspect-square mb-4 overflow-hidden rounded-lg bg-gray-700">
-                  <img
-                    src={entrenador.fotoUrl || 'https://via.placeholder.com/300x300.png?text=Entrenador'}
-                    alt={entrenador.nombre}
-                    className="object-cover w-full h-full"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/300x300.png?text=Entrenador';
-                    }}
-                  />
-                </div>
+              >                
                 <h2 className="text-xl font-semibold text-white mb-2">{entrenador.nombre}</h2>
                 <p className="text-blue-400 mb-2">{entrenador.especialidad}</p>
                 <p className="text-gray-300 mb-4">{entrenador.descripcion}</p>

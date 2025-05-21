@@ -18,6 +18,11 @@ model Usuario {
   calendario     Calendario[]
   fotoUrl        String? // Campo opcional para almacenar la URL de la foto de perfil
   contrataciones Contratacion[] // Relación inversa con Contratacion
+  plan           String         @default("free") // "free", "basic", "premium"
+
+  // Nuevas relaciones
+  userChallenges   UserChallenge[]
+  userAchievements UserAchievement[]
 }
 
 model Ejercicio {
@@ -86,4 +91,63 @@ model Contratacion {
   estado           String // "activa", "finalizada", "cancelada"
   planSeleccionado String // "mensual", "trimestral", "anual"
   precio           Float
+}
+
+// Modelo de Retos
+model Challenge {
+  id             Int             @id @default(autoincrement())
+  titulo         String
+  descripcion    String
+  activo         Boolean         @default(true)
+  fechaInicio    DateTime
+  fechaFin       DateTime
+  participantes  Int             @default(0)
+  nivel          String // 'Principiante', 'Intermedio', 'Avanzado', 'Todos los niveles'
+  tipo           String // 'Fuerza', 'Cardio', 'Flexibilidad', 'Resistencia', 'Equilibrio'
+  objetivos      String[]
+  recompensa     String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  userChallenges UserChallenge[]
+}
+
+// Modelo de Participación en Retos
+model UserChallenge {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  challengeId    Int
+  progreso       Int      @default(0)
+  completado     Boolean  @default(false)
+  fechaInicio    DateTime @default(now())
+  ultimoProgreso DateTime @default(now())
+
+  user      Usuario   @relation(fields: [userId], references: [id]) // Cambiado a Usuario
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  @@unique([userId, challengeId])
+}
+
+// Modelo de Logros
+model Achievement {
+  id               Int               @id @default(autoincrement())
+  titulo           String
+  descripcion      String
+  tipo             String
+  icono            String
+  criterio         String // 'retos_completados', 'dias_activos', etc.
+  valorNecesario   Int
+  userAchievements UserAchievement[]
+}
+
+// Modelo de Logros de Usuario
+model UserAchievement {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  achievementId   Int
+  fechaConseguido DateTime @default(now())
+
+  user        Usuario     @relation(fields: [userId], references: [id]) // Cambiado a Usuario
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
 }

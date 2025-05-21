@@ -41,6 +41,13 @@ app.get('/', (req, res) => {
   res.send('¡Hola, desde el servidor!');
 });
 
+// Constantes para los límites de planes
+const PLAN_LIMITS = {
+  free: 10,
+  basic: 50,
+  premium: Infinity
+};
+
 // Obtener todas las rutinas desde la base de datos
 app.get('/api/rutinas', async (req, res) => {
   try {
@@ -91,6 +98,21 @@ app.post('/api/rutinas', async (req, res) => {
   console.log('Datos recibidos para crear rutina:', { nombre, descripcion, usuarioId, ejercicios });
 
   try {
+    // Verificar el límite del plan del usuario
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: parseInt(usuarioId) },
+      include: {
+        rutinas: true,
+      },
+    });
+
+    const planLimit = PLAN_LIMITS[usuario.plan];
+    if (usuario.rutinas.length >= planLimit) {
+      return res.status(403).json({
+        error: 'Has alcanzado el límite de rutinas para tu plan actual'
+      });
+    }
+
     // Primero creamos la rutina
     const nuevaRutina = await prisma.rutina.create({
       data: {
@@ -633,6 +655,16 @@ app.post('/api/calendario', async (req, res) => {
 app.delete('/api/calendario/:eventoId', async (req, res) => {
   const { eventoId } = req.params;
   try {
+    // Verificar primero si el evento existe
+    const evento = await prisma.calendario.findUnique({
+      where: { id: parseInt(eventoId) }
+    });
+    
+    if (!evento) {
+      return res.status(404).json({ error: 'Evento no encontrado', message: 'El evento que intentas eliminar ya no existe' });
+    }
+    
+    // Si existe, entonces lo eliminamos
     await prisma.calendario.delete({
       where: { id: parseInt(eventoId) }
     });
@@ -640,6 +672,340 @@ app.delete('/api/calendario/:eventoId', async (req, res) => {
   } catch (error) {
     console.error('Error al eliminar evento:', error);
     res.status(500).json({ error: 'Error al eliminar evento' });
+  }
+});
+
+// --- INICIO DE RUTAS DE CHALLENGES ---
+
+// Ruta de prueba para challenges
+app.get('/api/challenges/test', (req, res) => {
+  res.json({
+    message: 'API de retos funcionando correctamente desde server.js con Prisma',
+    timestamp: new Date()
+  });
+});
+
+// Obtener todos los retos activos (que no han finalizado y están marcados como activos)
+app.get('/api/challenges/active', async (req, res) => {
+  try {
+    const activeChallenges = await prisma.challenge.findMany({
+      where: {
+        activo: true,
+        fechaFin: {
+          gte: new Date() // gte: greater than or equal to (para incluir retos que terminan hoy)
+        }
+      },
+      orderBy: {
+        fechaInicio: 'desc'
+      }
+    });
+    res.json(activeChallenges);
+  } catch (error) {
+    console.error('Error al obtener retos activos:', error);
+    res.status(500).json({
+      message: 'Error al obtener retos activos',
+      error: error.message
+    });
+  }
+});
+
+// Obtener retos en los que un usuario está participando
+app.get('/api/challenges/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const userChallenges = await prisma.userChallenge.findMany({
+      where: { userId: parseInt(userId) },
+      include: {
+        challenge: true // Incluir los detalles del reto asociado
+      },
+      orderBy: {
+        fechaInicio: 'desc'
+      }
+    });
+    res.json(userChallenges);
+  } catch (error)
+{
+    console.error(`Error al obtener retos para el usuario ${userId}:`, error);
+    res.status(500).json({
+      message: `Error al obtener retos para el usuario ${userId}`,
+      error: error.message
+    });
+  }
+});
+
+// Obtener retos completados por un usuario
+app.get('/api/challenges/completed/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const completedChallenges = await prisma.userChallenge.findMany({
+      where: {
+        userId: parseInt(userId),
+        completado: true
+      },
+      include: {
+        challenge: true
+      },
+      orderBy: {
+        ultimoProgreso: 'desc' // O fechaConseguido si tuvieras ese campo en UserChallenge
+      }
+    });
+    res.json(completedChallenges);
+  } catch (error) {
+    console.error(`Error al obtener retos completados para el usuario ${userId}:`, error);
+    res.status(500).json({
+      message: `Error al obtener retos completados para el usuario ${userId}`,
+      error: error.message
+    });
+  }
+});
+
+// Unirse a un reto
+app.post('/api/challenges/join', async (req, res) => {
+  const { userId, challengeId } = req.body;
+
+  if (!userId || !challengeId) {
+    return res.status(400).json({ message: 'userId y challengeId son requeridos.' });
+  }
+
+  try {
+    const challenge = await prisma.challenge.findUnique({
+      where: { id: parseInt(challengeId) }
+    });
+
+    if (!challenge) {
+      return res.status(404).json({ message: 'Reto no encontrado.' });
+    }
+    if (!challenge.activo || new Date(challenge.fechaFin) < new Date()) {
+      return res.status(400).json({ message: 'Este reto ya no está activo o ha finalizado.' });
+    }
+
+    const user = await prisma.usuario.findUnique({
+      where: { id: parseInt(userId) }
+    });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+
+    const existingParticipation = await prisma.userChallenge.findUnique({
+      where: {
+        userId_challengeId: {
+          userId: parseInt(userId),
+          challengeId: parseInt(challengeId)
+        }
+      }
+    });
+
+    if (existingParticipation) {
+      return res.status(409).json({ message: 'Ya estás participando en este reto.', userChallenge: existingParticipation });
+    }
+
+    const newUserChallenge = await prisma.userChallenge.create({
+      data: {
+        userId: parseInt(userId),
+        challengeId: parseInt(challengeId),
+        progreso: 0,
+        completado: false,
+        fechaInicio: new Date(),
+        ultimoProgreso: new Date()
+      },
+      include: {
+        challenge: true
+      }
+    });
+
+    // Incrementar el contador de participantes en el reto
+    await prisma.challenge.update({
+      where: { id: parseInt(challengeId) },
+      data: {
+        participantes: {
+          increment: 1
+        }
+      }
+    });
+
+    res.status(201).json({
+      message: 'Te has unido al reto con éxito.',
+      userChallenge: newUserChallenge
+    });
+
+  } catch (error) {
+    console.error('Error al unirse al reto:', error);
+    res.status(500).json({ message: 'Error al procesar la solicitud para unirse al reto.', error: error.message });
+  }
+});
+
+// Actualizar progreso de un reto
+app.put('/api/challenges/progress', async (req, res) => {
+  const { userId, challengeId, progreso } = req.body;
+
+  if (userId === undefined || challengeId === undefined || progreso === undefined) {
+    return res.status(400).json({ message: 'userId, challengeId y progreso son requeridos.' });
+  }
+  if (parseInt(progreso) < 0 || parseInt(progreso) > 100) { // Asumiendo progreso 0-100
+     return res.status(400).json({ message: 'El progreso debe estar entre 0 y 100.' });
+  }
+
+  try {
+    const userChallenge = await prisma.userChallenge.findUnique({
+      where: {
+        userId_challengeId: {
+          userId: parseInt(userId),
+          challengeId: parseInt(challengeId)
+        }
+      }
+    });
+
+    if (!userChallenge) {
+      return res.status(404).json({ message: 'No se encontró tu participación en este reto.' });
+    }
+    if (userChallenge.completado) {
+      return res.status(400).json({ message: 'Este reto ya ha sido completado.' });
+    }
+
+    const updatedUserChallenge = await prisma.userChallenge.update({
+      where: {
+        id: userChallenge.id
+      },
+      data: {
+        progreso: parseInt(progreso),
+        ultimoProgreso: new Date(),
+        // Opcional: Marcar como completado si el progreso es 100
+        ...(parseInt(progreso) === 100 && { completado: true }) 
+      },
+      include: {
+        challenge: true
+      }
+    });
+
+    res.status(200).json({
+      message: 'Progreso actualizado con éxito.',
+      userChallenge: updatedUserChallenge
+    });
+
+  } catch (error) {
+    console.error('Error al actualizar el progreso del reto:', error);
+    res.status(500).json({ message: 'Error al actualizar el progreso del reto.', error: error.message });
+  }
+});
+
+// Marcar un reto como completado (alternativa o complemento a la actualización de progreso)
+app.post('/api/challenges/complete', async (req, res) => {
+  const { userId, challengeId } = req.body;
+
+  if (!userId || !challengeId) {
+    return res.status(400).json({ message: 'userId y challengeId son requeridos.' });
+  }
+
+  try {
+    const userChallenge = await prisma.userChallenge.findUnique({
+      where: {
+        userId_challengeId: {
+          userId: parseInt(userId),
+          challengeId: parseInt(challengeId)
+        }
+      }
+    });
+
+    if (!userChallenge) {
+      return res.status(404).json({ message: 'No se encontró tu participación en este reto.' });
+    }
+    if (userChallenge.completado) {
+      return res.status(400).json({ message: 'Este reto ya ha sido marcado como completado.' });
+    }
+
+    const completedUserChallenge = await prisma.userChallenge.update({
+      where: {
+        id: userChallenge.id
+      },
+      data: {
+        completado: true,
+        progreso: 100, // Asegurar que el progreso sea 100 al completar
+        ultimoProgreso: new Date()
+      },
+      include: {
+        challenge: true
+      }
+    });
+    res.status(200).json({
+      message: 'Reto marcado como completado con éxito.',
+      userChallenge: completedUserChallenge
+    });
+  } catch (error) {
+    console.error('Error al marcar el reto como completado:', error);
+    res.status(500).json({ message: 'Error al marcar el reto como completado.', error: error.message });
+  }
+});
+
+// Ruta para obtener todos los logros (simulada por ahora, ya que no hay modelo Achievement en el schema proporcionado)
+app.get('/api/challenges/achievements', async (req, res) => {
+  // Esta ruta necesitaría su propia lógica con Prisma si tuvieras un modelo Achievement
+  console.warn("La ruta /api/challenges/achievements es simulada. Implementar con modelo Achievement si es necesario.");
+  res.json([]);
+});
+
+// --- FIN DE RUTAS DE CHALLENGES ---
+
+// Agregar ruta para obtener información del plan del usuario
+app.get('/api/user-plan/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: parseInt(userId) },
+      select: {
+        plan: true,
+        _count: {
+          select: { rutinas: true }
+        }
+      }
+    });
+
+    const planLimit = PLAN_LIMITS[usuario.plan];
+    res.json({
+      plan: usuario.plan,
+      rutinasCreadas: usuario._count.rutinas,
+      limite: planLimit,
+      puedeCrearMas: usuario._count.rutinas < planLimit
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener información del plan' });
+  }
+});
+
+// Ruta para actualizar el plan del usuario
+// Corregir la ruta de /api/update-plan a /api/user-plan para que coincida con PlansPage.jsx
+app.post('/api/user-plan', async (req, res) => {
+  const { userId, newPlan } = req.body;
+  try {
+    // Primero, verifica que el usuario exista
+    const userExists = await prisma.usuario.findUnique({
+      where: { id: parseInt(userId) }
+    });
+    if (!userExists) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const usuario = await prisma.usuario.update({
+      where: { id: parseInt(userId) },
+      data: { plan: newPlan },
+      select: { // Devolver la información necesaria para actualizar el estado en el frontend
+        plan: true,
+        _count: {
+          select: { rutinas: true }
+        }
+      }
+    });
+
+    const planLimit = PLAN_LIMITS[usuario.plan];
+    res.json({
+      message: 'Plan actualizado con éxito',
+      plan: usuario.plan, // plan actualizado
+      rutinasCreadas: usuario._count.rutinas,
+      limite: planLimit,
+      puedeCrearMas: usuario._count.rutinas < planLimit
+    });
+  } catch (error) {
+    console.error('Error al actualizar el plan:', error);
+    res.status(500).json({ error: 'Error al actualizar el plan' });
   }
 });
 

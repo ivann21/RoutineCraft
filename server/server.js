@@ -43,7 +43,7 @@ app.get('/', (req, res) => {
 
 // Constantes para los límites de planes
 const PLAN_LIMITS = {
-  free: 10,
+  free: 5,  // Cambiado de 10 a 5
   basic: 50,
   premium: Infinity
 };
@@ -201,6 +201,22 @@ app.delete('/api/rutinas/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // First delete related records in RutinaEjercicio
+    await prisma.rutinaEjercicio.deleteMany({
+      where: { rutinaId: parseInt(id) },
+    });
+
+    // Then delete related calendar entries 
+    await prisma.calendario.deleteMany({
+      where: { rutinaId: parseInt(id) },
+    });
+    
+    // Then delete related comments if they exist
+    await prisma.comentario.deleteMany({
+      where: { rutinaId: parseInt(id) },
+    });
+
+    // Finally, delete the rutina
     await prisma.rutina.delete({
       where: { id: parseInt(id) },
     });
@@ -487,6 +503,19 @@ app.delete('/api/ejercicios/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // First check if exercise is used in any routine
+    const exerciseInUse = await prisma.rutinaEjercicio.findFirst({
+      where: { ejercicioId: parseInt(id) },
+    });
+
+    if (exerciseInUse) {
+      return res.status(409).json({ 
+        error: 'Este ejercicio está siendo usado en una rutina y no puede ser eliminado',
+        message: 'Por favor, elimina este ejercicio de tus rutinas antes de borrarlo'
+      });
+    }
+
+    // If not in use, proceed with deletion
     await prisma.ejercicio.delete({
       where: { id: parseInt(id) },
     });
@@ -1041,7 +1070,7 @@ async function checkAndAssignAchievements(userId) {
   }
 }
 
-// Agregar ruta para obtener información del plan del usuario (asegúrate de que el campo sea userId, no usuarioId)
+// Agregar ruta para obtener información del plan del usuario
 app.get('/api/user-plan/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
@@ -1059,11 +1088,6 @@ app.get('/api/user-plan/:userId', async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    const PLAN_LIMITS = {
-      free: 10,
-      basic: 50,
-      premium: Infinity
-    };
     const planLimit = PLAN_LIMITS[usuario.plan];
     res.json({
       plan: usuario.plan,

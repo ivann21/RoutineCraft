@@ -4,6 +4,7 @@ export default function PlansPage() {
   const [planInfo, setPlanInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
   useEffect(() => {
     const fetchPlanInfo = async () => {
@@ -110,7 +111,7 @@ export default function PlansPage() {
           {/* Plan Gratis */}
           <div className="bg-gray-800 rounded-lg shadow-lg p-6 text-center">
             <h3 className="text-xl font-bold text-white mb-4">Gratis</h3>
-            <p className="text-gray-300 mb-6">Crea hasta 10 rutinas</p>
+            <p className="text-gray-300 mb-6">Crea hasta 5 rutinas</p>  {/* Cambiado de 10 a 5 */}
             <p className="text-4xl font-extrabold text-white mb-6">$0</p>
             <button 
               onClick={() => handlePlanChange('free')}
@@ -146,6 +147,27 @@ export default function PlansPage() {
             </button>
           </div>
         </div>
+
+        {/* Plan Limit Modal */}
+        {showLimitModal && planInfo && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h3 className="text-xl font-bold text-white mb-4">Límite de rutinas alcanzado</h3>
+              <p className="text-gray-300 mb-6">
+                Has alcanzado el límite de {planInfo.limite} rutinas de tu plan {planInfo.plan.toUpperCase()}.
+                Para crear más rutinas, actualiza tu plan a uno de nivel superior.
+              </p>
+              <div className="flex justify-end">
+                <button 
+                  onClick={() => setShowLimitModal(false)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                >
+                  Entendido
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

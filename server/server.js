@@ -1134,33 +1134,6 @@ app.post('/api/metrics', async (req, res) => {
   }
 });
 
-// Elimina o comenta la ruta de rutinas públicas de comunidad
-// app.get('/api/rutinas/publicas', async (req, res) => {
-//   try {
-//     const sort = req.query.sort || 'recent';
-//     let orderBy;
-//     if (sort === 'popular') {
-//       orderBy = { id: 'desc' };
-//     } else if (sort === 'name') {
-//       orderBy = { nombre: 'asc' };
-//     } else {
-//       orderBy = { id: 'desc' };
-//     }
-//     const rutinas = await prisma.rutina.findMany({
-//       where: { publica: true },
-//       include: {
-//         usuario: { select: { nombre: true } },
-//         likes: true,
-//       },
-//       orderBy
-//     });
-//     res.json(rutinas);
-//   } catch (error) {
-//     console.error('Error al obtener rutinas públicas:', error);
-//     res.status(200).json([]); // Nunca devuelvas 400, responde lista vacía si hay error
-//   }
-// });
-
 // Iniciar servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);

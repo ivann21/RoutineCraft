@@ -7,9 +7,7 @@
     "start": "node server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed:entrenadores": "node prisma/seed-entrenadores.js",
-    "seed:challenges": "node prisma/seed-challenges.js",
-    "seed": "npm run seed:entrenadores && npm run seed:challenges"
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",

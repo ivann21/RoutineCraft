@@ -254,37 +254,63 @@ app.put('/api/rutinas/:id', async (req, res) => {
       },
     });
 
-    // Actualizar la tabla intermedia RutinaEjercicio
-    const rutinaEjercicioData = ejercicios
-      .filter((ejercicio) =>
-        ejercicio.id != null &&
-        ejercicio.series != null &&
-        ejercicio.repeticiones != null &&
-        ejercicio.descansoSegundos != null &&
-        ejercicio.orden != null
-      )
-      .map((ejercicio) => ({
-        rutinaId: parseInt(id),
-        ejercicioId: ejercicio.id,
-        series: ejercicio.series,
-        repeticiones: ejercicio.repeticiones,
-        descansoSegundos: ejercicio.descansoSegundos,
-        orden: ejercicio.orden,
-      }));
-
-    // Eliminar registros existentes y añadir los nuevos
+    // Eliminar registros existentes primero
     await prisma.rutinaEjercicio.deleteMany({
       where: { rutinaId: parseInt(id) },
     });
-    try {
-      await prisma.rutinaEjercicio.createMany({
-        data: rutinaEjercicioData,
-      });
-    } catch (err) {
-      console.error('Error al crear RutinaEjercicio:', err);
+
+    // Crear nuevos ejercicios uno por uno para evitar errores de clave foránea
+    if (ejercicios && ejercicios.length > 0) {
+      for (const ejercicio of ejercicios) {
+        try {
+          // Validar y convertir IDs a números
+          const ejercicioId = parseInt(ejercicio.ejercicioId);
+          if (isNaN(ejercicioId)) continue; // Saltamos el ejercicio si el ID no es válido
+          
+          // Verificar que el ejercicio existe
+          const ejercicioExistente = await prisma.ejercicio.findUnique({
+            where: { id: ejercicioId }
+          });
+          
+          if (!ejercicioExistente) {
+            console.warn(`Ejercicio con ID ${ejercicioId} no existe y será omitido`);
+            continue; // Saltamos este ejercicio
+          }
+
+          // Crear el registro RutinaEjercicio para este ejercicio válido
+          await prisma.rutinaEjercicio.create({
+            data: {
+              rutinaId: parseInt(id),
+              ejercicioId: ejercicioId,
+              series: parseInt(ejercicio.series) || 3,
+              repeticiones: parseInt(ejercicio.repeticiones) || 12,
+              descansoSegundos: parseInt(ejercicio.descansoSegundos) || 60,
+              orden: parseInt(ejercicio.orden) || 1
+            }
+          });
+        } catch (ejercicioError) {
+          console.error(`Error al crear ejercicio para rutina. Detalles:`, ejercicioError);
+          // Continuamos con el siguiente ejercicio incluso si este falla
+        }
+      }
     }
 
-    res.json(rutinaActualizada);
+    // Obtener la rutina actualizada con sus ejercicios para devolverla en la respuesta
+    const rutinaConEjercicios = await prisma.rutina.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        ejercicios: {
+          include: {
+            ejercicio: true
+          },
+          orderBy: {
+            orden: 'asc'
+          }
+        }
+      }
+    });
+
+    res.json(rutinaConEjercicios);
   } catch (error) {
     console.error('Error al actualizar la rutina:', error);
     res.status(500).json({ error: 'Error al actualizar la rutina.' });

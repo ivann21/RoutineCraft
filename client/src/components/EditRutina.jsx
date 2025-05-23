@@ -1,70 +1,133 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const EditRutina = () => {  const navigate = useNavigate();
+// Configurar la URL base para todas las solicitudes en este componente
+axios.defaults.baseURL = 'http://localhost:5000';
+
+const EditRutina = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [ejerciciosDisponibles, setEjerciciosDisponibles] = useState([]);
+  const [ejercicios, setEjercicios] = useState([]);
   const [ejerciciosSeleccionados, setEjerciciosSeleccionados] = useState([]);
   const [ejercicioSeleccionado, setEjercicioSeleccionado] = useState('');
   const [loading, setLoading] = useState(true);
-  useEffect(() => {    const fetchRutina = async () => {
-      try {
-        const [rutinaResponse, ejerciciosResponse] = await Promise.all([
-          axios.get(`/api/rutina/${id}`),
-          axios.get('/api/ejercicios')
-        ]);
-        
-        const rutina = rutinaResponse.data;
-        console.log('Rutina recibida:', rutina); // Log para debug
-        if (!rutina || !rutina.ejercicios) {
-          throw new Error('La rutina no tiene la estructura esperada');
-        }
-        setNombre(rutina.nombre);
-        setDescripcion(rutina.descripcion);
-        // Mapeamos los ejercicios manteniendo la consistencia de campos
-        const ejerciciosFormateados = rutina.ejercicios.map(e => {
-          if (!e.ejercicio) {
-            console.error('Ejercicio sin la propiedad ejercicio:', e);
-            return null;
-          }
-          return {
-            ejercicioId: e.ejercicio.id,
-            ejercicio: e.ejercicio,
-            series: e.series,
-            repeticiones: e.repeticiones,
-            descansoSegundos: e.descansoSegundos,
-            orden: e.orden
-          };
-        }).filter(e => e !== null);
+  const [error, setError] = useState(null);
+  // Añadimos estados para controlar el modal de ejercicio ya existente
+  const [showEjercicioExistenteModal, setShowEjercicioExistenteModal] = useState(false);
+  const [ejercicioExistente, setEjercicioExistente] = useState(null);
 
-        console.log('Ejercicios formateados:', ejerciciosFormateados); // Log para debug
-        setEjerciciosSeleccionados(ejerciciosFormateados);
-        setEjerciciosDisponibles(ejerciciosResponse.data);
+  // Utiliza una sola función fetchRutina para obtener la rutina específica
+  useEffect(() => {
+    const fetchRutina = async () => {
+      try {
+        setLoading(true);
+        console.log(`Intentando obtener la rutina con ID: ${id}`);
+        
+        // Obtener el usuario ID del localStorage
+        const usuarioId = localStorage.getItem('usuarioId');
+        
+        // Obtener todas las rutinas del usuario
+        const response = await axios.get(`/api/rutinas/${usuarioId}`);
+        
+        // Encontrar la rutina específica por ID
+        const rutina = response.data.find(r => r.id === parseInt(id));
+        
+        if (rutina) {
+          console.log("Rutina encontrada:", rutina);
+          
+          setNombre(rutina.nombre || '');
+          setDescripcion(rutina.descripcion || '');
+          
+          // Procesar ejercicios si existen
+          if (rutina.ejercicios && rutina.ejercicios.length > 0) {
+            procesarEjercicios(rutina.ejercicios);
+          }
+        } else {
+          setError(`No se encontró ninguna rutina con ID: ${id}`);
+        }
+      } catch (err) {
+        console.error('Error al obtener la rutina:', err);
+        setError(`Error al cargar la rutina: ${err.message}`);
+      } finally {
         setLoading(false);
+      }
+    };
+
+    // Función auxiliar para procesar los ejercicios
+    const procesarEjercicios = (ejerciciosData) => {
+      if (!ejerciciosData || ejerciciosData.length === 0) {
+        console.log("No hay ejercicios para procesar");
+        return;
+      }
+      
+      try {
+        const ejerciciosFormateados = ejerciciosData.map(ej => {
+          // Manejar diferentes formatos de respuesta API
+          const ejercicioObj = ej.ejercicio || ej;
+          const ejercicioId = ejercicioObj.id || ej.ejercicioId;
+          
+          return {
+            id: ej.id,
+            ejercicioId: ejercicioId,
+            ejercicio: {
+              id: ejercicioId,
+              nombre: ejercicioObj.nombre || 'Ejercicio'
+            },
+            series: ej.series || 3,
+            repeticiones: ej.repeticiones || 12,
+            descansoSegundos: ej.descansoSegundos || 60,
+            orden: ej.orden || 1
+          };
+        });
+        
+        setEjerciciosSeleccionados(ejerciciosFormateados);
+        console.log("Ejercicios procesados correctamente:", ejerciciosFormateados);
       } catch (error) {
-        console.error('Error al cargar la rutina:', error);
-        alert('Error al cargar la rutina: ' + error.message);
-        navigate('/rutinas');
+        console.error("Error al procesar los ejercicios:", error);
+      }
+    };
+
+    const fetchEjercicios = async () => {
+      try {
+        const response = await axios.get('/api/ejercicios');
+        setEjercicios(response.data);
+      } catch (err) {
+        console.error('Error al obtener los ejercicios:', err);
+        setError(`Error al cargar los ejercicios: ${err.message}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRutina();
-  }, [id, navigate]);
+    fetchEjercicios();
+  }, [id]);
+
   const handleAddEjercicio = () => {
-    const ejercicio = ejerciciosDisponibles.find(e => e.id === parseInt(ejercicioSeleccionado));
+    if (!ejercicioSeleccionado) return;
+    
+    const ejercicio = ejercicios.find(e => e.id === parseInt(ejercicioSeleccionado));
+    // Verificar si el ejercicio ya existe en la lista por ejercicioId
     if (ejercicio && !ejerciciosSeleccionados.some(e => e.ejercicioId === ejercicio.id)) {
+      // Añadir el nuevo ejercicio sin ID de relación (se genera en el servidor)
       setEjerciciosSeleccionados([...ejerciciosSeleccionados, {
         ejercicioId: ejercicio.id,
         ejercicio: ejercicio,
         series: 3,
         repeticiones: 12,
         descansoSegundos: 60,
-        orden: ejerciciosSeleccionados.length + 1
+        orden: ejerciciosSeleccionados.length > 0 
+          ? Math.max(...ejerciciosSeleccionados.map(e => e.orden)) + 1 
+          : 1
       }]);
-      setEjercicioSeleccionado(''); // Limpiar la selección después de agregar
+      setEjercicioSeleccionado('');
+    } else if (ejercicio) {
+      // Si el ejercicio ya existe, guardamos la información y mostramos el modal
+      setEjercicioExistente(ejercicio);
+      setShowEjercicioExistenteModal(true);
     }
   };
 
@@ -75,196 +138,350 @@ const EditRutina = () => {  const navigate = useNavigate();
   const handleUpdateEjercicioDetails = (ejercicioId, field, value) => {
     setEjerciciosSeleccionados(ejerciciosSeleccionados.map(e => {
       if (e.ejercicioId === ejercicioId) {
-        return { ...e, [field]: parseInt(value) };
+        return { ...e, [field]: parseInt(value) || 0 };
       }
       return e;
     }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Mostrar indicador de carga
+    
     try {
-      const usuarioId = localStorage.getItem('usuarioId');
-      if (!usuarioId) {
-        throw new Error('No se encontró el ID del usuario');
-      }
-      
-      // Validar que tengamos todos los datos necesarios
       if (!nombre.trim()) {
         throw new Error('El nombre de la rutina es requerido');
       }
 
-      // Asegurar que todos los ejercicios tengan los campos requeridos
-      const ejerciciosValidados = ejerciciosSeleccionados.map((e, index) => {
-        if (!e.ejercicioId || !e.series || !e.repeticiones || e.descansoSegundos === undefined) {
-          throw new Error(`El ejercicio ${index + 1} tiene datos incompletos`);
-        }
-        return {
-          id: e.ejercicioId,
-          series: parseInt(e.series),
-          repeticiones: parseInt(e.repeticiones),
-          descansoSegundos: parseInt(e.descansoSegundos),
-          orden: index + 1 // Aseguramos que el orden sea secuencial
-        };
-      });
+      if (ejerciciosSeleccionados.length === 0) {
+        throw new Error('Debes añadir al menos un ejercicio a la rutina');
+      }
 
-      const rutinaActualizada = {
+      // Preparamos los ejercicios correctamente, preservando los IDs para los ejercicios existentes
+      const ejerciciosFormateados = ejerciciosSeleccionados.map(e => ({
+        id: e.id, // Conservar el ID solo para ejercicios existentes
+        ejercicioId: e.ejercicioId,
+        series: e.series || 3,
+        repeticiones: e.repeticiones || 12,
+        descansoSegundos: e.descansoSegundos || 60,
+        orden: e.orden || 1
+      }));
+
+      // Obtener el usuario ID del localStorage
+      const usuarioId = localStorage.getItem('usuarioId');
+
+      const rutinaData = {
         nombre,
         descripcion,
-        ejercicios: ejerciciosValidados,
+        usuarioId: parseInt(usuarioId),
+        ejercicios: ejerciciosFormateados
       };
 
-      console.log('Enviando actualización:', rutinaActualizada); // Log para debug
-      
-      await axios.put(`/api/rutinas/${id}`, { ...rutinaActualizada, usuarioId });
-      alert('Rutina actualizada con éxito');
-      navigate('/rutinas');
-    } catch (error) {
-      console.error('Error al actualizar la rutina:', error);
-      alert('Hubo un error al actualizar la rutina');
+      console.log("Enviando datos a la API para actualizar rutina:", rutinaData);
+
+      // Actualizar la rutina
+      try {
+        const response = await axios.put(`/api/rutinas/${id}`, rutinaData);
+        console.log("Rutina actualizada exitosamente:", response.data);
+        alert('Rutina actualizada con éxito');
+        navigate('/rutinas');
+      } catch (error) {
+        console.error("Error al actualizar la rutina:", error);
+        
+        // Si falla el PUT, intentar con recreación
+        try {
+          // Eliminar la rutina existente
+          await axios.delete(`/api/rutinas/${id}`);
+          
+          // Crear una nueva rutina con los mismos datos
+          await axios.post('/api/rutinas', rutinaData);
+          
+          alert('Rutina actualizada con éxito');
+          navigate('/rutinas');
+        } catch (recreateError) {
+          throw new Error(`No se pudo actualizar la rutina: ${recreateError.message}`);
+        }
+      }
+    } catch (err) {
+      console.error('Error al actualizar la rutina:', err);
+      alert(`Error al actualizar la rutina: ${err.message || 'Ocurrió un error desconocido'}`);
+    } finally {
+      setLoading(false); // Ocultar indicador de carga
     }
   };
 
+  // Mostrar pantalla de carga mientras se obtienen los datos
   if (loading) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
-        <div className="relative z-10 p-6 max-w-7xl mx-auto">
-          <p className="text-white">Cargando...</p>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <svg className="animate-spin h-12 w-12 text-blue-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="text-xl text-blue-400 font-medium">Cargando rutina...</p>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Mostrar mensaje de error si hay uno
+  if (error) {
+    return (
+      <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto flex items-center justify-center min-h-screen">
+          <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg max-w-xl w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h2 className="text-xl font-bold text-white mb-3">Error al cargar la rutina</h2>
+            <p className="text-red-400 mb-6">{error}</p>
+            
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => navigate('/rutinas')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow-md transition-all"
+              >
+                Volver a Rutinas
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Renderizar el formulario de edición
   return (
-    <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+    <div className="relative bg-gray-900 overflow-hidden min-h-screen pb-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
-      <div className="relative z-10 p-6 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+      <div className="relative z-10 p-6 max-w-5xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-white">Editar Rutina</h1>
           <button
             onClick={() => navigate('/rutinas')}
-            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors flex items-center shadow-md"
           >
-            Volver
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+            </svg>
+            Volver a Rutinas
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-white mb-2">Nombre de la Rutina</label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="w-full px-4 py-2 rounded-md bg-gray-800 text-white"
-              required
-            />
+        
+        {/* Modal para ejercicio existente */}
+        {showEjercicioExistenteModal && ejercicioExistente && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full transform transition-all">
+              <div className="text-center mb-5">
+                <div className="bg-blue-500/20 p-4 rounded-full inline-block mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Ejercicio ya añadido</h3>
+                <p className="text-gray-300">
+                  El ejercicio <span className="font-semibold text-blue-400">{ejercicioExistente.nombre}</span> ya está incluido en esta rutina.
+                </p>
+              </div>
+              
+              <div className="bg-gray-700/50 p-3 rounded-lg mb-5">
+                <p className="text-sm text-gray-300">
+                  Si deseas modificar las series, repeticiones o descanso, puedes hacerlo directamente en el ejercicio ya añadido.
+                </p>
+              </div>
+              
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    setShowEjercicioExistenteModal(false);
+                    setEjercicioExistente(null);
+                    setEjercicioSeleccionado('');
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-md shadow-md transition-colors flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Entendido
+                </button>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-white mb-2">Descripción</label>
-            <textarea
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              className="w-full px-4 py-2 rounded-md bg-gray-800 text-white"
-            ></textarea>
-          </div>
-          <div>
-            <label className="block text-white mb-2">Ejercicios</label>            <div className="flex items-center space-x-4">
-              <select
-                value={ejercicioSeleccionado}
-                onChange={(e) => setEjercicioSeleccionado(e.target.value)}
-                className="flex-1 px-4 py-2 rounded-md bg-gray-800 text-white"
-              >
-                <option value="">Selecciona un ejercicio</option>
-                {ejerciciosDisponibles.map((ejercicio) => (
-                  <option key={ejercicio.id} value={ejercicio.id}>
-                    {ejercicio.nombre}
-                  </option>
-                ))}
-              </select>
+        )}
+        
+        <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-white mb-2 font-medium">Nombre de la Rutina</label>
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Ej: Entrenamiento de Pecho y Bíceps"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-white mb-2 font-medium">Descripción</label>
+                <textarea
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                  className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  rows="1"
+                  placeholder="Breve descripción de la rutina (opcional)"
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-white flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  Ejercicios de la Rutina
+                </h2>
+                <span className="text-blue-400 text-sm">{ejerciciosSeleccionados.length} ejercicios añadidos</span>
+              </div>
+
+              <div className="bg-gray-700 p-5 rounded-lg shadow-inner mb-6">
+                <label className="block text-white mb-2 font-medium">Añadir Ejercicio</label>
+                <div className="flex items-center space-x-4">
+                  <select
+                    value={ejercicioSeleccionado}
+                    onChange={(e) => setEjercicioSeleccionado(e.target.value)}
+                    className="flex-1 px-4 py-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="">Selecciona un ejercicio</option>
+                    {ejercicios.map((ejercicio) => (
+                      <option key={ejercicio.id} value={ejercicio.id}>
+                        {ejercicio.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleAddEjercicio}
+                    disabled={!ejercicioSeleccionado}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-3 rounded-md transition-colors shadow-md flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Agregar
+                  </button>
+                </div>
+              </div>
+
+              {ejerciciosSeleccionados.length > 0 ? (
+                <ul className="space-y-5 mb-8">
+                  {ejerciciosSeleccionados.map((ejercicio, index) => (
+                    <li 
+                      key={`${ejercicio.ejercicioId}-${index}`} 
+                      className={`bg-gray-700 p-5 rounded-lg shadow-md border-l-4 ${index % 2 === 0 ? 'border-blue-500' : 'border-green-500'}`}
+                    >
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-white">{ejercicio.ejercicio.nombre}</h3>
+                        <div className="flex items-center">
+                          <span className="text-sm text-gray-300 mr-4">Ejercicio #{ejercicio.orden}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveEjercicio(ejercicio.ejercicioId)}
+                            className="text-red-400 hover:text-red-500 transition-colors p-1"
+                            title="Eliminar ejercicio"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">Series</label>
+                          <input
+                            type="number"
+                            value={ejercicio.series}
+                            onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'series', e.target.value)}
+                            className="w-full px-3 py-2 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:outline-none"
+                            min="1"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">Repeticiones</label>
+                          <input
+                            type="number"
+                            value={ejercicio.repeticiones}
+                            onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'repeticiones', e.target.value)}
+                            className="w-full px-3 py-2 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:outline-none"
+                            min="1"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">Descanso (seg)</label>
+                          <input
+                            type="number"
+                            value={ejercicio.descansoSegundos}
+                            onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'descansoSegundos', e.target.value)}
+                            className="w-full px-3 py-2 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:outline-none"
+                            min="0"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">Orden</label>
+                          <input
+                            type="number"
+                            value={ejercicio.orden}
+                            onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'orden', e.target.value)}
+                            className="w-full px-3 py-2 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:outline-none"
+                            min="1"
+                          />
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-center py-10 bg-gray-700/50 rounded-lg mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <p className="text-gray-400">No hay ejercicios añadidos</p>
+                  <p className="text-gray-500 text-sm mt-1">Selecciona uno del menú desplegable y haz clic en "Agregar"</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-between items-center pt-4 border-t border-gray-600">
               <button
                 type="button"
-                onClick={handleAddEjercicio}
-                disabled={!ejercicioSeleccionado}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md"
+                onClick={() => navigate('/rutinas')}
+                className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-3 rounded-md transition-colors flex items-center shadow-md"
               >
-                Agregar
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-md transition-colors shadow-md flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Guardar Cambios
               </button>
             </div>
-            <ul className="mt-4 space-y-4">
-              {ejerciciosSeleccionados.map((ejercicio) => (
-                <li key={ejercicio.ejercicioId} className="bg-gray-700 p-4 rounded-md">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-white font-medium">{ejercicio.ejercicio.nombre}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveEjercicio(ejercicio.ejercicioId)}
-                      className="text-red-500 hover:text-red-600"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-gray-300 mb-1">Series</label>
-                      <input
-                        type="number"
-                        value={ejercicio.series}
-                        onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'series', e.target.value)}
-                        className="w-full px-3 py-2 rounded-md bg-gray-800 text-white border border-gray-600"
-                        min="1"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-300 mb-1">Repeticiones</label>
-                      <input
-                        type="number"
-                        value={ejercicio.repeticiones}
-                        onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'repeticiones', e.target.value)}
-                        className="w-full px-3 py-2 rounded-md bg-gray-800 text-white border border-gray-600"
-                        min="1"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-300 mb-1">Descanso (seg)</label>
-                      <input
-                        type="number"
-                        value={ejercicio.descansoSegundos}
-                        onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'descansoSegundos', e.target.value)}
-                        className="w-full px-3 py-2 rounded-md bg-gray-800 text-white border border-gray-600"
-                        min="0"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-300 mb-1">Orden</label>
-                      <input
-                        type="number"
-                        value={ejercicio.orden}
-                        onChange={(e) => handleUpdateEjercicioDetails(ejercicio.ejercicioId, 'orden', e.target.value)}
-                        className="w-full px-3 py-2 rounded-md bg-gray-800 text-white border border-gray-600"
-                        min="1"
-                      />
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex justify-center space-x-4">
-            <button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md"
-            >
-              Guardar Cambios
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/rutinas')}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-md"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

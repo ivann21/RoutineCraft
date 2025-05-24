@@ -5,20 +5,74 @@ export default function PlansPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId'));
+
+  const handlePlanChange = async (newPlan) => {
+    try {
+      // Primero verificamos si el usuario está autenticado
+      const usuarioId = localStorage.getItem('usuarioId');
+      
+      if (!usuarioId) {
+        setError('Usuario no encontrado. Por favor, inicia sesión.');
+        return;
+      }
+      
+      setLoading(true);
+      setError(null);
+      
+      // Realizamos la solicitud para actualizar el plan
+      const response = await fetch('http://localhost:5000/api/user-plan/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuarioId: parseInt(usuarioId),
+          newPlan
+        })
+      });
+
+      // Leemos la respuesta como texto primero para evitar errores
+      const responseText = await response.text();
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${responseText || response.statusText}`);
+      }
+      
+      // Si la respuesta es JSON válido, la parseamos
+      let updatedPlanInfo;
+      try {
+        updatedPlanInfo = JSON.parse(responseText);
+      } catch {
+        throw new Error('Respuesta del servidor no es JSON válido');
+      }
+      
+      // Actualizamos el estado con la nueva información
+      setPlanInfo(updatedPlanInfo);
+      alert(`Plan cambiado a ${newPlan.toUpperCase()} con éxito`);
+    } catch (error) {
+      console.error('Error al actualizar el plan:', error);
+      setError(`Error al actualizar el plan: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchPlanInfo = async () => {
       try {
         setLoading(true);
-        const user = JSON.parse(localStorage.getItem('user'));
+        // Obtenemos el ID del usuario desde localStorage
+        const usuarioId = localStorage.getItem('usuarioId');
         
-        if (!user || !user.id) {
+        if (!usuarioId) {
           setError('Usuario no encontrado. Por favor, inicia sesión.');
           setLoading(false);
           return;
         }
         
-        const response = await fetch(`http://localhost:5000/api/user-plan/${user.id}`);
+        // Realizamos la solicitud para obtener la información del plan
+        const response = await fetch(`http://localhost:5000/api/user-plan/${usuarioId}`);
         
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -38,41 +92,45 @@ export default function PlansPage() {
     fetchPlanInfo();
   }, []);
 
-  const handlePlanChange = async (newPlan) => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      
-      if (!user || !user.id) {
-        setError('Usuario no encontrado. Por favor, inicia sesión.');
-        return;
-      }
-      
-      // Cambiar la URL de /api/update-plan a /api/user-plan
-      const response = await fetch('http://localhost:5000/api/user-plan', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          newPlan
-        })
-      });
+  useEffect(() => {
+    // Verificar autenticación al cargar
+    const checkAuth = () => {
+      const userId = localStorage.getItem('usuarioId');
+      setIsLoggedIn(!!userId);
+    };
+    
+    checkAuth();
+    
+    // Escuchar eventos de storage
+    const handleStorageChange = () => {
+      checkAuth();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
-      if (!response.ok) {
-        const errorData = await response.json(); // Intentar obtener más detalles del error
-        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-      }
-
-      const updatedPlanInfo = await response.json(); // La API ahora devuelve el plan actualizado
-      // Actualizar el estado local con la información completa devuelta por la API
-      setPlanInfo(updatedPlanInfo); 
-      alert(`Plan cambiado a ${newPlan.toUpperCase()} con éxito`);
-    } catch (error) {
-      console.error('Error al actualizar el plan:', error);
-      setError(`Error al actualizar el plan: ${error.message}. Por favor, intenta de nuevo.`);
-    }
-  };
+  // Manejar el caso de no autenticado
+  if (!isLoggedIn) {
+    return (
+      <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl font-bold text-white mb-6">Acceso Restringido</h1>
+          <p className="text-lg text-gray-300 mb-4">Por favor, regístrate o inicia sesión para acceder a nuestros planes.</p>
+          <a
+            href="/login"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition-all"
+          >
+            Iniciar Sesión
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -104,7 +162,12 @@ export default function PlansPage() {
         {planInfo && (
           <div className="text-center mb-8 text-white">
             <p>Plan actual: {planInfo.plan.toUpperCase()}</p>
-            <p>Rutinas creadas: {planInfo.rutinasCreadas} de {planInfo.limite === Infinity ? '∞' : planInfo.limite}</p>
+            {planInfo.plan !== 'premium' && (
+              <p>Rutinas creadas: {planInfo.rutinasCreadas} de {planInfo.limite} rutinas</p>
+            )}
+            {planInfo.plan === 'premium' && (
+              <p>Rutinas ilimitadas disponibles</p>
+            )}
           </div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

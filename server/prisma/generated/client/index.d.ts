@@ -1968,6 +1968,7 @@ export namespace Prisma {
     userAchievements: number
     comentarios: number
     metrics: number
+    ejercicios: number
   }
 
   export type UsuarioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1978,6 +1979,7 @@ export namespace Prisma {
     userAchievements?: boolean | UsuarioCountOutputTypeCountUserAchievementsArgs
     comentarios?: boolean | UsuarioCountOutputTypeCountComentariosArgs
     metrics?: boolean | UsuarioCountOutputTypeCountMetricsArgs
+    ejercicios?: boolean | UsuarioCountOutputTypeCountEjerciciosArgs
   }
 
   // Custom InputTypes
@@ -2040,17 +2042,24 @@ export namespace Prisma {
     where?: MetricWhereInput
   }
 
+  /**
+   * UsuarioCountOutputType without action
+   */
+  export type UsuarioCountOutputTypeCountEjerciciosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EjercicioWhereInput
+  }
+
 
   /**
    * Count Type EjercicioCountOutputType
    */
 
   export type EjercicioCountOutputType = {
-    rutinas: number
+    rutinaEjercicio: number
   }
 
   export type EjercicioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    rutinas?: boolean | EjercicioCountOutputTypeCountRutinasArgs
+    rutinaEjercicio?: boolean | EjercicioCountOutputTypeCountRutinaEjercicioArgs
   }
 
   // Custom InputTypes
@@ -2067,7 +2076,7 @@ export namespace Prisma {
   /**
    * EjercicioCountOutputType without action
    */
-  export type EjercicioCountOutputTypeCountRutinasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EjercicioCountOutputTypeCountRutinaEjercicioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RutinaEjercicioWhereInput
   }
 
@@ -2439,6 +2448,7 @@ export namespace Prisma {
     userAchievements?: boolean | Usuario$userAchievementsArgs<ExtArgs>
     comentarios?: boolean | Usuario$comentariosArgs<ExtArgs>
     metrics?: boolean | Usuario$metricsArgs<ExtArgs>
+    ejercicios?: boolean | Usuario$ejerciciosArgs<ExtArgs>
     _count?: boolean | UsuarioCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["usuario"]>
 
@@ -2481,6 +2491,7 @@ export namespace Prisma {
     userAchievements?: boolean | Usuario$userAchievementsArgs<ExtArgs>
     comentarios?: boolean | Usuario$comentariosArgs<ExtArgs>
     metrics?: boolean | Usuario$metricsArgs<ExtArgs>
+    ejercicios?: boolean | Usuario$ejerciciosArgs<ExtArgs>
     _count?: boolean | UsuarioCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UsuarioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2496,6 +2507,7 @@ export namespace Prisma {
       userAchievements: Prisma.$UserAchievementPayload<ExtArgs>[]
       comentarios: Prisma.$ComentarioPayload<ExtArgs>[]
       metrics: Prisma.$MetricPayload<ExtArgs>[]
+      ejercicios: Prisma.$EjercicioPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2906,6 +2918,7 @@ export namespace Prisma {
     userAchievements<T extends Usuario$userAchievementsArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$userAchievementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     comentarios<T extends Usuario$comentariosArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$comentariosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComentarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     metrics<T extends Usuario$metricsArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$metricsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetricPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ejercicios<T extends Usuario$ejerciciosArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$ejerciciosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EjercicioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3498,6 +3511,30 @@ export namespace Prisma {
   }
 
   /**
+   * Usuario.ejercicios
+   */
+  export type Usuario$ejerciciosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ejercicio
+     */
+    select?: EjercicioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ejercicio
+     */
+    omit?: EjercicioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EjercicioInclude<ExtArgs> | null
+    where?: EjercicioWhereInput
+    orderBy?: EjercicioOrderByWithRelationInput | EjercicioOrderByWithRelationInput[]
+    cursor?: EjercicioWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EjercicioScalarFieldEnum | EjercicioScalarFieldEnum[]
+  }
+
+  /**
    * Usuario without action
    */
   export type UsuarioDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3530,68 +3567,96 @@ export namespace Prisma {
 
   export type EjercicioAvgAggregateOutputType = {
     id: number | null
+    usuarioId: number | null
   }
 
   export type EjercicioSumAggregateOutputType = {
     id: number | null
+    usuarioId: number | null
   }
 
   export type EjercicioMinAggregateOutputType = {
     id: number | null
     nombre: string | null
     descripcion: string | null
-    imagenUrl: string | null
     categoria: string | null
+    imagenUrl: string | null
+    esComun: boolean | null
+    usuarioId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type EjercicioMaxAggregateOutputType = {
     id: number | null
     nombre: string | null
     descripcion: string | null
-    imagenUrl: string | null
     categoria: string | null
+    imagenUrl: string | null
+    esComun: boolean | null
+    usuarioId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type EjercicioCountAggregateOutputType = {
     id: number
     nombre: number
     descripcion: number
-    imagenUrl: number
     categoria: number
+    imagenUrl: number
+    esComun: number
+    usuarioId: number
+    createdAt: number
+    updatedAt: number
     _all: number
   }
 
 
   export type EjercicioAvgAggregateInputType = {
     id?: true
+    usuarioId?: true
   }
 
   export type EjercicioSumAggregateInputType = {
     id?: true
+    usuarioId?: true
   }
 
   export type EjercicioMinAggregateInputType = {
     id?: true
     nombre?: true
     descripcion?: true
-    imagenUrl?: true
     categoria?: true
+    imagenUrl?: true
+    esComun?: true
+    usuarioId?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type EjercicioMaxAggregateInputType = {
     id?: true
     nombre?: true
     descripcion?: true
-    imagenUrl?: true
     categoria?: true
+    imagenUrl?: true
+    esComun?: true
+    usuarioId?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type EjercicioCountAggregateInputType = {
     id?: true
     nombre?: true
     descripcion?: true
-    imagenUrl?: true
     categoria?: true
+    imagenUrl?: true
+    esComun?: true
+    usuarioId?: true
+    createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -3685,8 +3750,12 @@ export namespace Prisma {
     id: number
     nombre: string
     descripcion: string | null
-    imagenUrl: string | null
     categoria: string | null
+    imagenUrl: string | null
+    esComun: boolean
+    usuarioId: number | null
+    createdAt: Date
+    updatedAt: Date
     _count: EjercicioCountAggregateOutputType | null
     _avg: EjercicioAvgAggregateOutputType | null
     _sum: EjercicioSumAggregateOutputType | null
@@ -3712,9 +3781,14 @@ export namespace Prisma {
     id?: boolean
     nombre?: boolean
     descripcion?: boolean
-    imagenUrl?: boolean
     categoria?: boolean
-    rutinas?: boolean | Ejercicio$rutinasArgs<ExtArgs>
+    imagenUrl?: boolean
+    esComun?: boolean
+    usuarioId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    usuario?: boolean | Ejercicio$usuarioArgs<ExtArgs>
+    rutinaEjercicio?: boolean | Ejercicio$rutinaEjercicioArgs<ExtArgs>
     _count?: boolean | EjercicioCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ejercicio"]>
 
@@ -3722,45 +3796,69 @@ export namespace Prisma {
     id?: boolean
     nombre?: boolean
     descripcion?: boolean
-    imagenUrl?: boolean
     categoria?: boolean
+    imagenUrl?: boolean
+    esComun?: boolean
+    usuarioId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    usuario?: boolean | Ejercicio$usuarioArgs<ExtArgs>
   }, ExtArgs["result"]["ejercicio"]>
 
   export type EjercicioSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     nombre?: boolean
     descripcion?: boolean
-    imagenUrl?: boolean
     categoria?: boolean
+    imagenUrl?: boolean
+    esComun?: boolean
+    usuarioId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    usuario?: boolean | Ejercicio$usuarioArgs<ExtArgs>
   }, ExtArgs["result"]["ejercicio"]>
 
   export type EjercicioSelectScalar = {
     id?: boolean
     nombre?: boolean
     descripcion?: boolean
-    imagenUrl?: boolean
     categoria?: boolean
+    imagenUrl?: boolean
+    esComun?: boolean
+    usuarioId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type EjercicioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nombre" | "descripcion" | "imagenUrl" | "categoria", ExtArgs["result"]["ejercicio"]>
+  export type EjercicioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nombre" | "descripcion" | "categoria" | "imagenUrl" | "esComun" | "usuarioId" | "createdAt" | "updatedAt", ExtArgs["result"]["ejercicio"]>
   export type EjercicioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    rutinas?: boolean | Ejercicio$rutinasArgs<ExtArgs>
+    usuario?: boolean | Ejercicio$usuarioArgs<ExtArgs>
+    rutinaEjercicio?: boolean | Ejercicio$rutinaEjercicioArgs<ExtArgs>
     _count?: boolean | EjercicioCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type EjercicioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type EjercicioIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type EjercicioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | Ejercicio$usuarioArgs<ExtArgs>
+  }
+  export type EjercicioIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usuario?: boolean | Ejercicio$usuarioArgs<ExtArgs>
+  }
 
   export type $EjercicioPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Ejercicio"
     objects: {
-      rutinas: Prisma.$RutinaEjercicioPayload<ExtArgs>[]
+      usuario: Prisma.$UsuarioPayload<ExtArgs> | null
+      rutinaEjercicio: Prisma.$RutinaEjercicioPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       nombre: string
       descripcion: string | null
-      imagenUrl: string | null
       categoria: string | null
+      imagenUrl: string | null
+      esComun: boolean
+      usuarioId: number | null
+      createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["ejercicio"]>
     composites: {}
   }
@@ -4155,7 +4253,8 @@ export namespace Prisma {
    */
   export interface Prisma__EjercicioClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    rutinas<T extends Ejercicio$rutinasArgs<ExtArgs> = {}>(args?: Subset<T, Ejercicio$rutinasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RutinaEjercicioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    usuario<T extends Ejercicio$usuarioArgs<ExtArgs> = {}>(args?: Subset<T, Ejercicio$usuarioArgs<ExtArgs>>): Prisma__UsuarioClient<$Result.GetResult<Prisma.$UsuarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    rutinaEjercicio<T extends Ejercicio$rutinaEjercicioArgs<ExtArgs> = {}>(args?: Subset<T, Ejercicio$rutinaEjercicioArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RutinaEjercicioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4188,8 +4287,12 @@ export namespace Prisma {
     readonly id: FieldRef<"Ejercicio", 'Int'>
     readonly nombre: FieldRef<"Ejercicio", 'String'>
     readonly descripcion: FieldRef<"Ejercicio", 'String'>
-    readonly imagenUrl: FieldRef<"Ejercicio", 'String'>
     readonly categoria: FieldRef<"Ejercicio", 'String'>
+    readonly imagenUrl: FieldRef<"Ejercicio", 'String'>
+    readonly esComun: FieldRef<"Ejercicio", 'Boolean'>
+    readonly usuarioId: FieldRef<"Ejercicio", 'Int'>
+    readonly createdAt: FieldRef<"Ejercicio", 'DateTime'>
+    readonly updatedAt: FieldRef<"Ejercicio", 'DateTime'>
   }
     
 
@@ -4439,6 +4542,10 @@ export namespace Prisma {
      */
     data: EjercicioCreateManyInput | EjercicioCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EjercicioIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4509,6 +4616,10 @@ export namespace Prisma {
      * Limit how many Ejercicios to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EjercicioIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4578,9 +4689,28 @@ export namespace Prisma {
   }
 
   /**
-   * Ejercicio.rutinas
+   * Ejercicio.usuario
    */
-  export type Ejercicio$rutinasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Ejercicio$usuarioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Usuario
+     */
+    select?: UsuarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Usuario
+     */
+    omit?: UsuarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UsuarioInclude<ExtArgs> | null
+    where?: UsuarioWhereInput
+  }
+
+  /**
+   * Ejercicio.rutinaEjercicio
+   */
+  export type Ejercicio$rutinaEjercicioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the RutinaEjercicio
      */
@@ -17189,8 +17319,12 @@ export namespace Prisma {
     id: 'id',
     nombre: 'nombre',
     descripcion: 'descripcion',
+    categoria: 'categoria',
     imagenUrl: 'imagenUrl',
-    categoria: 'categoria'
+    esComun: 'esComun',
+    usuarioId: 'usuarioId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type EjercicioScalarFieldEnum = (typeof EjercicioScalarFieldEnum)[keyof typeof EjercicioScalarFieldEnum]
@@ -17409,6 +17543,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -17419,13 +17560,6 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
   /**
    * Deep Input Types
@@ -17450,6 +17584,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementListRelationFilter
     comentarios?: ComentarioListRelationFilter
     metrics?: MetricListRelationFilter
+    ejercicios?: EjercicioListRelationFilter
   }
 
   export type UsuarioOrderByWithRelationInput = {
@@ -17467,6 +17602,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementOrderByRelationAggregateInput
     comentarios?: ComentarioOrderByRelationAggregateInput
     metrics?: MetricOrderByRelationAggregateInput
+    ejercicios?: EjercicioOrderByRelationAggregateInput
   }
 
   export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
@@ -17487,6 +17623,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementListRelationFilter
     comentarios?: ComentarioListRelationFilter
     metrics?: MetricListRelationFilter
+    ejercicios?: EjercicioListRelationFilter
   }, "id" | "email">
 
   export type UsuarioOrderByWithAggregationInput = {
@@ -17524,18 +17661,28 @@ export namespace Prisma {
     id?: IntFilter<"Ejercicio"> | number
     nombre?: StringFilter<"Ejercicio"> | string
     descripcion?: StringNullableFilter<"Ejercicio"> | string | null
-    imagenUrl?: StringNullableFilter<"Ejercicio"> | string | null
     categoria?: StringNullableFilter<"Ejercicio"> | string | null
-    rutinas?: RutinaEjercicioListRelationFilter
+    imagenUrl?: StringNullableFilter<"Ejercicio"> | string | null
+    esComun?: BoolFilter<"Ejercicio"> | boolean
+    usuarioId?: IntNullableFilter<"Ejercicio"> | number | null
+    createdAt?: DateTimeFilter<"Ejercicio"> | Date | string
+    updatedAt?: DateTimeFilter<"Ejercicio"> | Date | string
+    usuario?: XOR<UsuarioNullableScalarRelationFilter, UsuarioWhereInput> | null
+    rutinaEjercicio?: RutinaEjercicioListRelationFilter
   }
 
   export type EjercicioOrderByWithRelationInput = {
     id?: SortOrder
     nombre?: SortOrder
     descripcion?: SortOrderInput | SortOrder
-    imagenUrl?: SortOrderInput | SortOrder
     categoria?: SortOrderInput | SortOrder
-    rutinas?: RutinaEjercicioOrderByRelationAggregateInput
+    imagenUrl?: SortOrderInput | SortOrder
+    esComun?: SortOrder
+    usuarioId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    usuario?: UsuarioOrderByWithRelationInput
+    rutinaEjercicio?: RutinaEjercicioOrderByRelationAggregateInput
   }
 
   export type EjercicioWhereUniqueInput = Prisma.AtLeast<{
@@ -17545,17 +17692,26 @@ export namespace Prisma {
     NOT?: EjercicioWhereInput | EjercicioWhereInput[]
     nombre?: StringFilter<"Ejercicio"> | string
     descripcion?: StringNullableFilter<"Ejercicio"> | string | null
-    imagenUrl?: StringNullableFilter<"Ejercicio"> | string | null
     categoria?: StringNullableFilter<"Ejercicio"> | string | null
-    rutinas?: RutinaEjercicioListRelationFilter
+    imagenUrl?: StringNullableFilter<"Ejercicio"> | string | null
+    esComun?: BoolFilter<"Ejercicio"> | boolean
+    usuarioId?: IntNullableFilter<"Ejercicio"> | number | null
+    createdAt?: DateTimeFilter<"Ejercicio"> | Date | string
+    updatedAt?: DateTimeFilter<"Ejercicio"> | Date | string
+    usuario?: XOR<UsuarioNullableScalarRelationFilter, UsuarioWhereInput> | null
+    rutinaEjercicio?: RutinaEjercicioListRelationFilter
   }, "id">
 
   export type EjercicioOrderByWithAggregationInput = {
     id?: SortOrder
     nombre?: SortOrder
     descripcion?: SortOrderInput | SortOrder
-    imagenUrl?: SortOrderInput | SortOrder
     categoria?: SortOrderInput | SortOrder
+    imagenUrl?: SortOrderInput | SortOrder
+    esComun?: SortOrder
+    usuarioId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: EjercicioCountOrderByAggregateInput
     _avg?: EjercicioAvgOrderByAggregateInput
     _max?: EjercicioMaxOrderByAggregateInput
@@ -17570,8 +17726,12 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Ejercicio"> | number
     nombre?: StringWithAggregatesFilter<"Ejercicio"> | string
     descripcion?: StringNullableWithAggregatesFilter<"Ejercicio"> | string | null
-    imagenUrl?: StringNullableWithAggregatesFilter<"Ejercicio"> | string | null
     categoria?: StringNullableWithAggregatesFilter<"Ejercicio"> | string | null
+    imagenUrl?: StringNullableWithAggregatesFilter<"Ejercicio"> | string | null
+    esComun?: BoolWithAggregatesFilter<"Ejercicio"> | boolean
+    usuarioId?: IntNullableWithAggregatesFilter<"Ejercicio"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"Ejercicio"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Ejercicio"> | Date | string
   }
 
   export type RutinaWhereInput = {
@@ -18344,6 +18504,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
     metrics?: MetricCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateInput = {
@@ -18361,6 +18522,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
     metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUpdateInput = {
@@ -18377,6 +18539,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateInput = {
@@ -18394,6 +18557,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioCreateManyInput = {
@@ -18428,58 +18592,85 @@ export namespace Prisma {
   export type EjercicioCreateInput = {
     nombre: string
     descripcion?: string | null
-    imagenUrl?: string | null
     categoria?: string | null
-    rutinas?: RutinaEjercicioCreateNestedManyWithoutEjercicioInput
+    imagenUrl?: string | null
+    esComun?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usuario?: UsuarioCreateNestedOneWithoutEjerciciosInput
+    rutinaEjercicio?: RutinaEjercicioCreateNestedManyWithoutEjercicioInput
   }
 
   export type EjercicioUncheckedCreateInput = {
     id?: number
     nombre: string
     descripcion?: string | null
-    imagenUrl?: string | null
     categoria?: string | null
-    rutinas?: RutinaEjercicioUncheckedCreateNestedManyWithoutEjercicioInput
+    imagenUrl?: string | null
+    esComun?: boolean
+    usuarioId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    rutinaEjercicio?: RutinaEjercicioUncheckedCreateNestedManyWithoutEjercicioInput
   }
 
   export type EjercicioUpdateInput = {
     nombre?: StringFieldUpdateOperationsInput | string
     descripcion?: NullableStringFieldUpdateOperationsInput | string | null
-    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
     categoria?: NullableStringFieldUpdateOperationsInput | string | null
-    rutinas?: RutinaEjercicioUpdateManyWithoutEjercicioNestedInput
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usuario?: UsuarioUpdateOneWithoutEjerciciosNestedInput
+    rutinaEjercicio?: RutinaEjercicioUpdateManyWithoutEjercicioNestedInput
   }
 
   export type EjercicioUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
     descripcion?: NullableStringFieldUpdateOperationsInput | string | null
-    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
     categoria?: NullableStringFieldUpdateOperationsInput | string | null
-    rutinas?: RutinaEjercicioUncheckedUpdateManyWithoutEjercicioNestedInput
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    usuarioId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rutinaEjercicio?: RutinaEjercicioUncheckedUpdateManyWithoutEjercicioNestedInput
   }
 
   export type EjercicioCreateManyInput = {
     id?: number
     nombre: string
     descripcion?: string | null
-    imagenUrl?: string | null
     categoria?: string | null
+    imagenUrl?: string | null
+    esComun?: boolean
+    usuarioId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EjercicioUpdateManyMutationInput = {
     nombre?: StringFieldUpdateOperationsInput | string
     descripcion?: NullableStringFieldUpdateOperationsInput | string | null
-    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
     categoria?: NullableStringFieldUpdateOperationsInput | string | null
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EjercicioUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
     descripcion?: NullableStringFieldUpdateOperationsInput | string | null
-    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
     categoria?: NullableStringFieldUpdateOperationsInput | string | null
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    usuarioId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RutinaCreateInput = {
@@ -18552,7 +18743,7 @@ export namespace Prisma {
     descansoSegundos: number
     orden: number
     rutina: RutinaCreateNestedOneWithoutEjerciciosInput
-    ejercicio: EjercicioCreateNestedOneWithoutRutinasInput
+    ejercicio: EjercicioCreateNestedOneWithoutRutinaEjercicioInput
   }
 
   export type RutinaEjercicioUncheckedCreateInput = {
@@ -18571,7 +18762,7 @@ export namespace Prisma {
     descansoSegundos?: IntFieldUpdateOperationsInput | number
     orden?: IntFieldUpdateOperationsInput | number
     rutina?: RutinaUpdateOneRequiredWithoutEjerciciosNestedInput
-    ejercicio?: EjercicioUpdateOneRequiredWithoutRutinasNestedInput
+    ejercicio?: EjercicioUpdateOneRequiredWithoutRutinaEjercicioNestedInput
   }
 
   export type RutinaEjercicioUncheckedUpdateInput = {
@@ -19309,6 +19500,12 @@ export namespace Prisma {
     none?: MetricWhereInput
   }
 
+  export type EjercicioListRelationFilter = {
+    every?: EjercicioWhereInput
+    some?: EjercicioWhereInput
+    none?: EjercicioWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -19339,6 +19536,10 @@ export namespace Prisma {
   }
 
   export type MetricOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type EjercicioOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19446,6 +19647,27 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type UsuarioNullableScalarRelationFilter = {
+    is?: UsuarioWhereInput | null
+    isNot?: UsuarioWhereInput | null
+  }
+
   export type RutinaEjercicioListRelationFilter = {
     every?: RutinaEjercicioWhereInput
     some?: RutinaEjercicioWhereInput
@@ -19460,32 +19682,70 @@ export namespace Prisma {
     id?: SortOrder
     nombre?: SortOrder
     descripcion?: SortOrder
-    imagenUrl?: SortOrder
     categoria?: SortOrder
+    imagenUrl?: SortOrder
+    esComun?: SortOrder
+    usuarioId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type EjercicioAvgOrderByAggregateInput = {
     id?: SortOrder
+    usuarioId?: SortOrder
   }
 
   export type EjercicioMaxOrderByAggregateInput = {
     id?: SortOrder
     nombre?: SortOrder
     descripcion?: SortOrder
-    imagenUrl?: SortOrder
     categoria?: SortOrder
+    imagenUrl?: SortOrder
+    esComun?: SortOrder
+    usuarioId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type EjercicioMinOrderByAggregateInput = {
     id?: SortOrder
     nombre?: SortOrder
     descripcion?: SortOrder
-    imagenUrl?: SortOrder
     categoria?: SortOrder
+    imagenUrl?: SortOrder
+    esComun?: SortOrder
+    usuarioId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type EjercicioSumOrderByAggregateInput = {
     id?: SortOrder
+    usuarioId?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type UsuarioScalarRelationFilter = {
@@ -19631,11 +19891,6 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -19720,14 +19975,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -20137,6 +20384,13 @@ export namespace Prisma {
     connect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
   }
 
+  export type EjercicioCreateNestedManyWithoutUsuarioInput = {
+    create?: XOR<EjercicioCreateWithoutUsuarioInput, EjercicioUncheckedCreateWithoutUsuarioInput> | EjercicioCreateWithoutUsuarioInput[] | EjercicioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: EjercicioCreateOrConnectWithoutUsuarioInput | EjercicioCreateOrConnectWithoutUsuarioInput[]
+    createMany?: EjercicioCreateManyUsuarioInputEnvelope
+    connect?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+  }
+
   export type RutinaUncheckedCreateNestedManyWithoutUsuarioInput = {
     create?: XOR<RutinaCreateWithoutUsuarioInput, RutinaUncheckedCreateWithoutUsuarioInput> | RutinaCreateWithoutUsuarioInput[] | RutinaUncheckedCreateWithoutUsuarioInput[]
     connectOrCreate?: RutinaCreateOrConnectWithoutUsuarioInput | RutinaCreateOrConnectWithoutUsuarioInput[]
@@ -20184,6 +20438,13 @@ export namespace Prisma {
     connectOrCreate?: MetricCreateOrConnectWithoutUsuarioInput | MetricCreateOrConnectWithoutUsuarioInput[]
     createMany?: MetricCreateManyUsuarioInputEnvelope
     connect?: MetricWhereUniqueInput | MetricWhereUniqueInput[]
+  }
+
+  export type EjercicioUncheckedCreateNestedManyWithoutUsuarioInput = {
+    create?: XOR<EjercicioCreateWithoutUsuarioInput, EjercicioUncheckedCreateWithoutUsuarioInput> | EjercicioCreateWithoutUsuarioInput[] | EjercicioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: EjercicioCreateOrConnectWithoutUsuarioInput | EjercicioCreateOrConnectWithoutUsuarioInput[]
+    createMany?: EjercicioCreateManyUsuarioInputEnvelope
+    connect?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -20296,6 +20557,20 @@ export namespace Prisma {
     deleteMany?: MetricScalarWhereInput | MetricScalarWhereInput[]
   }
 
+  export type EjercicioUpdateManyWithoutUsuarioNestedInput = {
+    create?: XOR<EjercicioCreateWithoutUsuarioInput, EjercicioUncheckedCreateWithoutUsuarioInput> | EjercicioCreateWithoutUsuarioInput[] | EjercicioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: EjercicioCreateOrConnectWithoutUsuarioInput | EjercicioCreateOrConnectWithoutUsuarioInput[]
+    upsert?: EjercicioUpsertWithWhereUniqueWithoutUsuarioInput | EjercicioUpsertWithWhereUniqueWithoutUsuarioInput[]
+    createMany?: EjercicioCreateManyUsuarioInputEnvelope
+    set?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    disconnect?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    delete?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    connect?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    update?: EjercicioUpdateWithWhereUniqueWithoutUsuarioInput | EjercicioUpdateWithWhereUniqueWithoutUsuarioInput[]
+    updateMany?: EjercicioUpdateManyWithWhereWithoutUsuarioInput | EjercicioUpdateManyWithWhereWithoutUsuarioInput[]
+    deleteMany?: EjercicioScalarWhereInput | EjercicioScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -20402,6 +20677,26 @@ export namespace Prisma {
     deleteMany?: MetricScalarWhereInput | MetricScalarWhereInput[]
   }
 
+  export type EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput = {
+    create?: XOR<EjercicioCreateWithoutUsuarioInput, EjercicioUncheckedCreateWithoutUsuarioInput> | EjercicioCreateWithoutUsuarioInput[] | EjercicioUncheckedCreateWithoutUsuarioInput[]
+    connectOrCreate?: EjercicioCreateOrConnectWithoutUsuarioInput | EjercicioCreateOrConnectWithoutUsuarioInput[]
+    upsert?: EjercicioUpsertWithWhereUniqueWithoutUsuarioInput | EjercicioUpsertWithWhereUniqueWithoutUsuarioInput[]
+    createMany?: EjercicioCreateManyUsuarioInputEnvelope
+    set?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    disconnect?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    delete?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    connect?: EjercicioWhereUniqueInput | EjercicioWhereUniqueInput[]
+    update?: EjercicioUpdateWithWhereUniqueWithoutUsuarioInput | EjercicioUpdateWithWhereUniqueWithoutUsuarioInput[]
+    updateMany?: EjercicioUpdateManyWithWhereWithoutUsuarioInput | EjercicioUpdateManyWithWhereWithoutUsuarioInput[]
+    deleteMany?: EjercicioScalarWhereInput | EjercicioScalarWhereInput[]
+  }
+
+  export type UsuarioCreateNestedOneWithoutEjerciciosInput = {
+    create?: XOR<UsuarioCreateWithoutEjerciciosInput, UsuarioUncheckedCreateWithoutEjerciciosInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutEjerciciosInput
+    connect?: UsuarioWhereUniqueInput
+  }
+
   export type RutinaEjercicioCreateNestedManyWithoutEjercicioInput = {
     create?: XOR<RutinaEjercicioCreateWithoutEjercicioInput, RutinaEjercicioUncheckedCreateWithoutEjercicioInput> | RutinaEjercicioCreateWithoutEjercicioInput[] | RutinaEjercicioUncheckedCreateWithoutEjercicioInput[]
     connectOrCreate?: RutinaEjercicioCreateOrConnectWithoutEjercicioInput | RutinaEjercicioCreateOrConnectWithoutEjercicioInput[]
@@ -20416,6 +20711,20 @@ export namespace Prisma {
     connect?: RutinaEjercicioWhereUniqueInput | RutinaEjercicioWhereUniqueInput[]
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type UsuarioUpdateOneWithoutEjerciciosNestedInput = {
+    create?: XOR<UsuarioCreateWithoutEjerciciosInput, UsuarioUncheckedCreateWithoutEjerciciosInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutEjerciciosInput
+    upsert?: UsuarioUpsertWithoutEjerciciosInput
+    disconnect?: UsuarioWhereInput | boolean
+    delete?: UsuarioWhereInput | boolean
+    connect?: UsuarioWhereUniqueInput
+    update?: XOR<XOR<UsuarioUpdateToOneWithWhereWithoutEjerciciosInput, UsuarioUpdateWithoutEjerciciosInput>, UsuarioUncheckedUpdateWithoutEjerciciosInput>
+  }
+
   export type RutinaEjercicioUpdateManyWithoutEjercicioNestedInput = {
     create?: XOR<RutinaEjercicioCreateWithoutEjercicioInput, RutinaEjercicioUncheckedCreateWithoutEjercicioInput> | RutinaEjercicioCreateWithoutEjercicioInput[] | RutinaEjercicioUncheckedCreateWithoutEjercicioInput[]
     connectOrCreate?: RutinaEjercicioCreateOrConnectWithoutEjercicioInput | RutinaEjercicioCreateOrConnectWithoutEjercicioInput[]
@@ -20428,6 +20737,14 @@ export namespace Prisma {
     update?: RutinaEjercicioUpdateWithWhereUniqueWithoutEjercicioInput | RutinaEjercicioUpdateWithWhereUniqueWithoutEjercicioInput[]
     updateMany?: RutinaEjercicioUpdateManyWithWhereWithoutEjercicioInput | RutinaEjercicioUpdateManyWithWhereWithoutEjercicioInput[]
     deleteMany?: RutinaEjercicioScalarWhereInput | RutinaEjercicioScalarWhereInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type RutinaEjercicioUncheckedUpdateManyWithoutEjercicioNestedInput = {
@@ -20590,9 +20907,9 @@ export namespace Prisma {
     connect?: RutinaWhereUniqueInput
   }
 
-  export type EjercicioCreateNestedOneWithoutRutinasInput = {
-    create?: XOR<EjercicioCreateWithoutRutinasInput, EjercicioUncheckedCreateWithoutRutinasInput>
-    connectOrCreate?: EjercicioCreateOrConnectWithoutRutinasInput
+  export type EjercicioCreateNestedOneWithoutRutinaEjercicioInput = {
+    create?: XOR<EjercicioCreateWithoutRutinaEjercicioInput, EjercicioUncheckedCreateWithoutRutinaEjercicioInput>
+    connectOrCreate?: EjercicioCreateOrConnectWithoutRutinaEjercicioInput
     connect?: EjercicioWhereUniqueInput
   }
 
@@ -20604,12 +20921,12 @@ export namespace Prisma {
     update?: XOR<XOR<RutinaUpdateToOneWithWhereWithoutEjerciciosInput, RutinaUpdateWithoutEjerciciosInput>, RutinaUncheckedUpdateWithoutEjerciciosInput>
   }
 
-  export type EjercicioUpdateOneRequiredWithoutRutinasNestedInput = {
-    create?: XOR<EjercicioCreateWithoutRutinasInput, EjercicioUncheckedCreateWithoutRutinasInput>
-    connectOrCreate?: EjercicioCreateOrConnectWithoutRutinasInput
-    upsert?: EjercicioUpsertWithoutRutinasInput
+  export type EjercicioUpdateOneRequiredWithoutRutinaEjercicioNestedInput = {
+    create?: XOR<EjercicioCreateWithoutRutinaEjercicioInput, EjercicioUncheckedCreateWithoutRutinaEjercicioInput>
+    connectOrCreate?: EjercicioCreateOrConnectWithoutRutinaEjercicioInput
+    upsert?: EjercicioUpsertWithoutRutinaEjercicioInput
     connect?: EjercicioWhereUniqueInput
-    update?: XOR<XOR<EjercicioUpdateToOneWithWhereWithoutRutinasInput, EjercicioUpdateWithoutRutinasInput>, EjercicioUncheckedUpdateWithoutRutinasInput>
+    update?: XOR<XOR<EjercicioUpdateToOneWithWhereWithoutRutinaEjercicioInput, EjercicioUpdateWithoutRutinaEjercicioInput>, EjercicioUncheckedUpdateWithoutRutinaEjercicioInput>
   }
 
   export type UsuarioCreateNestedOneWithoutCalendarioInput = {
@@ -20664,10 +20981,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -21075,6 +21388,30 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type NestedFloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -21100,14 +21437,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -21324,6 +21653,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type EjercicioCreateWithoutUsuarioInput = {
+    nombre: string
+    descripcion?: string | null
+    categoria?: string | null
+    imagenUrl?: string | null
+    esComun?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    rutinaEjercicio?: RutinaEjercicioCreateNestedManyWithoutEjercicioInput
+  }
+
+  export type EjercicioUncheckedCreateWithoutUsuarioInput = {
+    id?: number
+    nombre: string
+    descripcion?: string | null
+    categoria?: string | null
+    imagenUrl?: string | null
+    esComun?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    rutinaEjercicio?: RutinaEjercicioUncheckedCreateNestedManyWithoutEjercicioInput
+  }
+
+  export type EjercicioCreateOrConnectWithoutUsuarioInput = {
+    where: EjercicioWhereUniqueInput
+    create: XOR<EjercicioCreateWithoutUsuarioInput, EjercicioUncheckedCreateWithoutUsuarioInput>
+  }
+
+  export type EjercicioCreateManyUsuarioInputEnvelope = {
+    data: EjercicioCreateManyUsuarioInput | EjercicioCreateManyUsuarioInput[]
+    skipDuplicates?: boolean
+  }
+
   export type RutinaUpsertWithWhereUniqueWithoutUsuarioInput = {
     where: RutinaWhereUniqueInput
     update: XOR<RutinaUpdateWithoutUsuarioInput, RutinaUncheckedUpdateWithoutUsuarioInput>
@@ -21516,6 +21878,75 @@ export namespace Prisma {
     fecha?: DateTimeFilter<"Metric"> | Date | string
   }
 
+  export type EjercicioUpsertWithWhereUniqueWithoutUsuarioInput = {
+    where: EjercicioWhereUniqueInput
+    update: XOR<EjercicioUpdateWithoutUsuarioInput, EjercicioUncheckedUpdateWithoutUsuarioInput>
+    create: XOR<EjercicioCreateWithoutUsuarioInput, EjercicioUncheckedCreateWithoutUsuarioInput>
+  }
+
+  export type EjercicioUpdateWithWhereUniqueWithoutUsuarioInput = {
+    where: EjercicioWhereUniqueInput
+    data: XOR<EjercicioUpdateWithoutUsuarioInput, EjercicioUncheckedUpdateWithoutUsuarioInput>
+  }
+
+  export type EjercicioUpdateManyWithWhereWithoutUsuarioInput = {
+    where: EjercicioScalarWhereInput
+    data: XOR<EjercicioUpdateManyMutationInput, EjercicioUncheckedUpdateManyWithoutUsuarioInput>
+  }
+
+  export type EjercicioScalarWhereInput = {
+    AND?: EjercicioScalarWhereInput | EjercicioScalarWhereInput[]
+    OR?: EjercicioScalarWhereInput[]
+    NOT?: EjercicioScalarWhereInput | EjercicioScalarWhereInput[]
+    id?: IntFilter<"Ejercicio"> | number
+    nombre?: StringFilter<"Ejercicio"> | string
+    descripcion?: StringNullableFilter<"Ejercicio"> | string | null
+    categoria?: StringNullableFilter<"Ejercicio"> | string | null
+    imagenUrl?: StringNullableFilter<"Ejercicio"> | string | null
+    esComun?: BoolFilter<"Ejercicio"> | boolean
+    usuarioId?: IntNullableFilter<"Ejercicio"> | number | null
+    createdAt?: DateTimeFilter<"Ejercicio"> | Date | string
+    updatedAt?: DateTimeFilter<"Ejercicio"> | Date | string
+  }
+
+  export type UsuarioCreateWithoutEjerciciosInput = {
+    nombre: string
+    email: string
+    contraseña: string
+    fecha_registro?: Date | string
+    fotoUrl?: string | null
+    plan?: string
+    rutinas?: RutinaCreateNestedManyWithoutUsuarioInput
+    calendario?: CalendarioCreateNestedManyWithoutUsuarioInput
+    contrataciones?: ContratacionCreateNestedManyWithoutUsuarioInput
+    userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioUncheckedCreateWithoutEjerciciosInput = {
+    id?: number
+    nombre: string
+    email: string
+    contraseña: string
+    fecha_registro?: Date | string
+    fotoUrl?: string | null
+    plan?: string
+    rutinas?: RutinaUncheckedCreateNestedManyWithoutUsuarioInput
+    calendario?: CalendarioUncheckedCreateNestedManyWithoutUsuarioInput
+    contrataciones?: ContratacionUncheckedCreateNestedManyWithoutUsuarioInput
+    userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioCreateOrConnectWithoutEjerciciosInput = {
+    where: UsuarioWhereUniqueInput
+    create: XOR<UsuarioCreateWithoutEjerciciosInput, UsuarioUncheckedCreateWithoutEjerciciosInput>
+  }
+
   export type RutinaEjercicioCreateWithoutEjercicioInput = {
     series: number
     repeticiones: number
@@ -21541,6 +21972,50 @@ export namespace Prisma {
   export type RutinaEjercicioCreateManyEjercicioInputEnvelope = {
     data: RutinaEjercicioCreateManyEjercicioInput | RutinaEjercicioCreateManyEjercicioInput[]
     skipDuplicates?: boolean
+  }
+
+  export type UsuarioUpsertWithoutEjerciciosInput = {
+    update: XOR<UsuarioUpdateWithoutEjerciciosInput, UsuarioUncheckedUpdateWithoutEjerciciosInput>
+    create: XOR<UsuarioCreateWithoutEjerciciosInput, UsuarioUncheckedCreateWithoutEjerciciosInput>
+    where?: UsuarioWhereInput
+  }
+
+  export type UsuarioUpdateToOneWithWhereWithoutEjerciciosInput = {
+    where?: UsuarioWhereInput
+    data: XOR<UsuarioUpdateWithoutEjerciciosInput, UsuarioUncheckedUpdateWithoutEjerciciosInput>
+  }
+
+  export type UsuarioUpdateWithoutEjerciciosInput = {
+    nombre?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    contraseña?: StringFieldUpdateOperationsInput | string
+    fecha_registro?: DateTimeFieldUpdateOperationsInput | Date | string
+    fotoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    rutinas?: RutinaUpdateManyWithoutUsuarioNestedInput
+    calendario?: CalendarioUpdateManyWithoutUsuarioNestedInput
+    contrataciones?: ContratacionUpdateManyWithoutUsuarioNestedInput
+    userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+  }
+
+  export type UsuarioUncheckedUpdateWithoutEjerciciosInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    nombre?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    contraseña?: StringFieldUpdateOperationsInput | string
+    fecha_registro?: DateTimeFieldUpdateOperationsInput | Date | string
+    fotoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    rutinas?: RutinaUncheckedUpdateManyWithoutUsuarioNestedInput
+    calendario?: CalendarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    contrataciones?: ContratacionUncheckedUpdateManyWithoutUsuarioNestedInput
+    userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type RutinaEjercicioUpsertWithWhereUniqueWithoutEjercicioInput = {
@@ -21585,6 +22060,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
     metrics?: MetricCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutRutinasInput = {
@@ -21601,6 +22077,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
     metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutRutinasInput = {
@@ -21613,7 +22090,7 @@ export namespace Prisma {
     repeticiones: number
     descansoSegundos: number
     orden: number
-    ejercicio: EjercicioCreateNestedOneWithoutRutinasInput
+    ejercicio: EjercicioCreateNestedOneWithoutRutinaEjercicioInput
   }
 
   export type RutinaEjercicioUncheckedCreateWithoutRutinaInput = {
@@ -21703,6 +22180,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutRutinasInput = {
@@ -21719,6 +22197,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type RutinaEjercicioUpsertWithWhereUniqueWithoutRutinaInput = {
@@ -21793,24 +22272,32 @@ export namespace Prisma {
     create: XOR<RutinaCreateWithoutEjerciciosInput, RutinaUncheckedCreateWithoutEjerciciosInput>
   }
 
-  export type EjercicioCreateWithoutRutinasInput = {
+  export type EjercicioCreateWithoutRutinaEjercicioInput = {
     nombre: string
     descripcion?: string | null
-    imagenUrl?: string | null
     categoria?: string | null
+    imagenUrl?: string | null
+    esComun?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usuario?: UsuarioCreateNestedOneWithoutEjerciciosInput
   }
 
-  export type EjercicioUncheckedCreateWithoutRutinasInput = {
+  export type EjercicioUncheckedCreateWithoutRutinaEjercicioInput = {
     id?: number
     nombre: string
     descripcion?: string | null
-    imagenUrl?: string | null
     categoria?: string | null
+    imagenUrl?: string | null
+    esComun?: boolean
+    usuarioId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type EjercicioCreateOrConnectWithoutRutinasInput = {
+  export type EjercicioCreateOrConnectWithoutRutinaEjercicioInput = {
     where: EjercicioWhereUniqueInput
-    create: XOR<EjercicioCreateWithoutRutinasInput, EjercicioUncheckedCreateWithoutRutinasInput>
+    create: XOR<EjercicioCreateWithoutRutinaEjercicioInput, EjercicioUncheckedCreateWithoutRutinaEjercicioInput>
   }
 
   export type RutinaUpsertWithoutEjerciciosInput = {
@@ -21843,30 +22330,38 @@ export namespace Prisma {
     comentarios?: ComentarioUncheckedUpdateManyWithoutRutinaNestedInput
   }
 
-  export type EjercicioUpsertWithoutRutinasInput = {
-    update: XOR<EjercicioUpdateWithoutRutinasInput, EjercicioUncheckedUpdateWithoutRutinasInput>
-    create: XOR<EjercicioCreateWithoutRutinasInput, EjercicioUncheckedCreateWithoutRutinasInput>
+  export type EjercicioUpsertWithoutRutinaEjercicioInput = {
+    update: XOR<EjercicioUpdateWithoutRutinaEjercicioInput, EjercicioUncheckedUpdateWithoutRutinaEjercicioInput>
+    create: XOR<EjercicioCreateWithoutRutinaEjercicioInput, EjercicioUncheckedCreateWithoutRutinaEjercicioInput>
     where?: EjercicioWhereInput
   }
 
-  export type EjercicioUpdateToOneWithWhereWithoutRutinasInput = {
+  export type EjercicioUpdateToOneWithWhereWithoutRutinaEjercicioInput = {
     where?: EjercicioWhereInput
-    data: XOR<EjercicioUpdateWithoutRutinasInput, EjercicioUncheckedUpdateWithoutRutinasInput>
+    data: XOR<EjercicioUpdateWithoutRutinaEjercicioInput, EjercicioUncheckedUpdateWithoutRutinaEjercicioInput>
   }
 
-  export type EjercicioUpdateWithoutRutinasInput = {
+  export type EjercicioUpdateWithoutRutinaEjercicioInput = {
     nombre?: StringFieldUpdateOperationsInput | string
     descripcion?: NullableStringFieldUpdateOperationsInput | string | null
-    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
     categoria?: NullableStringFieldUpdateOperationsInput | string | null
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usuario?: UsuarioUpdateOneWithoutEjerciciosNestedInput
   }
 
-  export type EjercicioUncheckedUpdateWithoutRutinasInput = {
+  export type EjercicioUncheckedUpdateWithoutRutinaEjercicioInput = {
     id?: IntFieldUpdateOperationsInput | number
     nombre?: StringFieldUpdateOperationsInput | string
     descripcion?: NullableStringFieldUpdateOperationsInput | string | null
-    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
     categoria?: NullableStringFieldUpdateOperationsInput | string | null
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    usuarioId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsuarioCreateWithoutCalendarioInput = {
@@ -21882,6 +22377,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
     metrics?: MetricCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutCalendarioInput = {
@@ -21898,6 +22394,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
     metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutCalendarioInput = {
@@ -21953,6 +22450,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutCalendarioInput = {
@@ -21969,6 +22467,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type RutinaUpsertWithoutCalendarioInput = {
@@ -22059,6 +22558,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
     metrics?: MetricCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutContratacionesInput = {
@@ -22075,6 +22575,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
     metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutContratacionesInput = {
@@ -22136,6 +22637,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutContratacionesInput = {
@@ -22152,6 +22654,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type EntrenadorUpsertWithoutContratacionesInput = {
@@ -22246,6 +22749,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
     metrics?: MetricCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutUserChallengesInput = {
@@ -22262,6 +22766,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
     metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutUserChallengesInput = {
@@ -22329,6 +22834,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutUserChallengesInput = {
@@ -22345,6 +22851,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type ChallengeUpsertWithoutUserChallengesInput = {
@@ -22439,6 +22946,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
     comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
     metrics?: MetricCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutUserAchievementsInput = {
@@ -22455,6 +22963,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
     comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
     metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutUserAchievementsInput = {
@@ -22510,6 +23019,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutUserAchievementsInput = {
@@ -22526,6 +23036,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
     metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type AchievementUpsertWithoutUserAchievementsInput = {
@@ -22571,6 +23082,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     metrics?: MetricCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutComentariosInput = {
@@ -22587,6 +23099,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     metrics?: MetricUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutComentariosInput = {
@@ -22642,6 +23155,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     metrics?: MetricUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutComentariosInput = {
@@ -22658,6 +23172,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     metrics?: MetricUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type RutinaUpsertWithoutComentariosInput = {
@@ -22703,6 +23218,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     comentarios?: ComentarioCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioUncheckedCreateWithoutMetricsInput = {
@@ -22719,6 +23235,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     comentarios?: ComentarioUncheckedCreateNestedManyWithoutUsuarioInput
+    ejercicios?: EjercicioUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
   export type UsuarioCreateOrConnectWithoutMetricsInput = {
@@ -22750,6 +23267,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUpdateManyWithoutUsuarioNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutMetricsInput = {
@@ -22766,6 +23284,7 @@ export namespace Prisma {
     userChallenges?: UserChallengeUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     comentarios?: ComentarioUncheckedUpdateManyWithoutUsuarioNestedInput
+    ejercicios?: EjercicioUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type RutinaCreateManyUsuarioInput = {
@@ -22818,6 +23337,17 @@ export namespace Prisma {
     tipo: string
     valor: number
     fecha: Date | string
+  }
+
+  export type EjercicioCreateManyUsuarioInput = {
+    id?: number
+    nombre: string
+    descripcion?: string | null
+    categoria?: string | null
+    imagenUrl?: string | null
+    esComun?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type RutinaUpdateWithoutUsuarioInput = {
@@ -22975,6 +23505,40 @@ export namespace Prisma {
     fecha?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type EjercicioUpdateWithoutUsuarioInput = {
+    nombre?: StringFieldUpdateOperationsInput | string
+    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    categoria?: NullableStringFieldUpdateOperationsInput | string | null
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rutinaEjercicio?: RutinaEjercicioUpdateManyWithoutEjercicioNestedInput
+  }
+
+  export type EjercicioUncheckedUpdateWithoutUsuarioInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    nombre?: StringFieldUpdateOperationsInput | string
+    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    categoria?: NullableStringFieldUpdateOperationsInput | string | null
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rutinaEjercicio?: RutinaEjercicioUncheckedUpdateManyWithoutEjercicioNestedInput
+  }
+
+  export type EjercicioUncheckedUpdateManyWithoutUsuarioInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    nombre?: StringFieldUpdateOperationsInput | string
+    descripcion?: NullableStringFieldUpdateOperationsInput | string | null
+    categoria?: NullableStringFieldUpdateOperationsInput | string | null
+    imagenUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    esComun?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type RutinaEjercicioCreateManyEjercicioInput = {
     id?: number
     rutinaId: number
@@ -23037,7 +23601,7 @@ export namespace Prisma {
     repeticiones?: IntFieldUpdateOperationsInput | number
     descansoSegundos?: IntFieldUpdateOperationsInput | number
     orden?: IntFieldUpdateOperationsInput | number
-    ejercicio?: EjercicioUpdateOneRequiredWithoutRutinasNestedInput
+    ejercicio?: EjercicioUpdateOneRequiredWithoutRutinaEjercicioNestedInput
   }
 
   export type RutinaEjercicioUncheckedUpdateWithoutRutinaInput = {

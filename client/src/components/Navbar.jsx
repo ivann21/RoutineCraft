@@ -21,9 +21,17 @@ export default function Navbar({ user, setUser }) {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    // Limpiar completamente el almacenamiento local
+    localStorage.clear();
+    
+    // Notificar a la aplicación que el usuario se ha desconectado
+    window.dispatchEvent(new Event('storage'));
+    
+    // Actualizar estado de usuario (reemplaza las variables isLoggedIn y userName)
     setUser(null);
-    navigate("/");
+    
+    // Redireccionar al inicio
+    navigate('/');
   };
 
   // Cargar usuario desde localStorage
@@ -40,14 +48,188 @@ export default function Navbar({ user, setUser }) {
     }
   }, [setUser, user]);
 
+  // Actualizar método de carga de foto de perfil
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.fotoUrl) {
-      setProfilePic(user.fotoUrl.startsWith("http") ? user.fotoUrl : `http://localhost:5000${user.fotoUrl}`);
+    const loadUserProfile = () => {
+      // Intentar obtener la foto desde múltiples fuentes
+      const userId = localStorage.getItem("usuarioId");
+      
+      // Si tenemos el ID del usuario pero no la URL de la foto
+      if (userId) {
+        // Intentar obtener directamente del localStorage
+        const storedPic = localStorage.getItem("userProfilePic");
+        if (storedPic) {
+          setProfilePic(storedPic);
+          return;
+        }
+
+        // Si no hay foto específica, intentar obtener de user
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser.fotoUrl) {
+              const picUrl = parsedUser.fotoUrl.startsWith("http") 
+                ? parsedUser.fotoUrl 
+                : `http://localhost:5000${parsedUser.fotoUrl}`;
+              setProfilePic(picUrl);
+              return;
+            }
+          } catch (error) {
+            console.error("Error parsing user from localStorage:", error);
+          }
+        }
+
+        // Como último recurso, verificar si user prop tiene foto
+        if (user?.fotoUrl) {
+          const picUrl = user.fotoUrl.startsWith("http")
+            ? user.fotoUrl
+            : `http://localhost:5000${user.fotoUrl}`;
+          setProfilePic(picUrl);
+          return;
+        }
+      } else {
+        // No hay usuario logueado, usar imagen por defecto
+        setProfilePic(defaultProfilePic);
+      }
+    };
+
+    // Cargar al inicializar
+    loadUserProfile();
+    
+    // También recargar cuando cambie el usuario
+  }, [user]);
+
+  // Mejorar la gestión de eventos de almacenamiento
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      console.log("Storage event detected:", event?.type || "unknown event");
+      
+      // Verificar si el usuario ha cerrado sesión
+      const userId = localStorage.getItem('usuarioId');
+      
+      if (!userId) {
+        setUser(null);
+        setProfilePic(defaultProfilePic);
+        return;
+      }
+      
+      // Si hay usuario pero no tenemos el objeto user actual, intentar reconstruirlo
+      if (userId) {
+        // Construir objeto básico de usuario desde localStorage
+        const userName = localStorage.getItem('userName');
+        const userEmail = localStorage.getItem('userEmail');
+        
+        setUser(prevUser => {
+          if (!prevUser) {
+            return {
+              id: userId,
+              nombre: userName,
+              email: userEmail
+            };
+          }
+          return prevUser;
+        });
+        
+        // SIEMPRE intentar actualizar la foto de perfil al detectar un cambio
+        const storedPic = localStorage.getItem("userProfilePic");
+        if (storedPic) {
+          console.log("Found profile pic in localStorage:", storedPic);
+          setProfilePic(storedPic);
+        } else {
+          // Fallback: obtener del objeto user completo
+          const storedUser = localStorage.getItem("user");
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              if (parsedUser.fotoUrl || parsedUser.fullPhotoUrl) {
+                const picUrl = parsedUser.fullPhotoUrl || (parsedUser.fotoUrl?.startsWith("http") 
+                  ? parsedUser.fotoUrl 
+                  : `http://localhost:5000${parsedUser.fotoUrl}`);
+                
+                // Guardar en localStorage para futuras referencias
+                localStorage.setItem("userProfilePic", picUrl);
+                setProfilePic(picUrl);
+                console.log("Updated profile pic from user object:", picUrl);
+              }
+            } catch (e) {
+              console.error("Error parsing user for profile pic:", e);
+            }
+          }
+        }
+      }
+    };
+    
+    // Manejar evento específico para actualizar la foto directamente
+    const handlePhotoUpdate = (event) => {
+      console.log("Photo update event received", event.detail);
+      if (event.detail?.photoUrl && 
+          event.detail.photoUrl !== 'null' && 
+          event.detail.photoUrl !== 'undefined') {
+        const photoUrl = event.detail.photoUrl;
+        console.log("Setting profile pic from event:", photoUrl);
+        setProfilePic(photoUrl);
+        
+        // Always update localStorage for consistency
+        localStorage.setItem("userProfilePic", photoUrl);
+      } else {
+        console.log("Received invalid photo URL in event, ignoring");
+      }
+    };
+    
+    // New handler specifically for the force update event
+    const handleForceUpdate = (event) => {
+      console.log("FORCE UPDATE event received for profile pic", event.detail);
+      if (event.detail?.photoUrl && 
+          event.detail.photoUrl !== 'null' && 
+          event.detail.photoUrl !== 'undefined') {
+        // Update the profile pic immediately
+        setProfilePic(event.detail.photoUrl);
+      } else {
+        console.log("Received invalid photo URL in force update event, ignoring");
+      }
+    };
+    
+    // Escuchar por eventos de storage y también por eventos personalizados
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userLogin', handleStorageChange);
+    window.addEventListener('userPhotoUpdate', handlePhotoUpdate);
+    window.addEventListener('forceProfileUpdate', handleForceUpdate);
+    
+    // Ejecutar una vez al inicio para asegurarse de tener la última foto
+    handleStorageChange({type: 'init'});
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLogin', handleStorageChange);
+      window.removeEventListener('userPhotoUpdate', handlePhotoUpdate);
+      window.removeEventListener('forceProfileUpdate', handleForceUpdate);
+    };
+  }, [setUser]);
+
+  // Añadir un efecto adicional específico para actualizar la foto cuando cambia el usuario
+  useEffect(() => {
+    // Si el usuario existe, verificar si tiene foto
+    if (user) {
+      // Primero intentar desde localStorage
+      const storedPic = localStorage.getItem("userProfilePic");
+      if (storedPic) {
+        setProfilePic(storedPic);
+      } 
+      // Luego verificar si el objeto user tiene foto
+      else if (user.fotoUrl || user.fullPhotoUrl) {
+        const picUrl = user.fullPhotoUrl || (user.fotoUrl?.startsWith("http") 
+          ? user.fotoUrl 
+          : `http://localhost:5000${user.fotoUrl}`);
+        
+        // Guardar en localStorage para futuras referencias
+        localStorage.setItem("userProfilePic", picUrl);
+        setProfilePic(picUrl);
+      }
     } else {
       setProfilePic(defaultProfilePic);
     }
-  }, []);
+  }, [user]);
 
   // Cerrar menú de usuario al hacer clic fuera
   useEffect(() => {

@@ -29,6 +29,8 @@ export default function Progress() {
   const [activeMetric, setActiveMetric] = useState('peso');
   const [newEntry, setNewEntry] = useState({ valor: '', fecha: new Date().toISOString().split('T')[0] });
   const [userId, setUserId] = useState(null);
+  const [error, setError] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Define solo métricas claras y personales
   const metricOptions = [
@@ -40,10 +42,15 @@ export default function Progress() {
   ];
 
   useEffect(() => {
-    // Obtener el usuario actual
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.id) setUserId(user.id);
-    fetchMetrics(user?.id);
+    // Obtener el ID del usuario del localStorage usando la clave correcta
+    const uid = localStorage.getItem('usuarioId');
+    if (uid) {
+      setUserId(uid);
+      fetchMetrics(uid);
+    } else {
+      setLoading(false);
+      setError('Usuario no identificado. Por favor, inicia sesión nuevamente.');
+    }
   }, []);
 
   const fetchMetrics = async (uid) => {
@@ -53,11 +60,21 @@ export default function Progress() {
         setMetrics([]);
         return;
       }
-      // Llama a la API real para obtener métricas del usuario
-      const response = await axios.get(`http://localhost:5000/api/metrics/${uid}`);
-      setMetrics(response.data);
+      // Llama a la API para obtener métricas del usuario
+      const response = await axios.get(`http://localhost:5000/api/metrics/${uid}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('userToken')}`
+        }
+      });
+      
+      if (response.status === 200) {
+        setMetrics(response.data);
+      } else {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
     } catch (error) {
       console.error('Error al cargar métricas:', error);
+      setError('No se pudieron cargar las métricas. Verifica tu conexión.');
       setMetrics([]);
     } finally {
       setLoading(false);
@@ -65,19 +82,54 @@ export default function Progress() {
   };
 
   const addMetric = async () => {
-    if (!newEntry.valor || !userId) return;
+    // Validar entrada
+    if (!newEntry.valor || isNaN(parseFloat(newEntry.valor))) {
+      setError('Por favor ingresa un valor numérico válido');
+      return;
+    }
+    
+    if (!userId) {
+      setError('Usuario no identificado');
+      return;
+    }
+    
+    setError('');
+    setSaveSuccess(false);
+    
     try {
-      // Guarda la métrica en la base de datos
-      const response = await axios.post('http://localhost:5000/api/metrics', {
-        userId,
+      // Preparar los datos para enviar
+      const metricData = {
+        userId: userId,
         tipo: activeMetric,
         valor: parseFloat(newEntry.valor),
         fecha: newEntry.fecha
+      };
+      
+      console.log('Enviando métrica:', metricData);
+      
+      // Guardar la métrica en la base de datos
+      const response = await axios.post('http://localhost:5000/api/metrics', metricData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('userToken')}`
+        }
       });
-      setMetrics([...metrics, response.data]);
-      setNewEntry({ valor: '', fecha: new Date().toISOString().split('T')[0] });
+      
+      if (response.status === 201 || response.status === 200) {
+        // Añadir la nueva métrica al estado
+        setMetrics([...metrics, response.data]);
+        // Limpiar el formulario
+        setNewEntry({ valor: '', fecha: new Date().toISOString().split('T')[0] });
+        setSaveSuccess(true);
+        
+        // Volver a cargar todas las métricas para asegurar datos actualizados
+        fetchMetrics(userId);
+      } else {
+        throw new Error(`Error al guardar: ${response.status}`);
+      }
     } catch (error) {
       console.error('Error al añadir métrica:', error);
+      setError(error.response?.data?.message || 'Error al guardar la métrica');
     }
   };
 
@@ -114,6 +166,18 @@ export default function Progress() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
       <div className="relative z-10 p-6 max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-white mb-8">Seguimiento de Progreso</h1>
+        
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-100 p-4 rounded mb-6">
+            {error}
+          </div>
+        )}
+        
+        {saveSuccess && (
+          <div className="bg-green-500/20 border border-green-500 text-green-100 p-4 rounded mb-6">
+            ¡Métrica guardada con éxito!
+          </div>
+        )}
         
         <div className="bg-gray-800 rounded-lg p-6 mb-8">
           <div className="flex flex-wrap gap-4 mb-6">
@@ -180,7 +244,7 @@ export default function Progress() {
               <select
                 value={activeMetric}
                 onChange={e => setActiveMetric(e.target.value)}
-                className="bg-gray-800 text-white px-4 py-2 rounded"
+                className="bg-gray-800 text-white px-4 py-2 rounded border border-gray-600"
               >
                 {metricOptions.map(opt => (
                   <option key={opt.key} value={opt.key}>{opt.label}</option>
@@ -193,7 +257,7 @@ export default function Progress() {
                 type="number"
                 value={newEntry.valor}
                 onChange={e => setNewEntry({ ...newEntry, valor: e.target.value })}
-                className="bg-gray-800 text-white px-4 py-2 rounded"
+                className="bg-gray-800 text-white px-4 py-2 rounded border border-gray-600"
                 placeholder="Ingresa el valor"
               />
             </div>
@@ -203,7 +267,7 @@ export default function Progress() {
                 type="date"
                 value={newEntry.fecha}
                 onChange={e => setNewEntry({ ...newEntry, fecha: e.target.value })}
-                className="bg-gray-800 text-white px-4 py-2 rounded"
+                className="bg-gray-800 text-white px-4 py-2 rounded border border-gray-600"
               />
             </div>
             <div className="flex items-end">
@@ -215,6 +279,11 @@ export default function Progress() {
               </button>
             </div>
           </div>
+          {userId ? (
+            <p className="text-gray-400 text-sm mt-2">ID de usuario: {userId}</p>
+          ) : (
+            <p className="text-red-400 text-sm mt-2">Usuario no identificado</p>
+          )}
         </div>
       </div>
     </div>

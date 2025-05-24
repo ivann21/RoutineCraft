@@ -19,16 +19,50 @@ import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsOfService from "./components/TermsOfService";
 import CookiesPage from "./components/CookiesPage";
 import ScrollToTop from "./components/ScrollToTop"; // Importar el componente
+import ProtectedRoute from "./components/ProtectedRoute";
+import { handleLoginTransition } from './utils/userUtils';
 
 export default function App() {
   const [user, setUser] = useState(null);
 
-  // Al iniciar la app, intentar cargar el usuario desde localStorage
+  // Sincronizar el estado del usuario con localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const checkUserAuth = () => {
+      const userId = localStorage.getItem("usuarioId");
+      const userName = localStorage.getItem("userName");
+      const userEmail = localStorage.getItem("userEmail");
+
+      if (userId && userName) {
+        // Si hay ID y nombre de usuario en localStorage, actualizar el estado
+        setUser({
+          id: userId,
+          nombre: userName,
+          email: userEmail || "",
+        });
+      } else {
+        // Si no hay información de usuario en localStorage, limpiar el estado
+        setUser(null);
+      }
+    };
+
+    // Verificar al montar el componente
+    checkUserAuth();
+
+    // Escuchar cambios en el localStorage
+    const handleStorageChange = () => {
+      checkUserAuth();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Handle special case when user just logged in
+    handleLoginTransition();
   }, []);
 
   return (
@@ -41,12 +75,54 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/rutinas" element={<Rutinas />} />
-        <Route path="/add-rutina" element={<AddRutina />} />
-        <Route path="/edit-rutina/:id" element={<EditRutina />} />
-        <Route path="/ejercicios" element={<Ejercicios />} />
-        <Route path="/entrenadores" element={<Entrenadores />} />
-        <Route path="/calendario" element={<Calendario />} />
+        <Route
+          path="/rutinas"
+          element={
+            <ProtectedRoute>
+              <Rutinas />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-rutina"
+          element={
+            <ProtectedRoute>
+              <AddRutina />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/edit-rutina/:id"
+          element={
+            <ProtectedRoute>
+              <EditRutina />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ejercicios"
+          element={
+            <ProtectedRoute>
+              <Ejercicios />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/entrenadores"
+          element={
+            <ProtectedRoute>
+              <Entrenadores />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/calendario"
+          element={
+            <ProtectedRoute>
+              <Calendario />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/cookies" element={<CookiesPage />} />

@@ -134,8 +134,12 @@ exports.Prisma.EjercicioScalarFieldEnum = {
   id: 'id',
   nombre: 'nombre',
   descripcion: 'descripcion',
+  categoria: 'categoria',
   imagenUrl: 'imagenUrl',
-  categoria: 'categoria'
+  esComun: 'esComun',
+  usuarioId: 'usuarioId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.RutinaScalarFieldEnum = {

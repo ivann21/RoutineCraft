@@ -17,6 +17,7 @@ const Rutinas = () => {
   const [rutinaToDelete, setRutinaToDelete] = useState(null);
   const [selectedRutina, setSelectedRutina] = useState(null);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para la búsqueda
   
   const openDeleteModal = (rutina) => {
     setRutinaToDelete(rutina);
@@ -42,8 +43,26 @@ const Rutinas = () => {
   };
 
   useEffect(() => {
+    // Verificar autenticación al cargar el componente y en cada cambio de almacenamiento
+    const checkAuth = () => {
+      const userId = localStorage.getItem('usuarioId');
+      setIsLoggedIn(!!userId);
+      
+      if (!userId) {
+        // Si no hay ID de usuario, limpiar cualquier dato relacionado con las rutinas
+        setRutinas([]);
+        setPlanInfo(null);
+        setSelectedRutina(null);
+        setSelectedExercise(null);
+      }
+    };
+    
+    // Verificar al montar el componente
+    checkAuth();
+    
+    // Escuchar cambios en localStorage (como logout)
     const handleStorageChange = () => {
-      setIsLoggedIn(!!localStorage.getItem('usuarioId'));
+      checkAuth();
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -105,6 +124,23 @@ const Rutinas = () => {
     setSelectedRutina(null);
   };
 
+  // Función para filtrar rutinas por término de búsqueda
+  const rutinasFiltradas = () => {
+    if (!searchTerm.trim()) {
+      return rutinas;
+    }
+    
+    const termLower = searchTerm.toLowerCase().trim();
+    return rutinas.filter(rutina => 
+      rutina.nombre.toLowerCase().includes(termLower) ||
+      (rutina.descripcion && rutina.descripcion.toLowerCase().includes(termLower)) ||
+      // Opcional: también buscar en los nombres de los ejercicios dentro de cada rutina
+      (rutina.ejercicios && rutina.ejercicios.some(ej => 
+        ej.ejercicio && ej.ejercicio.nombre.toLowerCase().includes(termLower)
+      ))
+    );
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
@@ -147,22 +183,57 @@ const Rutinas = () => {
         <h1 className="text-4xl font-bold text-white mb-8 text-center">Mis Rutinas de Entrenamiento</h1>
         
         {!selectedRutina && (
-          <div className="text-center mb-8">
-            <button
-              onClick={handleAddRutinaClick}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md shadow-md transition-all flex items-center mx-auto"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Añadir Rutina
-            </button>
-            {planInfo && (
-              <p className="text-sm text-gray-300 mt-2">
-                {planInfo.rutinasCreadas} de {planInfo.limite === Infinity ? '∞' : planInfo.limite} rutinas utilizadas
-              </p>
+          <>
+            <div className="text-center mb-4">
+              <button
+                onClick={handleAddRutinaClick}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md shadow-md transition-all flex items-center mx-auto"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Añadir Rutina
+              </button>
+              {planInfo && planInfo.plan !== 'premium' && (
+                <p className="text-sm text-gray-300 mt-2">
+                  {planInfo.rutinasCreadas} de {planInfo.limite} rutinas utilizadas
+                </p>
+              )}
+            </div>
+
+            {/* Búsqueda de rutinas */}
+            {rutinas.length > 0 && (
+              <div className="max-w-lg mx-auto mb-8 mt-6">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar rutinas por nombre, descripción o ejercicios..."
+                    className="w-full pl-10 pr-10 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none shadow-md"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  {searchTerm && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <button 
+                        onClick={() => setSearchTerm('')}
+                        className="text-gray-400 hover:text-white"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
-          </div>
+          </>
         )}
         
         {/* Rutina Details View */}
@@ -255,7 +326,7 @@ const Rutinas = () => {
               ) : (
                 <div className="text-center p-8 bg-gray-700/30 rounded-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                   <p className="text-gray-400 text-lg">No hay ejercicios en esta rutina.</p>
                   <p className="text-gray-500 mt-2">Puedes editar la rutina para añadir ejercicios.</p>
@@ -289,26 +360,34 @@ const Rutinas = () => {
           </div>
         ) : (
           <>
-            {rutinas.length === 0 ? (
+            {rutinasFiltradas().length === 0 ? (
               <div className="text-center bg-gray-800 rounded-lg p-10 max-w-xl mx-auto shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
-                <h2 className="text-2xl font-bold text-white mb-3">Aún no tienes rutinas</h2>
-                <p className="text-lg text-gray-300 mb-6">¡Crea tu primera rutina de entrenamiento para comenzar!</p>
-                <button
-                  onClick={handleAddRutinaClick}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md shadow-md transition-all inline-flex items-center"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Crear mi primera rutina
-                </button>
+                <h2 className="text-2xl font-bold text-white mb-3">
+                  {searchTerm ? 'No se encontraron rutinas' : 'Aún no tienes rutinas'}
+                </h2>
+                <p className="text-lg text-gray-300 mb-6">
+                  {searchTerm ? 
+                    `No hay rutinas que coincidan con "${searchTerm}"` : 
+                    '¡Crea tu primera rutina de entrenamiento para comenzar!'}
+                </p>
+                {!searchTerm && (
+                  <button
+                    onClick={handleAddRutinaClick}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md shadow-md transition-all inline-flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Crear mi primera rutina
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rutinas.map((rutina) => (
+                {rutinasFiltradas().map((rutina) => (
                   <div
                     key={rutina.id}
                     className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"

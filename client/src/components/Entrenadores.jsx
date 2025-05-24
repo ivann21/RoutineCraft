@@ -11,6 +11,12 @@ const Entrenadores = () => {
   const [modalEntrenador, setModalEntrenador] = useState(null);
   const [planSeleccionado, setPlanSeleccionado] = useState('mensual');
   const [error, setError] = useState(null);
+  
+  // Nuevos estados para modales de notificación
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [processingContratacion, setProcessingContratacion] = useState(false);
 
   // Manejar cambios en el estado de login
   useEffect(() => {
@@ -19,10 +25,15 @@ const Entrenadores = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
+    
+    // También verificar al montar el componente
+    setIsLoggedIn(!!localStorage.getItem('usuarioId'));
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
   const fetchEntrenadores = async () => {
     try {
       const response = await axios.get('/api/entrenadores');
@@ -46,6 +57,7 @@ const Entrenadores = () => {
       setError('Error al cargar los entrenadores contratados');
     }
   };
+
   useEffect(() => {
     if (isLoggedIn) {
       Promise.all([
@@ -59,13 +71,18 @@ const Entrenadores = () => {
     }
   }, [isLoggedIn]);
 
-  const especialidades = [...new Set(entrenadores.map(e => e.especialidad))];  const handleContratacion = async (entrenadorId) => {
+  const especialidades = [...new Set(entrenadores.map(e => e.especialidad))];  
+
+  const handleContratacion = async (entrenadorId) => {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
       if (!usuarioId) {
-        alert('Debes iniciar sesión para contratar un entrenador');
+        setNotificationMessage('Debes iniciar sesión para contratar un entrenador');
+        setShowErrorModal(true);
         return;
       }
+
+      setProcessingContratacion(true);
 
       await axios.post('/api/contrataciones', {
         entrenadorId,
@@ -74,7 +91,9 @@ const Entrenadores = () => {
         fechaInicio: new Date().toISOString()
       });
 
-      alert('¡Contratación exitosa!');
+      // Mostrar modal de éxito en lugar de alerta
+      setNotificationMessage('¡Has contratado al entrenador exitosamente!');
+      setShowSuccessModal(true);
       setModalEntrenador(null);
       
       // Recargar ambas listas para actualizar cambios
@@ -85,9 +104,15 @@ const Entrenadores = () => {
     } catch (error) {
       console.error('Error al realizar la contratación:', error);
       const mensaje = error.response?.data?.error || 'Error al realizar la contratación';
-      alert(mensaje);
+      
+      // Mostrar modal de error en lugar de alerta
+      setNotificationMessage(mensaje);
+      setShowErrorModal(true);
+    } finally {
+      setProcessingContratacion(false);
     }
   };
+
   const calcularPrecio = (precioBase) => {
     const precios = {
       mensual: precioBase,
@@ -112,13 +137,13 @@ const Entrenadores = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
         <div className="relative z-10 p-6 max-w-7xl mx-auto text-center">
           <h1 className="text-4xl font-bold text-white mb-6">Acceso Restringido</h1>
-          <p className="text-lg text-gray-300 mb-4">Por favor, regístrate o inicia sesión para ver nuestros entrenadores.</p>
-          <Link
-            to="/login"
+          <p className="text-lg text-gray-300 mb-4">Por favor, regístrate o inicia sesión para acceder a nuestros entrenadores.</p>
+          <a
+            href="/login"
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition-all"
           >
             Iniciar Sesión
-          </Link>
+          </a>
         </div>
       </div>
     );
@@ -126,17 +151,24 @@ const Entrenadores = () => {
 
   if (loading) {
     return (
-      <div className="relative bg-gray-900 min-h-screen">
+      <div className="relative bg-gray-900 overflow-hidden min-h-screen">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
-        <div className="relative z-10 p-6 max-w-7xl mx-auto">
-          <p className="text-white">Cargando...</p>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <svg className="animate-spin h-12 w-12 text-blue-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="text-xl text-blue-400 font-medium">Cargando entrenadores...</p>
+          </div>
         </div>
       </div>
     );
   }  return (
-    <div className="relative bg-gray-900 min-h-screen">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>      <div className="relative z-10 p-6 max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-6">Entrenadores y Nutricionistas</h1>
+    <div className="relative bg-gray-900 overflow-hidden min-h-screen pb-12">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-8 text-center">Nuestros Entrenadores</h1>
         
         {/* Sección de Entrenadores Contratados */}
         <div className="mb-12">
@@ -212,8 +244,8 @@ const Entrenadores = () => {
 
         {/* Modal de contratación */}
         {modalEntrenador && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-            <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-30 animate-fadeIn">
+            <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl border border-gray-700 animate-scaleIn">
               <h2 className="text-2xl font-bold text-white mb-4">Contratar a {modalEntrenador.nombre}</h2>
               
               <div className="mb-4">
@@ -237,15 +269,74 @@ const Entrenadores = () => {
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={() => setModalEntrenador(null)}
-                  className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={() => handleContratacion(modalEntrenador.id)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                  disabled={processingContratacion}
+                  className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center ${processingContratacion ? 'opacity-75 cursor-not-allowed' : ''}`}
                 >
-                  Confirmar Contratación
+                  {processingContratacion ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Procesando...
+                    </>
+                  ) : "Confirmar Contratación"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de éxito */}
+        {showSuccessModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40 animate-fadeIn">
+            <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full border-2 border-green-500 shadow-xl animate-scaleIn">
+              <div className="flex items-center justify-center mb-4">
+                <div className="h-16 w-16 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-white text-center mb-2">¡Excelente!</h2>
+              <p className="text-gray-300 text-center mb-6">{notificationMessage}</p>
+              <div className="flex justify-center">
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition-colors"
+                >
+                  Entendido
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de error */}
+        {showErrorModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40 animate-fadeIn">
+            <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full border-2 border-red-500 shadow-xl animate-scaleIn">
+              <div className="flex items-center justify-center mb-4">
+                <div className="h-16 w-16 bg-red-500 rounded-full flex items-center justify-center">
+                  <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-white text-center mb-2">Oops!</h2>
+              <p className="text-gray-300 text-center mb-6">{notificationMessage}</p>
+              <div className="flex justify-center">
+                <button
+                  onClick={() => setShowErrorModal(false)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md transition-colors"
+                >
+                  Cerrar
                 </button>
               </div>
             </div>

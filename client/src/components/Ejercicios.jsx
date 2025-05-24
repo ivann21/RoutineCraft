@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import AddEjercicio from './AddEjercicio';
+import EditEjercicio from './EditEjercicio';
 
 const Ejercicios = () => {
   const [ejercicios, setEjercicios] = useState([]);
-  const [nombre, setNombre] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [categoria, setCategoria] = useState('');
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId'));
   const [ejercicioEditando, setEjercicioEditando] = useState(null);
@@ -13,6 +12,10 @@ const Ejercicios = () => {
   const [ejercicioToDelete, setEjercicioToDelete] = useState(null);
   const [deleteError, setDeleteError] = useState('');
   const [selectedEjercicio, setSelectedEjercicio] = useState(null);
+  const [ejerciciosComunes, setEjerciciosComunes] = useState([]);
+  const [ejerciciosPersonalizados, setEjerciciosPersonalizados] = useState([]);
+  const [tipoFiltro, setTipoFiltro] = useState('todos'); // 'todos', 'comunes', 'personalizados'
+  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -30,8 +33,16 @@ const Ejercicios = () => {
     if (isLoggedIn) {
       const fetchEjercicios = async () => {
         try {
-          const response = await axios.get('/api/ejercicios');
-          setEjercicios(response.data);
+          const usuarioId = localStorage.getItem('usuarioId');
+          const response = await axios.get(`/api/ejercicios?usuarioId=${usuarioId}`);
+          
+          // Separar ejercicios comunes y personalizados
+          const comunes = response.data.filter(e => e.esComun);
+          const personalizados = response.data.filter(e => !e.esComun);
+          
+          setEjerciciosComunes(comunes);
+          setEjerciciosPersonalizados(personalizados);
+          setEjercicios(response.data); // Mantener la lista completa para compatibilidad
         } catch (error) {
           console.error('Error al obtener los ejercicios:', error);
         } finally {
@@ -44,68 +55,38 @@ const Ejercicios = () => {
       setLoading(false);
     }
   }, [isLoggedIn]);
-
-  const handleAddEjercicio = async (e) => {
-    e.preventDefault();
-    try {
-      const usuarioId = localStorage.getItem('usuarioId');
-      const formData = new FormData();
-      formData.append('nombre', nombre);
-      formData.append('descripcion', descripcion);
-      formData.append('categoria', categoria);
-      formData.append('usuarioId', usuarioId);
-
-      const response = await axios.post('/api/ejercicios', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setEjercicios([...ejercicios, response.data]);
-      setNombre('');
-      setDescripcion('');
-      setCategoria('');
-    } catch (error) {
-      console.error('Error al añadir el ejercicio:', error);
+  
+  // Filtrar ejercicios según el tipo seleccionado y el término de búsqueda
+  const ejerciciosFiltrados = () => {
+    let resultado = [];
+    
+    // Primero filtrar por tipo
+    switch (tipoFiltro) {
+      case 'comunes':
+        resultado = ejerciciosComunes || [];
+        break;
+      case 'personalizados':
+        resultado = ejerciciosPersonalizados || [];
+        break;
+      default:
+        resultado = ejercicios || [];
     }
+    
+    // Luego filtrar por término de búsqueda si existe
+    if (searchTerm.trim() !== '') {
+      const termLower = searchTerm.toLowerCase().trim();
+      resultado = resultado.filter(e => 
+        e.nombre.toLowerCase().includes(termLower) || 
+        (e.categoria && e.categoria.toLowerCase().includes(termLower)) ||
+        (e.descripcion && e.descripcion.toLowerCase().includes(termLower))
+      );
+    }
+    
+    return resultado;
   };
 
   const handleEditEjercicio = (ejercicio) => {
     setEjercicioEditando(ejercicio);
-    setNombre(ejercicio.nombre);
-    setDescripcion(ejercicio.descripcion);
-    setCategoria(ejercicio.categoria);
-  };
-
-  const handleUpdateEjercicio = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append('nombre', nombre);
-      formData.append('descripcion', descripcion);
-      formData.append('categoria', categoria);
-
-      await axios.put(`/api/ejercicios/${ejercicioEditando.id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setEjercicios((prevEjercicios) =>
-        prevEjercicios.map((ej) =>
-          ej.id === ejercicioEditando.id
-            ? { ...ej, nombre, descripcion, categoria }
-            : ej
-        )
-      );
-
-      setEjercicioEditando(null);
-      setNombre('');
-      setDescripcion('');
-      setCategoria('');
-    } catch (error) {
-      console.error('Error al actualizar el ejercicio:', error);
-    }
   };
 
   const openDeleteModal = (ejercicio) => {
@@ -117,7 +98,17 @@ const Ejercicios = () => {
   const handleDeleteEjercicio = async () => {
     try {
       await axios.delete(`/api/ejercicios/${ejercicioToDelete.id}`);
-      setEjercicios(ejercicios.filter((ejercicio) => ejercicio.id !== ejercicioToDelete.id));
+      
+      // Actualizar todas las listas de ejercicios
+      const filteredEjercicios = ejercicios.filter(ej => ej.id !== ejercicioToDelete.id);
+      setEjercicios(filteredEjercicios);
+      
+      if (ejercicioToDelete.esComun) {
+        setEjerciciosComunes(ejerciciosComunes.filter(ej => ej.id !== ejercicioToDelete.id));
+      } else {
+        setEjerciciosPersonalizados(ejerciciosPersonalizados.filter(ej => ej.id !== ejercicioToDelete.id));
+      }
+      
       setShowDeleteModal(false);
       setEjercicioToDelete(null);
     } catch (error) {
@@ -132,9 +123,6 @@ const Ejercicios = () => {
 
   const handleCancelEdit = () => {
     setEjercicioEditando(null);
-    setNombre('');
-    setDescripcion('');
-    setCategoria('');
   };
 
   const handleViewDetails = (ejercicio) => {
@@ -145,6 +133,49 @@ const Ejercicios = () => {
     setSelectedEjercicio(null);
   };
 
+  const handleAddSuccess = (newEjercicio) => {
+    // Asegurarse de que el nuevo ejercicio se añada a la lista correcta
+    if (newEjercicio.esComun) {
+      // Esto no debería ocurrir normalmente
+      setEjerciciosComunes([...ejerciciosComunes, newEjercicio]);
+    } else {
+      // Lo normal es que el nuevo ejercicio sea personalizado
+      setEjerciciosPersonalizados([...ejerciciosPersonalizados, newEjercicio]);
+      
+      // También cambiar al filtro de personalizados para mostrar inmediatamente el nuevo ejercicio
+      setTipoFiltro('personalizados');
+    }
+    
+    // Añadir a la lista completa también
+    setEjercicios([...ejercicios, newEjercicio]);
+  };
+
+  const handleUpdateSuccess = (updatedEjercicio) => {
+    // Actualizar tanto las listas completas como las filtradas
+    setEjercicios(prevEjercicios =>
+      prevEjercicios.map(ej => 
+        ej.id === updatedEjercicio.id ? updatedEjercicio : ej
+      )
+    );
+
+    if (updatedEjercicio.esComun) {
+      setEjerciciosComunes(prevComunes => 
+        prevComunes.map(ej => 
+          ej.id === updatedEjercicio.id ? updatedEjercicio : ej
+        )
+      );
+    } else {
+      setEjerciciosPersonalizados(prevPersonalizados => 
+        prevPersonalizados.map(ej => 
+          ej.id === updatedEjercicio.id ? updatedEjercicio : ej
+        )
+      );
+    }
+
+    setEjercicioEditando(null);
+  };
+
+  // Renderizar componentes basados en el estado actual
   if (!isLoggedIn) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
@@ -185,6 +216,33 @@ const Ejercicios = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
       <div className="relative z-10 p-6 max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-white mb-8 text-center">Mis Ejercicios</h1>
+        
+        {/* Filtros de ejercicios */}
+        {!selectedEjercicio && (
+          <div className="flex justify-center mb-6 bg-gray-800 p-3 rounded-lg shadow-lg">
+            <button 
+              type="button"
+              onClick={() => setTipoFiltro('todos')} 
+              className={`px-4 py-2 mx-1 rounded-md ${tipoFiltro === 'todos' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+            >
+              Todos
+            </button>
+            <button 
+              type="button"
+              onClick={() => setTipoFiltro('comunes')} 
+              className={`px-4 py-2 mx-1 rounded-md ${tipoFiltro === 'comunes' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+            >
+              Ejercicios comunes
+            </button>
+            <button 
+              type="button"
+              onClick={() => setTipoFiltro('personalizados')} 
+              className={`px-4 py-2 mx-1 rounded-md ${tipoFiltro === 'personalizados' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+            >
+              Mis ejercicios
+            </button>
+          </div>
+        )}
         
         {/* Exercise Details View */}
         {selectedEjercicio ? (
@@ -250,93 +308,91 @@ const Ejercicios = () => {
           </div>
         ) : (
           <>
-            {/* Form section */}
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-8 max-w-4xl mx-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white flex items-center">
-                  {ejercicioEditando ? 'Editar Ejercicio' : 'Añadir Nuevo Ejercicio'}
-                </h2>
-                {ejercicioEditando && (
-                  <button
-                    onClick={handleCancelEdit}
-                    className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md flex items-center text-sm"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Cancelar
-                  </button>
-                )}
-              </div>
+            {/* Form section - Usar componentes separados */}
+            {!selectedEjercicio && (
+              ejercicioEditando ? (
+                <EditEjercicio 
+                  ejercicio={ejercicioEditando}
+                  onSubmitSuccess={handleUpdateSuccess}
+                  onCancel={handleCancelEdit}
+                />
+              ) : (
+                <AddEjercicio 
+                  onSubmitSuccess={handleAddSuccess}
+                />
+              )
+            )}
+
+            {/* Exercise List with Search */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white mb-4 md:mb-0">
+                {tipoFiltro === 'todos' ? 'Lista de Ejercicios' : 
+                 tipoFiltro === 'comunes' ? 'Ejercicios Comunes' : 'Mis Ejercicios Personalizados'}
+              </h2>
               
-              <form onSubmit={ejercicioEditando ? handleUpdateEjercicio : handleAddEjercicio} className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-white mb-2 font-medium">Nombre del Ejercicio</label>
-                    <input
-                      type="text"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                      className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder="Ej: Flexiones de pecho"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-white mb-2 font-medium">Categoría</label>
-                    <input
-                      type="text"
-                      value={categoria}
-                      onChange={(e) => setCategoria(e.target.value)}
-                      className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder="Ej: Pecho, Brazos, Piernas..."
-                      required
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-white mb-2 font-medium">Descripción</label>
-                  <textarea
-                    value={descripcion}
-                    onChange={(e) => setDescripcion(e.target.value)}
-                    className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    rows="3"
-                    placeholder="Describe cómo realizar este ejercicio correctamente"
-                  ></textarea>
-                </div>
-                <div className="flex justify-end pt-3">
-                  <button
-                    type="submit"
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md shadow-md transition-colors flex items-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              {/* Buscador de ejercicios */}
+              <div className="w-full md:w-auto md:min-w-[300px]">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    {ejercicioEditando ? 'Guardar Cambios' : 'Añadir Ejercicio'}
-                  </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar ejercicios..."
+                    className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  {searchTerm && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <button 
+                        onClick={() => setSearchTerm('')}
+                        className="text-gray-400 hover:text-white"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </form>
+              </div>
             </div>
 
-            {/* Exercise List */}
-            <h2 className="text-2xl font-bold text-white mb-6">Lista de Ejercicios</h2>
-            {ejercicios.length === 0 ? (
+            {ejerciciosFiltrados().length === 0 ? (
               <div className="text-center bg-gray-800 rounded-lg p-10 max-w-xl mx-auto shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 <h2 className="text-2xl font-bold text-white mb-3">No hay ejercicios</h2>
-                <p className="text-lg text-gray-300 mb-6">¡Usa el formulario de arriba para añadir tu primer ejercicio!</p>
+                {searchTerm ? (
+                  <p className="text-lg text-gray-300 mb-6">No se encontraron ejercicios que coincidan con "{searchTerm}"</p>
+                ) : tipoFiltro === 'personalizados' ? (
+                  <p className="text-lg text-gray-300 mb-6">¡Usa el formulario de arriba para añadir tu primer ejercicio personalizado!</p>
+                ) : (
+                  <p className="text-lg text-gray-300 mb-6">No se encontraron ejercicios en esta categoría.</p>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {ejercicios.map((ejercicio) => (
+                {ejerciciosFiltrados().map((ejercicio) => (
                   <div
                     key={ejercicio.id}
-                    className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"
+                    className={`bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1 
+                                ${ejercicio.esComun ? 'border-l-4 border-blue-500' : 'border-l-4 border-green-500'}`}
                   >
                     <div className="p-5">
-                      <h2 className="text-2xl font-bold text-white mb-2 line-clamp-1">{ejercicio.nombre}</h2>
+                      <div className="flex justify-between items-start mb-2">
+                        <h2 className="text-2xl font-bold text-white line-clamp-1">{ejercicio.nombre}</h2>
+                        {!ejercicio.esComun && (
+                          <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">
+                            Personalizado
+                          </span>
+                        )}
+                      </div>
                       <div className="bg-gray-700/50 px-3 py-1 inline-block rounded-full text-sm text-blue-400 mb-3">
                         {ejercicio.categoria || "Sin categoría"}
                       </div>

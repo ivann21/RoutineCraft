@@ -467,28 +467,58 @@ app.get("/api/profile/:id", async (req, res) => {
   }
 });
 
-// Ruta para obtener todos los ejercicios
+// Obtener todos los ejercicios (comunes + personalizados del usuario)
 app.get('/api/ejercicios', async (req, res) => {
   try {
-    const ejercicios = await prisma.ejercicio.findMany();
+    const usuarioId = req.query.usuarioId ? parseInt(req.query.usuarioId) : null;
+    
+    // Consulta para obtener ejercicios comunes y personalizados del usuario
+    const where = {
+      OR: [
+        { esComun: true }, // Ejercicios comunes para todos
+      ]
+    };
+    
+    // Si hay un ID de usuario, incluir también sus ejercicios personalizados
+    if (usuarioId) {
+      where.OR.push({ usuarioId: usuarioId });
+    }
+    
+    const ejercicios = await prisma.ejercicio.findMany({
+      where,
+      orderBy: [
+        { categoria: 'asc' },
+        { nombre: 'asc' }
+      ],
+    });
+    
     res.json(ejercicios);
   } catch (error) {
-    console.error('Error al obtener los ejercicios:', error);
-    res.status(500).json({ error: 'Error al obtener los ejercicios' });
+    console.error('Error al obtener ejercicios:', error);
+    res.status(500).json({ error: 'Error al obtener ejercicios' });
   }
 });
 
 // Ruta para añadir un nuevo ejercicio
 app.post('/api/ejercicios', upload.single('imagen'), async (req, res) => {
-  const { nombre, descripcion, categoria } = req.body;
+  const { nombre, descripcion, categoria, usuarioId } = req.body;
   const imagen = req.file ? req.file.path : null;
-
+  
   try {
+    // Siempre crear como ejercicio personalizado si viene de un usuario
+    const esComun = false; // Cambio fundamental: todos los ejercicios creados por usuarios son personalizados
+    
+    if (!usuarioId) {
+      return res.status(400).json({ error: 'Se requiere ID de usuario para crear ejercicios personalizados' });
+    }
+
     const nuevoEjercicio = await prisma.ejercicio.create({
       data: {
         nombre,
         descripcion,
         categoria,
+        esComun,
+        usuarioId: parseInt(usuarioId),
         ...(imagen && { imagenUrl: imagen }),
       },
     });
@@ -1096,33 +1126,106 @@ async function checkAndAssignAchievements(userId) {
   }
 }
 
-// Agregar ruta para obtener información del plan del usuario
-app.get('/api/user-plan/:userId', async (req, res) => {
-  const { userId } = req.params;
+// Endpoint para obtener información del plan de un usuario
+app.get('/api/user-plan/:usuarioId', async (req, res) => {
   try {
+    const usuarioId = parseInt(req.params.usuarioId);
+    
+    // Buscar el usuario para obtener su plan actual
     const usuario = await prisma.usuario.findUnique({
-      where: { id: parseInt(userId) },
-      select: {
-        plan: true,
-        _count: {
-          select: { rutinas: true }
-        }
-      }
+      where: { id: usuarioId }
     });
 
     if (!usuario) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
+      return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    const planLimit = PLAN_LIMITS[usuario.plan];
+    // Calcular límites según el plan
+    let limite;
+    switch (usuario.plan) {
+      case 'free':
+        limite = 5;
+        break;
+      case 'basic':
+        limite = 50;
+        break;
+      case 'premium':
+        limite = Infinity;
+        break;
+      default:
+        limite = 5; // Plan gratuito por defecto
+    }
+
+    // Contar rutinas existentes para el usuario
+    const rutinasCount = await prisma.rutina.count({
+      where: { usuarioId }
+    });
+
+    // Devolver la información
     res.json({
       plan: usuario.plan,
-      rutinasCreadas: usuario._count.rutinas,
-      limite: planLimit,
-      puedeCrearMas: usuario._count.rutinas < planLimit
+      limite,
+      rutinasCreadas: rutinasCount,
+      puedeCrearMas: rutinasCount < limite
     });
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener información del plan' });
+    console.error('Error al obtener información del plan:', error);
+    res.status(500).json({ message: 'Error al obtener información del plan' });
+  }
+});
+
+// Endpoint para actualizar el plan de un usuario
+app.post('/api/user-plan/update', async (req, res) => {
+  try {
+    const { usuarioId, newPlan } = req.body;
+    
+    if (!usuarioId || !newPlan) {
+      return res.status(400).json({ message: 'Se requiere ID de usuario y plan nuevo' });
+    }
+
+    // Validar que el plan es válido
+    const validPlans = ['free', 'basic', 'premium'];
+    if (!validPlans.includes(newPlan)) {
+      return res.status(400).json({ message: 'Plan no válido' });
+    }
+
+    // Actualizar plan en la base de datos
+    const updatedUser = await prisma.usuario.update({
+      where: { id: parseInt(usuarioId) },
+      data: { plan: newPlan }
+    });
+
+    // Calcular límites según el plan
+    let limite;
+    switch (newPlan) {
+      case 'free':
+        limite = 5;
+        break;
+      case 'basic':
+        limite = 50;
+        break;
+      case 'premium':
+        limite = Infinity;
+        break;
+      default:
+        limite = 5;
+    }
+
+    // Contar rutinas existentes
+    const rutinasCount = await prisma.rutina.count({
+      where: { usuarioId: parseInt(usuarioId) }
+    });
+
+    // Devolver la información actualizada del plan
+    res.json({
+      plan: updatedUser.plan,
+      limite,
+      rutinasCreadas: rutinasCount,
+      puedeCrearMas: rutinasCount < limite
+    });
+  } catch (error) {
+    console.error('Error al actualizar el plan del usuario:', error);
+    res.status(500).json({ message: 'Error al actualizar el plan del usuario' });
   }
 });
 

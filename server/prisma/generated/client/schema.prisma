@@ -28,15 +28,24 @@ model Usuario {
   comentarios Comentario[] // Relación con Comentario
 
   metrics Metric[] // <-- Añade esta línea para la relación inversa
+
+  ejercicios Ejercicio[] // Relación con los ejercicios personalizados
 }
 
 model Ejercicio {
-  id          Int               @id @default(autoincrement())
-  nombre      String
-  descripcion String?
-  imagenUrl   String?
-  categoria   String?
-  rutinas     RutinaEjercicio[]
+  id              Int               @id @default(autoincrement())
+  nombre          String
+  descripcion     String?
+  categoria       String?
+  imagenUrl       String?
+  esComun         Boolean           @default(true) // True para ejercicios comunes, false para personalizados
+  usuarioId       Int? // El ID del usuario que creó el ejercicio personalizado
+  usuario         Usuario?          @relation(fields: [usuarioId], references: [id])
+  rutinaEjercicio RutinaEjercicio[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([usuarioId])
 }
 
 model Rutina {

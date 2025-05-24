@@ -16,16 +16,31 @@ export default function Challenges() {
   
   // Obtener el token de autenticación y el ID del usuario
   const getCurrentUser = () => {
-    return JSON.parse(localStorage.getItem('user') || '{}');
+    // Usar las mismas claves de localStorage que en Login.jsx
+    const id = localStorage.getItem('usuarioId');
+    const token = localStorage.getItem('userToken');
+    const nombre = localStorage.getItem('userName');
+    const email = localStorage.getItem('userEmail');
+    
+    // Verificar si existe el ID y token para determinar si hay sesión
+    if (id && token) {
+      return {
+        id,
+        token,
+        nombre,
+        email
+      };
+    }
+    return null;  // Retornar null en vez de objeto vacío para facilitar validación
   };
   
   // Configuración para las peticiones a la API
   const apiConfig = () => {
-    const user = getCurrentUser();
+    const token = localStorage.getItem('userToken');
     return {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token || ''}`
+        'Authorization': `Bearer ${token || ''}`
       }
     };
   };
@@ -34,7 +49,7 @@ export default function Challenges() {
     fetchData();
   }, [activeTab]);
   
-  // Modificar la función fetchData para que use fetchActiveChallenges en lugar de testApiConnection
+  // Modificar la función fetchData para una mejor validación de sesión
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -45,24 +60,26 @@ export default function Challenges() {
       if (activeTab === 'active') {
         await fetchActiveChallenges(); 
       } else if (activeTab === 'joined') {
-        if (currentUser.id) {
+        if (currentUser?.id) {
           await fetchUserChallenges(currentUser.id);
         } else {
-          setError("Inicia sesión para ver tus retos.");
+          setError("Inicia sesión para ver tus retos. Parece que tu sesión ha expirado.");
           setUserChallenges([]);
         }
       } else if (activeTab === 'completed') {
-        if (currentUser.id) {
+        if (currentUser?.id) {
           await fetchCompletedChallenges(currentUser.id);
         } else {
-          setError("Inicia sesión para ver tus retos completados.");
+          setError("Inicia sesión para ver tus retos completados. Parece que tu sesión ha expirado.");
           setChallenges([]); // Asegúrate de limpiar los retos si no hay usuario
         }
       }
       
       // Cargar logros del usuario en cualquier caso si el usuario está autenticado
-      if (currentUser.id) { // Usar currentUser.id en lugar de currentUser.token para la condición
-        await fetchUserAchievements(); // Esta ruta aún es simulada en el backend
+      if (currentUser?.id) { // Usar el operador de encadenamiento opcional
+        await fetchUserAchievements();
+      } else {
+        console.log("No hay sesión activa, no se cargarán logros");
       }
     } catch (err) {
       console.error('Error al cargar datos:', err);
@@ -72,7 +89,7 @@ export default function Challenges() {
     }
   };
   
-  // Modificar la función fetchActiveChallenges para incluir mejor manejo de errores
+  // Modificar la función fetchActiveChallenges para manejar mejor la sesión
   const fetchActiveChallenges = async () => {
     try {
       console.log('Intentando obtener retos activos...');
@@ -100,7 +117,7 @@ export default function Challenges() {
       // También necesitamos los retos del usuario para filtrar los que ya participa
       try {
         const currentUser = getCurrentUser();
-        if (currentUser.id) {
+        if (currentUser?.id) { // Usar validación más robusta
           const userResponse = await axios.get(`http://localhost:5000/api/challenges/user/${currentUser.id}`, apiConfig());
           console.log('Retos del usuario:', userResponse.data);
           setUserChallenges(userResponse.data);
@@ -108,7 +125,7 @@ export default function Challenges() {
           setUserChallenges([]); // No hay usuario, no hay retos de usuario
         }
       } catch (userError) {
-        console.warn('Error al obtener retos del usuario (esto puede ser normal si no está autenticado):', userError.message);
+        console.warn('Error al obtener retos del usuario:', userError.message);
         setUserChallenges([]);
       }
     } catch (error) {
@@ -210,7 +227,7 @@ export default function Challenges() {
   const fetchUserAchievements = async () => {
     try {
       const currentUser = getCurrentUser();
-      if (!currentUser.id) {
+      if (!currentUser?.id) {
         setUserAchievements([]);
         return;
       }
@@ -222,12 +239,12 @@ export default function Challenges() {
     }
   };
   
-  // Actualizar la función joinChallenge para manejar correctamente la respuesta
+  // Actualizar la función joinChallenge para manejar correctamente la sesión
   const joinChallenge = async (challengeId) => {
     try {
       const currentUser = getCurrentUser();
-      if (!currentUser.id) {
-        alert("Debes iniciar sesión para unirte a un reto.");
+      if (!currentUser?.id) { // Usar validación más robusta
+        alert("Debes iniciar sesión para unirte a un reto. Tu sesión puede haber expirado.");
         return;
       }
 
@@ -275,7 +292,7 @@ export default function Challenges() {
   const updateProgress = async (challengeId, newProgress) => {
     try {
       const currentUser = getCurrentUser();
-      if (!currentUser.id) {
+      if (!currentUser?.id) {
         alert("Debes iniciar sesión para actualizar el progreso.");
         return;
       }

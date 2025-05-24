@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import SearchableSelect from './SearchableSelect';
 
 // Configurar la URL base para todas las solicitudes en este componente
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -11,14 +12,17 @@ const EditRutina = () => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [ejercicios, setEjercicios] = useState([]);
-  const [ejerciciosSeleccionados, setEjerciciosSeleccionados] = useState([]);
   const [ejercicioSeleccionado, setEjercicioSeleccionado] = useState('');
+  const [ejerciciosSeleccionados, setEjerciciosSeleccionados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // Añadimos estados para controlar el modal de ejercicio ya existente
   const [showEjercicioExistenteModal, setShowEjercicioExistenteModal] = useState(false);
   const [ejercicioExistente, setEjercicioExistente] = useState(null);
-
+  
+  // Nuevos estados para filtro y búsqueda
+  const [filtroEjercicios, setFiltroEjercicios] = useState('todos'); // 'todos', 'comunes', 'personalizados'
+  const [searchTerm] = useState('');  // Search term for filtering exercises
+  
   // Utiliza una sola función fetchRutina para obtener la rutina específica
   useEffect(() => {
     const fetchRutina = async () => {
@@ -92,13 +96,12 @@ const EditRutina = () => {
 
     const fetchEjercicios = async () => {
       try {
-        const response = await axios.get('/api/ejercicios');
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await axios.get(`/api/ejercicios?usuarioId=${usuarioId}`);
         setEjercicios(response.data);
-      } catch (err) {
-        console.error('Error al obtener los ejercicios:', err);
-        setError(`Error al cargar los ejercicios: ${err.message}`);
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error('Error al obtener los ejercicios:', error);
+        setError('Error al cargar los ejercicios');
       }
     };
 
@@ -255,6 +258,39 @@ const EditRutina = () => {
     );
   }
 
+  // Función para obtener ejercicios
+  const ejerciciosFiltrados = () => {
+    let resultado = [];
+    
+    // Primero filtrar por tipo de ejercicio
+    if (filtroEjercicios === 'comunes') {
+      resultado = ejercicios.filter(e => e.esComun);
+    } else if (filtroEjercicios === 'personalizados') {
+      resultado = ejercicios.filter(e => !e.esComun);
+    } else {
+      resultado = [...ejercicios];
+    }
+    
+    // Luego filtrar por término de búsqueda si existe
+    if (searchTerm.trim() !== '') {
+      const termLower = searchTerm.toLowerCase().trim();
+      resultado = resultado.filter(e => 
+        e.nombre.toLowerCase().includes(termLower) || 
+        (e.categoria && e.categoria.toLowerCase().includes(termLower)) ||
+        (e.descripcion && e.descripcion.toLowerCase().includes(termLower))
+      );
+    }
+    
+    return resultado;
+  };
+  
+  // Prepare options for the SearchableSelect component if you're using it
+  const ejercicioOptions = ejerciciosFiltrados().map(ejercicio => ({
+    value: ejercicio.id.toString(),
+    label: `${ejercicio.nombre}${ejercicio.categoria ? ` - ${ejercicio.categoria}` : ''}`,
+    customProp: !ejercicio.esComun ? 'Personalizado' : null
+  }));
+  
   // Renderizar el formulario de edición
   return (
     <div className="relative bg-gray-900 overflow-hidden min-h-screen pb-12">
@@ -353,31 +389,59 @@ const EditRutina = () => {
 
               <div className="bg-gray-700 p-5 rounded-lg shadow-inner mb-6">
                 <label className="block text-white mb-2 font-medium">Añadir Ejercicio</label>
-                <div className="flex items-center space-x-4">
-                  <select
-                    value={ejercicioSeleccionado}
-                    onChange={(e) => setEjercicioSeleccionado(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:outline-none"
+                
+                {/* Filtros para ejercicios */}
+                <div className="flex mb-4 bg-gray-700 p-2 rounded-lg">
+                  <button 
+                    type="button"
+                    onClick={() => setFiltroEjercicios('todos')} 
+                    className={`px-4 py-2 mx-1 rounded-md ${filtroEjercicios === 'todos' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}
                   >
-                    <option value="">Selecciona un ejercicio</option>
-                    {ejercicios.map((ejercicio) => (
-                      <option key={ejercicio.id} value={ejercicio.id}>
-                        {ejercicio.nombre}
-                      </option>
-                    ))}
-                  </select>
+                    Todos
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setFiltroEjercicios('comunes')} 
+                    className={`px-4 py-2 mx-1 rounded-md ${filtroEjercicios === 'comunes' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}
+                  >
+                    Ejercicios comunes
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setFiltroEjercicios('personalizados')} 
+                    className={`px-4 py-2 mx-1 rounded-md ${filtroEjercicios === 'personalizados' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}
+                  >
+                    Mis ejercicios
+                  </button>
+                </div>
+                
+                {/* SearchableSelect component */}
+                <div className="flex space-x-4">
+                  <div className="flex-grow">
+                    <SearchableSelect 
+                      options={ejercicioOptions}
+                      value={ejercicioSeleccionado}
+                      onChange={setEjercicioSeleccionado}
+                      placeholder="Buscar o seleccionar un ejercicio..."
+                      className="w-full"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={handleAddEjercicio}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
                     disabled={!ejercicioSeleccionado}
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-3 rounded-md transition-colors shadow-md flex items-center"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Agregar
+                    Añadir
                   </button>
                 </div>
+                
+                {/* Message when no results */}
+                {ejerciciosFiltrados().length === 0 && (
+                  <div className="mt-3 text-center text-gray-400">
+                    No se encontraron ejercicios con los filtros aplicados
+                  </div>
+                )}
               </div>
 
               {ejerciciosSeleccionados.length > 0 ? (
@@ -461,7 +525,7 @@ const EditRutina = () => {
             
             <div className="flex justify-between items-center pt-4 border-t border-gray-600">
               <button
-                type="button"
+                type="button"  // Asegúrate que sea type="button"
                 onClick={() => navigate('/rutinas')}
                 className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-3 rounded-md transition-colors flex items-center shadow-md"
               >
@@ -471,7 +535,7 @@ const EditRutina = () => {
                 Cancelar
               </button>
               <button
-                type="submit"
+                type="submit"  // Este sí debe ser type="submit"
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-md transition-colors shadow-md flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

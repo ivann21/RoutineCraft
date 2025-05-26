@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const app = express();
-const port = 5000;
+// Usar el puerto proporcionado por el entorno (Render) o el 5000 como fallback
+const port = process.env.PORT || 5000;
 const { PrismaClient } = require('./prisma/generated/client');
 const prisma = new PrismaClient();
 const multer = require("multer");
@@ -30,7 +31,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Middleware
-app.use(cors());
+// Configuración de CORS para permitir solicitudes desde cualquier origen (ajustar en producción)
+app.use(cors({
+  origin: process.env.CLIENT_URL || '*', // Permite solicitudes desde la URL del cliente o cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Servir archivos estáticos desde la carpeta 'uploads'
@@ -1367,5 +1373,6 @@ app.delete('/api/users/:id', async (req, res) => {
 
 // Iniciar servidor
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`Servidor corriendo en el puerto ${port}`);
+  console.log(`URL de la aplicación: ${process.env.SERVER_URL || `http://localhost:${port}`}`);
 });

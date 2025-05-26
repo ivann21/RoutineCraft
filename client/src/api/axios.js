@@ -3,7 +3,7 @@ import axios from 'axios';
 // Determinar la URL base según el entorno
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? 'http://localhost:5000' 
-  : 'https://routinecraft-api.onrender.com';
+  : 'https://routinecraft.onrender.com'; // URL correcta del servidor en Render
 
 console.log('API URL configurada:', API_URL);
 

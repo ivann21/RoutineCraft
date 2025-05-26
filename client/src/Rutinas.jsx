@@ -4,7 +4,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import RestTimer from './components/RestTimer';
 
-axios.defaults.baseURL = 'http://localhost:5000';
+// Determinar la URL base según el entorno
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? 'http://localhost:5000' 
+  : 'https://routinecraft-api.onrender.com';
+
+// Configurar axios con la URL adecuada
+axios.defaults.baseURL = API_URL;
 
 const Rutinas = () => {
   const navigate = useNavigate();

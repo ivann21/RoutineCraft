@@ -33,7 +33,12 @@ const upload = multer({ storage });
 // Middleware
 // Configuración de CORS para permitir solicitudes desde cualquier origen (ajustar en producción)
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*', // Permite solicitudes desde la URL del cliente o cualquier origen
+  origin: [
+    process.env.CLIENT_URL || '*',
+    'https://routine-craft.vercel.app',
+    'https://routinecraft.vercel.app',
+    /\.vercel\.app$/  // Permite cualquier subdominio de vercel.app
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

@@ -5,11 +5,12 @@
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "rewrites": [
+    { "source": "/RoutineCraft/(.*)", "destination": "/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
-      "source": "/(.*).(js|css|woff2|png|jpg|jpeg|svg)",
+      "source": "/(.*)\\.(js|css|woff2|png|jpg|jpeg|svg)",
       "headers": [
         {
           "key": "Cache-Control",

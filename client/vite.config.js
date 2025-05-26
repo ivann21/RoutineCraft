@@ -7,6 +7,7 @@ const API_URL = 'https://routinecraft-api.onrender.com';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/', // Asegura que la base sea la raíz
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020', // Asegura compatibilidad
@@ -21,7 +22,7 @@ export default defineConfig({
     // Configuración para el build
     outDir: 'dist',
     assetsDir: 'assets',
-    // Asegurar que los nombres de archivos sean consistentes
+    // Asegurar que las rutas sean relativas a la raíz
     rollupOptions: {
       output: {
         manualChunks: undefined,

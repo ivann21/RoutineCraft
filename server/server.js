@@ -1263,6 +1263,108 @@ app.post('/api/metrics', async (req, res) => {
   }
 });
 
+// Ruta para eliminar una cuenta de usuario
+app.delete('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const userId = parseInt(id);
+
+  try {
+    // Verificar que el usuario existe
+    const user = await prisma.usuario.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Guardar la URL de la foto antes de eliminar al usuario
+    const fotoUrl = user.fotoUrl;
+
+    // Eliminar todas las entidades relacionadas - esto es importante para evitar errores de restricción de clave foránea
+    
+    // 1. Eliminar las contrataciones del usuario
+    await prisma.contratacion.deleteMany({
+      where: { usuarioId: userId }
+    });
+
+    // 2. Eliminar los logros del usuario
+    await prisma.userAchievement.deleteMany({
+      where: { userId: userId }
+    });
+
+    // 3. Eliminar los retos del usuario
+    await prisma.userChallenge.deleteMany({
+      where: { userId: userId }
+    });
+
+    // 4. Eliminar las métricas del usuario
+    await prisma.metric.deleteMany({
+      where: { userId: userId }
+    });
+
+    // 5. Eliminar los eventos de calendario del usuario
+    await prisma.calendario.deleteMany({
+      where: { usuarioId: userId }
+    });
+
+    // 6. Eliminar los comentarios del usuario
+    await prisma.comentario.deleteMany({
+      where: { usuarioId: userId }
+    });
+
+    // 7. Eliminar las rutinas del usuario (primero eliminar las relaciones rutinaEjercicio)
+    const rutinas = await prisma.rutina.findMany({
+      where: { usuarioId: userId }
+    });
+
+    for (const rutina of rutinas) {
+      await prisma.rutinaEjercicio.deleteMany({
+        where: { rutinaId: rutina.id }
+      });
+    }
+    
+    await prisma.rutina.deleteMany({
+      where: { usuarioId: userId }
+    });
+
+    // 8. Eliminar los ejercicios personalizados del usuario
+    await prisma.ejercicio.deleteMany({
+      where: { usuarioId: userId, esComun: false }
+    });
+
+    // 9. Finalmente, eliminar el usuario
+    await prisma.usuario.delete({
+      where: { id: userId }
+    });
+    
+    // 10. Eliminar la foto de perfil del sistema de archivos si existe
+    if (fotoUrl) {
+      try {
+        // Convertir la URL relativa a una ruta absoluta del sistema de archivos
+        const filePath = path.join(__dirname, fotoUrl.replace(/^\/uploads/, 'uploads'));
+        
+        // Verificar si el archivo existe
+        if (fs.existsSync(filePath)) {
+          // Eliminar el archivo
+          fs.unlinkSync(filePath);
+          console.log(`Foto de perfil eliminada: ${filePath}`);
+        } else {
+          console.log(`No se encontró la foto de perfil: ${filePath}`);
+        }
+      } catch (fileError) {
+        // Registrar el error pero no fallar la operación completa
+        console.error('Error al eliminar la foto de perfil:', fileError);
+      }
+    }
+
+    res.status(200).json({ message: 'Cuenta eliminada con éxito' });
+  } catch (error) {
+    console.error('Error al eliminar cuenta de usuario:', error);
+    res.status(500).json({ error: 'Error al eliminar la cuenta' });
+  }
+});
+
 // Iniciar servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);

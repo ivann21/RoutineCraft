@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-// Remove useNavigate if you're not using it
+import { useState } from "react";
 import axios from "axios";
 
 export default function Login({ setUser }) {
@@ -9,10 +8,6 @@ export default function Login({ setUser }) {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // Remove the unused navigate variable
-  // If you need navigation in the future, you can uncomment this line
-  // const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,50 +23,22 @@ export default function Login({ setUser }) {
       const response = await axios.post("/login", formData);
       const { token, user } = response.data;
 
-      // Process the profile picture URL first for better visibility in debugging
-      let profilePicUrl = null;
-      if (user.fotoUrl) {
-        // Ensure the URL is complete
-        profilePicUrl = user.fotoUrl.startsWith('http') 
-          ? user.fotoUrl 
-          : `http://localhost:5000${user.fotoUrl.startsWith('/') ? '' : '/'}${user.fotoUrl}`;
-          
-        console.log('Setting profile pic URL:', profilePicUrl);
-        
-        // Store it in localStorage immediately for the Navbar
-        localStorage.setItem("userProfilePic", profilePicUrl);
-        
-        // Update the user object with the full URL for consistency
-        user.fullPhotoUrl = profilePicUrl;
-      }
-
-      // Save session data to localStorage
+      // Save basic user data to localStorage
       localStorage.setItem("userToken", token);
       localStorage.setItem("usuarioId", user.id);
       localStorage.setItem("userName", user.nombre);
       localStorage.setItem("userEmail", user.email);
       
-      // Save the complete updated user object
+      // Save the complete user object
       localStorage.setItem("user", JSON.stringify(user));
 
       // Update app state directly
       if (setUser) {
-        // Add the profile picture directly to the user object
-        const userWithPhoto = {
-          ...user,
-          profilePic: profilePicUrl // Add the photo URL directly to the user object
-        };
-        setUser(userWithPhoto);
+        setUser(user);
       }
       
-      // Standard events after
-      window.dispatchEvent(new Event('storage'));
-      window.dispatchEvent(new Event('userLogin'));
-      
       // Navigate to routines page
-      setTimeout(() => {
-        window.location.href = '/rutinas';
-      }, 100);
+      window.location.href = '/rutinas';
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setError(error.response?.data?.error || "Error al iniciar sesión");

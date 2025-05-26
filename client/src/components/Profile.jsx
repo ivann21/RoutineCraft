@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import defaultProfilePic from "/default-profile.png?url";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -9,6 +11,9 @@ export default function Profile() {
   const [contrataciones, setContrataciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -283,6 +288,49 @@ export default function Profile() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      setDeleteError(null);
+      const userId = localStorage.getItem("usuarioId");
+      if (!userId) {
+        throw new Error("No se encontró ID de usuario");
+      }
+      
+      console.log("Enviando solicitud para eliminar usuario:", userId);
+      
+      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Error ${response.status}: ${errorData.error || response.statusText}`);
+      }
+
+      // Clear all local storage
+      localStorage.clear();
+      
+      // Show successful deletion message
+      const successMessage = document.createElement('div');
+      successMessage.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50';
+      successMessage.textContent = 'Cuenta eliminada correctamente';
+      document.body.appendChild(successMessage);
+      
+      // Redirect to home after a short delay
+      setTimeout(() => {
+        document.body.removeChild(successMessage);
+        navigate('/');
+        // Force a page reload to ensure all app state is cleared
+        window.location.reload();
+      }, 2000);
+      
+    } catch (error) {
+      console.error("Error al eliminar la cuenta:", error);
+      setDeleteError(error.message);
+      setShowDeleteModal(false); // Close modal to show error message
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-900">
@@ -320,6 +368,15 @@ export default function Profile() {
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
       <div className="bg-gray-800 p-8 rounded shadow-md w-full max-w-md border border-gray-700">
         <h2 className="text-2xl font-bold mb-6 text-white">Perfil del Usuario</h2>
+        
+        {/* Show delete error if exists */}
+        {deleteError && (
+          <div className="mb-4 p-3 bg-red-900 border border-red-800 rounded text-white">
+            <p className="font-bold">Error al eliminar cuenta:</p>
+            <p>{deleteError}</p>
+          </div>
+        )}
+        
         <div className="flex justify-center mb-6">
           <img
             src={formData.foto || defaultProfilePic}
@@ -398,9 +455,17 @@ export default function Profile() {
             </p>
             <button
               onClick={() => setEditing(true)}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-3"
             >
               Editar Perfil
+            </button>
+            
+            {/* Botón para eliminar cuenta */}
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Eliminar Cuenta
             </button>
           </>
         )}
@@ -447,6 +512,14 @@ export default function Profile() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* Modal de confirmación para eliminar cuenta */}
+        {showDeleteModal && (
+          <DeleteConfirmationModal
+            onConfirm={handleDeleteAccount}
+            onCancel={() => setShowDeleteModal(false)}
+          />
         )}
       </div>
     </div>

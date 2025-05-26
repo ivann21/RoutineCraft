@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import defaultProfilePic from "/default-profile.png?url";
 
 export default function Navbar({ user, setUser }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [profilePic, setProfilePic] = useState(defaultProfilePic);
   const userMenuRef = useRef(null);
   const navigate = useNavigate();
 
@@ -21,16 +19,8 @@ export default function Navbar({ user, setUser }) {
   ];
 
   const handleLogout = () => {
-    // Limpiar completamente el almacenamiento local
     localStorage.clear();
-    
-    // Notificar a la aplicación que el usuario se ha desconectado
-    window.dispatchEvent(new Event('storage'));
-    
-    // Actualizar estado de usuario (reemplaza las variables isLoggedIn y userName)
     setUser(null);
-    
-    // Redireccionar al inicio
     navigate('/');
   };
 
@@ -48,218 +38,47 @@ export default function Navbar({ user, setUser }) {
     }
   }, [setUser, user]);
 
-  // Actualizar método de carga de foto de perfil
+  // Gestión de eventos de almacenamiento simplificada
   useEffect(() => {
-    const loadUserProfile = () => {
-      // Intentar obtener la foto desde múltiples fuentes
-      const userId = localStorage.getItem("usuarioId");
-      
-      // Si tenemos el ID del usuario pero no la URL de la foto
-      if (userId) {
-        // Intentar obtener directamente del localStorage
-        const storedPic = localStorage.getItem("userProfilePic");
-        if (storedPic) {
-          setProfilePic(storedPic);
-          return;
-        }
-
-        // Si no hay foto específica, intentar obtener de user
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          try {
-            const parsedUser = JSON.parse(storedUser);
-            if (parsedUser.fotoUrl) {
-              const picUrl = parsedUser.fotoUrl.startsWith("http") 
-                ? parsedUser.fotoUrl 
-                : `http://localhost:5000${parsedUser.fotoUrl}`;
-              setProfilePic(picUrl);
-              return;
-            }
-          } catch (error) {
-            console.error("Error parsing user from localStorage:", error);
-          }
-        }
-
-        // Como último recurso, verificar si user prop tiene foto
-        if (user?.fotoUrl) {
-          const picUrl = user.fotoUrl.startsWith("http")
-            ? user.fotoUrl
-            : `http://localhost:5000${user.fotoUrl}`;
-          setProfilePic(picUrl);
-          return;
-        }
-      } else {
-        // No hay usuario logueado, usar imagen por defecto
-        setProfilePic(defaultProfilePic);
-      }
-    };
-
-    // Cargar al inicializar
-    loadUserProfile();
-    
-    // También recargar cuando cambie el usuario
-  }, [user]);
-
-  // Mejorar la gestión de eventos de almacenamiento
-  useEffect(() => {
-    const handleStorageChange = (event) => {
-      console.log("Storage event detected:", event?.type || "unknown event");
-      
-      // Verificar si el usuario ha cerrado sesión
+    const handleStorageChange = () => {
       const userId = localStorage.getItem('usuarioId');
       
       if (!userId) {
         setUser(null);
-        setProfilePic(defaultProfilePic);
         return;
       }
       
-      // Si hay usuario pero no tenemos el objeto user actual, intentar reconstruirlo
-      if (userId) {
-        // Construir objeto básico de usuario desde localStorage
+      if (userId && !user) {
         const userName = localStorage.getItem('userName');
         const userEmail = localStorage.getItem('userEmail');
         
-        setUser(prevUser => {
-          if (!prevUser) {
-            return {
-              id: userId,
-              nombre: userName,
-              email: userEmail
-            };
-          }
-          return prevUser;
+        setUser({
+          id: userId,
+          nombre: userName,
+          email: userEmail
         });
-        
-        // SIEMPRE intentar actualizar la foto de perfil al detectar un cambio
-        const storedPic = localStorage.getItem("userProfilePic");
-        if (storedPic) {
-          console.log("Found profile pic in localStorage:", storedPic);
-          setProfilePic(storedPic);
-        } else {
-          // Fallback: obtener del objeto user completo
-          const storedUser = localStorage.getItem("user");
-          if (storedUser) {
-            try {
-              const parsedUser = JSON.parse(storedUser);
-              if (parsedUser.fotoUrl || parsedUser.fullPhotoUrl) {
-                const picUrl = parsedUser.fullPhotoUrl || (parsedUser.fotoUrl?.startsWith("http") 
-                  ? parsedUser.fotoUrl 
-                  : `http://localhost:5000${parsedUser.fotoUrl}`);
-                
-                // Guardar en localStorage para futuras referencias
-                localStorage.setItem("userProfilePic", picUrl);
-                setProfilePic(picUrl);
-                console.log("Updated profile pic from user object:", picUrl);
-              }
-            } catch (e) {
-              console.error("Error parsing user for profile pic:", e);
-            }
-          }
-        }
       }
     };
     
-    // Manejar evento específico para actualizar la foto directamente
-    const handlePhotoUpdate = (event) => {
-      console.log("Photo update event received", event.detail);
-      if (event.detail?.photoUrl && 
-          event.detail.photoUrl !== 'null' && 
-          event.detail.photoUrl !== 'undefined') {
-        const photoUrl = event.detail.photoUrl;
-        console.log("Setting profile pic from event:", photoUrl);
-        setProfilePic(photoUrl);
-        
-        // Always update localStorage for consistency
-        localStorage.setItem("userProfilePic", photoUrl);
-      } else {
-        console.log("Received invalid photo URL in event, ignoring");
-      }
-    };
-    
-    // New handler specifically for the force update event
-    const handleForceUpdate = (event) => {
-      console.log("FORCE UPDATE event received for profile pic", event.detail);
-      if (event.detail?.photoUrl && 
-          event.detail.photoUrl !== 'null' && 
-          event.detail.photoUrl !== 'undefined') {
-        // Update the profile pic immediately
-        setProfilePic(event.detail.photoUrl);
-      } else {
-        console.log("Received invalid photo URL in force update event, ignoring");
-      }
-    };
-    
-    // Escuchar por eventos de storage y también por eventos personalizados
     window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('userLogin', handleStorageChange);
-    window.addEventListener('userPhotoUpdate', handlePhotoUpdate);
-    window.addEventListener('forceProfileUpdate', handleForceUpdate);
-    
-    // Ejecutar una vez al inicio para asegurarse de tener la última foto
-    handleStorageChange({type: 'init'});
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('userLogin', handleStorageChange);
-      window.removeEventListener('userPhotoUpdate', handlePhotoUpdate);
-      window.removeEventListener('forceProfileUpdate', handleForceUpdate);
     };
-  }, [setUser]);
-
-  // Añadir un efecto adicional específico para actualizar la foto cuando cambia el usuario
-  useEffect(() => {
-    // Si el usuario existe, verificar si tiene foto
-    if (user) {
-      // Primero intentar desde localStorage
-      const storedPic = localStorage.getItem("userProfilePic");
-      if (storedPic) {
-        setProfilePic(storedPic);
-      } 
-      // Luego verificar si el objeto user tiene foto
-      else if (user.fotoUrl || user.fullPhotoUrl) {
-        const picUrl = user.fullPhotoUrl || (user.fotoUrl?.startsWith("http") 
-          ? user.fotoUrl 
-          : `http://localhost:5000${user.fotoUrl}`);
-        
-        // Guardar en localStorage para futuras referencias
-        localStorage.setItem("userProfilePic", picUrl);
-        setProfilePic(picUrl);
-      }
-    } else {
-      setProfilePic(defaultProfilePic);
-    }
-  }, [user]);
+  }, [setUser, user]);
 
   // Cerrar menú de usuario al hacer clic fuera
   useEffect(() => {
-    // Creamos una función específica para manejar los clics en los enlaces del menú
-    const handleMenuItemClick = (e) => {
-      // Si el clic fue en un elemento del menú, permitimos la navegación
-      if (e.target.closest('.dropdown-menu-item')) {
-        // Cerramos el menú después de un pequeño delay para permitir que la navegación ocurra primero
-        setTimeout(() => {
-          setUserMenuOpen(false);
-        }, 100);
-      }
-    };
-
     const handleClickOutside = (event) => {
-      // Solo cerramos el menú si el clic fue fuera del menú y su botón
-      if (
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target)
-      ) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setUserMenuOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("click", handleMenuItemClick);
     
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("click", handleMenuItemClick);
     };
   }, []);
 
@@ -293,18 +112,11 @@ export default function Navbar({ user, setUser }) {
             {user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
-                  className="flex items-center text-gray-300 hover:text-white cursor-pointer px-3 py-2 rounded-md"
+                  className="flex items-center text-gray-300 hover:text-white cursor-pointer px-3 py-2 rounded-md hover:bg-gray-700"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   aria-expanded={userMenuOpen}
                 >
-                  <span className="mr-2">{user.nombre}</span>
-                  <div className="h-8 w-8 rounded-full bg-gray-600 flex items-center justify-center">
-                    <img
-                      src={profilePic}
-                      alt="Perfil"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </div>
+                  <span className="font-medium">{user.nombre}</span>
                   <svg
                     className={`w-4 h-4 ml-1 transform transition-transform ${
                       userMenuOpen ? "rotate-180" : ""
@@ -321,7 +133,7 @@ export default function Navbar({ user, setUser }) {
                     />
                   </svg>
                 </button>
-                {/* Dropdown menu - usando Portal para renderizarlo fuera del flow normal */}
+                {/* Dropdown menu */}
                 {userMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg overflow-hidden z-50 dropdown-menu">
                     <a
@@ -426,15 +238,6 @@ export default function Navbar({ user, setUser }) {
           {user ? (
             <>
               <div className="flex items-center px-5">
-                <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center">
-                    <img
-                      src={profilePic}
-                      alt="Perfil"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </div>
-                </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-white">
                     {user.nombre}

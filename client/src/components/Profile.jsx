@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from '../api/axios'; // Importar la instancia de axios configurada
 import defaultProfilePic from "/default-profile.png?url";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+
+// Obtener la URL base correcta
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? 'http://localhost:5000' 
+  : 'https://routinecraft.onrender.com';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -47,17 +53,17 @@ export default function Profile() {
           foto: defaultProfilePic
         });
 
-        // Cargar el perfil completo desde la API
-        const response = await fetch(`http://localhost:5000/api/profile/${userId}`);
-        if (response.ok) {
-          const userData = await response.json();
+        // Cargar el perfil completo desde la API usando axios
+        try {
+          const response = await axios.get(`/api/profile/${userId}`);
+          const userData = response.data;
           setUser(userData);
           
           // Procesar la URL de la foto y guardarla en localStorage para el Navbar
           if (userData.fotoUrl) {
             const fullPhotoUrl = userData.fotoUrl.startsWith('http') 
               ? userData.fotoUrl 
-              : `http://localhost:5000${userData.fotoUrl}`;
+              : `${API_URL}${userData.fotoUrl}`;
               
             // Guardar la URL de la foto para el Navbar
             localStorage.setItem("userProfilePic", fullPhotoUrl);
@@ -89,9 +95,9 @@ export default function Profile() {
             fetchPlanInfo(userId),
             fetchContrataciones(userId)
           ]);
-          
-        } else {
-          throw new Error(`Error al cargar el perfil: ${response.status}`);
+        } catch (error) {
+          console.error("Error al cargar el perfil completo:", error);
+          // Continuamos con los datos básicos
         }
       } catch (error) {
         console.error("Error al cargar datos del usuario:", error);
@@ -103,13 +109,8 @@ export default function Profile() {
 
     const fetchPlanInfo = async (userId) => {
       try {
-        const response = await fetch(`http://localhost:5000/api/user-plan/${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setPlanInfo(data);
-        } else {
-          console.error('Error en la respuesta del plan:', response.status);
-        }
+        const response = await axios.get(`/api/user-plan/${userId}`);
+        setPlanInfo(response.data);
       } catch (error) {
         console.error('Error al obtener información del plan:', error);
       }
@@ -117,13 +118,8 @@ export default function Profile() {
 
     const fetchContrataciones = async (userId) => {
       try {
-        const response = await fetch(`http://localhost:5000/api/contrataciones/usuario/${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setContrataciones(data);
-        } else {
-          console.error('Error en la respuesta de contrataciones:', response.status);
-        }
+        const response = await axios.get(`/api/contrataciones/usuario/${userId}`);
+        setContrataciones(response.data);
       } catch (error) {
         console.error('Error al obtener contrataciones:', error);
       }
@@ -165,27 +161,23 @@ export default function Profile() {
       formDataToSend.append("userId", user.id); // Agregar el ID del usuario al FormData
 
       try {
-        const response = await fetch("http://localhost:5000/upload-profile-pic", {
-          method: "POST",
-          body: formDataToSend,
+        const response = await axios.post("/upload-profile-pic", formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          updatedUser.foto = data.imageUrl; // Actualizar la URL de la foto en el usuario
-          
-          // Almacenar la URL de la foto en un ítem específico de localStorage para el Navbar
-          const fullPhotoUrl = data.imageUrl.startsWith('http') 
-            ? data.imageUrl 
-            : `http://localhost:5000${data.imageUrl}`;
-          localStorage.setItem("userProfilePic", fullPhotoUrl);
-        } else {
-          alert("Error al subir la foto de perfil.");
-          return;
-        }
+        const data = response.data;
+        updatedUser.foto = data.imageUrl; // Actualizar la URL de la foto en el usuario
+        
+        // Almacenar la URL de la foto en un ítem específico de localStorage para el Navbar
+        const fullPhotoUrl = data.imageUrl.startsWith('http') 
+          ? data.imageUrl 
+          : `${API_URL}${data.imageUrl}`;
+        localStorage.setItem("userProfilePic", fullPhotoUrl);
       } catch (error) {
         console.error("Error al subir la foto de perfil:", error);
-        alert("Error en el servidor.");
+        alert("Error al subir la foto de perfil.");
         return;
       }
     }
@@ -202,7 +194,7 @@ export default function Profile() {
       if (updatedUser.foto) {
         const fullPhotoUrl = updatedUser.foto.startsWith('http') 
           ? updatedUser.foto 
-          : `http://localhost:5000${updatedUser.foto}`;
+          : `${API_URL}${updatedUser.foto}`; // Usar API_URL en lugar de localhost:5000
         localStorage.setItem("userProfilePic", fullPhotoUrl);
       }
       
@@ -241,7 +233,7 @@ export default function Profile() {
         try {
           const photoUrl = updatedUser.foto.startsWith('http') 
             ? updatedUser.foto 
-            : `http://localhost:5000${updatedUser.foto}`;
+            : `${API_URL}${updatedUser.foto}`; // Usar API_URL en lugar de localhost:5000
           localStorage.setItem("userProfilePic", photoUrl);
         } catch (e) {
           console.error("Error guardando la foto:", e);
@@ -298,14 +290,12 @@ export default function Profile() {
       
       console.log("Enviando solicitud para eliminar usuario:", userId);
       
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
-        method: "DELETE",
+      // Modificar la llamada de API para asegurar que funcione correctamente
+      await axios({
+        method: 'DELETE',
+        url: `/api/users/${userId}`,
+        timeout: 15000 // Aumentar timeout para operaciones críticas
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Error ${response.status}: ${errorData.error || response.statusText}`);
-      }
 
       // Clear all local storage
       localStorage.clear();

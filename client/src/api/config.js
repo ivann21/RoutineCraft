@@ -1,16 +1,21 @@
 // Archivo de configuración para la API
 
-// Usar la URL de la API de producción en Render si está disponible, de lo contrario usar desarrollo local
-const API_URL = import.meta.env.VITE_API_URL || 'https://routinecraft.onrender.com';
+// Determinar si estamos en desarrollo o producción
+const isDevelopment = import.meta.env.DEV;
 
-// Configuración para Axios
-export const API_CONFIG = {
+// Configurar la URL base de la API según el entorno
+const API_URL = isDevelopment 
+  ? 'http://localhost:5000' 
+  : 'https://routinecraft-api.onrender.com';
+
+// Exportar la configuración para Axios
+export const apiConfig = {
   baseURL: API_URL,
-  timeout: 10000, // 10 segundos de timeout
   headers: {
-    'Content-Type': 'application/json',
-  }
+    'Content-Type': 'application/json'
+  },
+  withCredentials: true // Importante para enviar cookies en solicitudes cross-origin
 };
 
-// URL de la API para uso directo en componentes
+// Exportar la URL base para uso directo
 export const getApiUrl = () => API_URL;

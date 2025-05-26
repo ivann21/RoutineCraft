@@ -1,20 +1,29 @@
 import axios from 'axios';
-import { API_CONFIG } from './config';
+import { apiConfig } from './config';
 
 // Crear instancia de axios con la configuración
-const api = axios.create(API_CONFIG);
+const api = axios.create(apiConfig);
 
-// Interceptores y otras configuraciones aquí
-
-// Exportar funciones de API
-export const registerUser = async (userData) => {
+// Función para iniciar sesión
+export const login = async (credentials) => {
   try {
-    const response = await api.post('/register', userData);
+    const response = await api.post('/login', credentials);
     return response.data;
   } catch (error) {
-    console.error("Error al registrar:", error);
+    console.error('Error al iniciar sesión:', error);
     throw error;
   }
 };
 
-// ... resto de funciones de API
+// Función para registrar un usuario
+export const register = async (userData) => {
+  try {
+    const response = await api.post('/register', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al registrar:', error);
+    throw error;
+  }
+};
+
+// ...resto de funciones de API

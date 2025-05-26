@@ -37,10 +37,12 @@ app.use(cors({
     process.env.CLIENT_URL || '*',
     'https://routine-craft.vercel.app',
     'https://routinecraft.vercel.app',
+    'http://localhost:5173', // Añadir el origen de desarrollo local
     /\.vercel\.app$/  // Permite cualquier subdominio de vercel.app
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 app.use(express.json());
 

@@ -1,16 +1,8 @@
 // src/Rutinas.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from './api/axios'; // Importar la instancia configurada
 import { useNavigate } from 'react-router-dom';
 import RestTimer from './components/RestTimer';
-
-// Determinar la URL base según el entorno
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-  ? 'http://localhost:5000' 
-  : 'https://routinecraft-api.onrender.com';
-
-// Configurar axios con la URL adecuada
-axios.defaults.baseURL = API_URL;
 
 const Rutinas = () => {
   const navigate = useNavigate();

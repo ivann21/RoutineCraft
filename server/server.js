@@ -221,11 +221,6 @@ app.delete('/api/rutinas/:id', async (req, res) => {
       where: { rutinaId: parseInt(id) },
     });
     
-    // Then delete related comments if they exist
-    await prisma.comentario.deleteMany({
-      where: { rutinaId: parseInt(id) },
-    });
-
     // Finally, delete the rutina
     await prisma.rutina.delete({
       where: { id: parseInt(id) },

@@ -34,26 +34,22 @@ export default function Register() {
       const response = await axios.post("/register", formData);
       console.log('Registro exitoso:', response.data);
 
-      // Simular inicio de sesión automático después del registro
       try {
         const loginResponse = await axios.post("/login", {
           email: formData.email,
           contraseña: formData.contraseña,
         });
 
-        // Guardar datos de sesión
         localStorage.setItem("userToken", loginResponse.data.token);
         localStorage.setItem("usuarioId", loginResponse.data.user.id);
         localStorage.setItem("userName", loginResponse.data.user.nombre);
         localStorage.setItem("userEmail", loginResponse.data.user.email);
 
-        // Disparar evento para notificar cambio de autenticación
         window.dispatchEvent(new Event("storage"));
 
         navigate("/rutinas");
       } catch (loginError) {
         console.error("Error al iniciar sesión automáticamente:", loginError);
-        // Si falla el login automático, aún así redirigimos al login
         navigate("/login");
       }
     } catch (error) {

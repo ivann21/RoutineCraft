@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from '../api/axios'; // Importar la instancia de axios configurada
+import axios from '../api/axios'; 
 import defaultProfilePic from "/default-profile.png?url";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
-// Obtener la URL base correcta
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? 'http://localhost:5000' 
   : 'https://routinecraft.onrender.com';
@@ -25,7 +24,6 @@ export default function Profile() {
     const fetchUserData = async () => {
       try {
         setLoading(true);
-        // Usar las claves específicas que se establecieron en el Login
         const userId = localStorage.getItem("usuarioId");
         const userName = localStorage.getItem("userName");
         const userEmail = localStorage.getItem("userEmail");
@@ -36,7 +34,6 @@ export default function Profile() {
           return;
         }
 
-        // Crear un objeto de usuario básico con la información del localStorage
         const basicUser = {
           id: userId,
           nombre: userName || "",
@@ -45,7 +42,6 @@ export default function Profile() {
         
         setUser(basicUser);
         
-        // Inicializar el formulario con los datos básicos
         setFormData({
           nombre: basicUser.nombre,
           email: basicUser.email,
@@ -53,22 +49,18 @@ export default function Profile() {
           foto: defaultProfilePic
         });
 
-        // Cargar el perfil completo desde la API usando axios
         try {
           const response = await axios.get(`/api/profile/${userId}`);
           const userData = response.data;
           setUser(userData);
           
-          // Procesar la URL de la foto y guardarla en localStorage para el Navbar
           if (userData.fotoUrl) {
             const fullPhotoUrl = userData.fotoUrl.startsWith('http') 
               ? userData.fotoUrl 
               : `${API_URL}${userData.fotoUrl}`;
               
-            // Guardar la URL de la foto para el Navbar
             localStorage.setItem("userProfilePic", fullPhotoUrl);
             
-            // Disparar evento para notificar al Navbar
             try {
               window.dispatchEvent(new Event('userLogin'));
             } catch (e) {
@@ -90,14 +82,13 @@ export default function Profile() {
             });
           }
           
-          // Cargar información adicional
           await Promise.all([
             fetchPlanInfo(userId),
             fetchContrataciones(userId)
           ]);
         } catch (error) {
           console.error("Error al cargar el perfil completo:", error);
-          // Continuamos con los datos básicos
+ 
         }
       } catch (error) {
         console.error("Error al cargar datos del usuario:", error);
@@ -152,13 +143,12 @@ export default function Profile() {
       foto: formData.foto,
     };
 
-    // Subir la foto al servidor si se seleccionó una nueva
     const fileInput = document.getElementById("foto");
     if (fileInput && fileInput.files && fileInput.files.length > 0) {
       const file = fileInput.files[0];
       const formDataToSend = new FormData();
       formDataToSend.append("profilePic", file);
-      formDataToSend.append("userId", user.id); // Agregar el ID del usuario al FormData
+      formDataToSend.append("userId", user.id); 
 
       try {
         const response = await axios.post("/upload-profile-pic", formDataToSend, {
@@ -168,9 +158,8 @@ export default function Profile() {
         });
 
         const data = response.data;
-        updatedUser.foto = data.imageUrl; // Actualizar la URL de la foto en el usuario
+        updatedUser.foto = data.imageUrl; 
         
-        // Almacenar la URL de la foto en un ítem específico de localStorage para el Navbar
         const fullPhotoUrl = data.imageUrl.startsWith('http') 
           ? data.imageUrl 
           : `${API_URL}${data.imageUrl}`;
@@ -183,41 +172,31 @@ export default function Profile() {
     }
 
     try {
-      // Skip the user API update since that endpoint doesn't seem to exist
-      // Just handle the photo upload which we already did above
       
-      // Actualizar información de usuario en localStorage
       localStorage.setItem("userName", formData.nombre);
       localStorage.setItem("userEmail", formData.email);
       
-      // Asegurarnos de que la foto de perfil se almacena correctamente
       if (updatedUser.foto) {
         const fullPhotoUrl = updatedUser.foto.startsWith('http') 
           ? updatedUser.foto 
-          : `${API_URL}${updatedUser.foto}`; // Usar API_URL en lugar de localhost:5000
+          : `${API_URL}${updatedUser.foto}`; 
         localStorage.setItem("userProfilePic", fullPhotoUrl);
       }
       
-      // Guardar el objeto completo también (para compatibilidad)
       localStorage.setItem("user", JSON.stringify(updatedUser));
       
-      // Actualizar estado
       setUser(updatedUser);
       setEditing(false);
       
-      // Notificar otros componentes (como Navbar) del cambio
       window.dispatchEvent(new Event('storage'));
       
-      // Disparar también el evento específico para actualizar la foto en el Navbar
       window.dispatchEvent(new Event('userLogin'));
-      
-      // Mostrar mensaje de éxito más elegante en lugar de alert
+
       const successMessage = document.createElement('div');
       successMessage.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50';
       successMessage.textContent = 'Perfil actualizado con éxito';
       document.body.appendChild(successMessage);
       
-      // Eliminar el mensaje después de 3 segundos
       setTimeout(() => {
         document.body.removeChild(successMessage);
       }, 3000);
@@ -225,7 +204,6 @@ export default function Profile() {
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
       
-      // Simplificar el manejo de errores para evitar problemas con el segundo try/catch
       localStorage.setItem("userName", formData.nombre);
       localStorage.setItem("userEmail", formData.email);
       
@@ -233,7 +211,7 @@ export default function Profile() {
         try {
           const photoUrl = updatedUser.foto.startsWith('http') 
             ? updatedUser.foto 
-            : `${API_URL}${updatedUser.foto}`; // Usar API_URL en lugar de localhost:5000
+            : `${API_URL}${updatedUser.foto}`;
           localStorage.setItem("userProfilePic", photoUrl);
         } catch (e) {
           console.error("Error guardando la foto:", e);
@@ -246,20 +224,16 @@ export default function Profile() {
         console.error("Error guardando el usuario completo:", e);
       }
       
-      // Actualizar estado independientemente de los errores
       setUser(updatedUser);
       setEditing(false);
       
-      // Notificar cambios
       try {
         window.dispatchEvent(new Event('storage'));
-        // Añadir evento específico para la foto
         window.dispatchEvent(new Event('userLogin'));
       } catch (e) {
         console.error("Error al disparar evento storage:", e);
       }
       
-      // Mostrar mensaje
       try {
         const successMessage = document.createElement('div');
         successMessage.className = 'fixed top-4 right-4 bg-yellow-600 text-white px-6 py-3 rounded shadow-lg z-50';
@@ -273,7 +247,6 @@ export default function Profile() {
           }
         }, 3000);
       } catch (e) {
-        // Si no se puede mostrar el mensaje elegante, usar un alert simple
         console.error("Error al mostrar notificación:", e);
         alert('Perfil actualizado pero no se pudo conectar con el servidor');
       }
@@ -290,34 +263,29 @@ export default function Profile() {
       
       console.log("Enviando solicitud para eliminar usuario:", userId);
       
-      // Modificar la llamada de API para asegurar que funcione correctamente
       await axios({
         method: 'DELETE',
         url: `/api/users/${userId}`,
-        timeout: 15000 // Aumentar timeout para operaciones críticas
+        timeout: 15000 
       });
 
-      // Clear all local storage
       localStorage.clear();
       
-      // Show successful deletion message
       const successMessage = document.createElement('div');
       successMessage.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50';
       successMessage.textContent = 'Cuenta eliminada correctamente';
       document.body.appendChild(successMessage);
       
-      // Redirect to home after a short delay
       setTimeout(() => {
         document.body.removeChild(successMessage);
         navigate('/');
-        // Force a page reload to ensure all app state is cleared
         window.location.reload();
       }, 2000);
       
     } catch (error) {
       console.error("Error al eliminar la cuenta:", error);
       setDeleteError(error.message);
-      setShowDeleteModal(false); // Close modal to show error message
+      setShowDeleteModal(false); 
     }
   };
 

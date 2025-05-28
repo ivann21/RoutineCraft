@@ -20,17 +20,13 @@ const RestTimer = ({ initialSeconds = 60, onClose }) => {
             clearInterval(interval);
             setIsActive(false);
             
-            // Mostrar modal en lugar de llamar a onComplete
             setShowCompletionModal(true);
             
-            // Intentar reproducir sonido cuando termina
             try {
               const audio = new Audio('/notification.mp3');
               audio.play().catch(e => console.log("Error reproduciendo audio:", e));
               
-              // Solo enviar notificación si no se ha mostrado el modal
               if ("Notification" in window && Notification.permission === "granted") {
-                // Creamos solo una notificación por finalización
                 new Notification("¡Tiempo de descanso completado!", {
                   body: "¡Es hora de continuar con tu entrenamiento!",
                   icon: "/logo.png"
@@ -52,10 +48,8 @@ const RestTimer = ({ initialSeconds = 60, onClose }) => {
     return () => clearInterval(interval);
   }, [isActive, isPaused]);
 
-  // Función para manejar el cierre del modal de completado
   const handleCloseCompletionModal = () => {
     setShowCompletionModal(false);
-    // Ya no hay referencia a onComplete aquí
   };
 
   const formatTime = (secs) => {

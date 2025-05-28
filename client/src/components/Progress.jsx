@@ -12,7 +12,6 @@ import {
 } from 'chart.js';
 import axios from 'axios';
 
-// Registrar los componentes de Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -32,7 +31,6 @@ export default function Progress() {
   const [error, setError] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Define solo métricas claras y personales
   const metricOptions = [
     { key: 'peso', label: 'Peso (kg)' },
     { key: 'grasa', label: 'Porcentaje de grasa (%)' },
@@ -42,7 +40,6 @@ export default function Progress() {
   ];
 
   useEffect(() => {
-    // Obtener el ID del usuario del localStorage usando la clave correcta
     const uid = localStorage.getItem('usuarioId');
     if (uid) {
       setUserId(uid);
@@ -60,7 +57,6 @@ export default function Progress() {
         setMetrics([]);
         return;
       }
-      // Llama a la API para obtener métricas del usuario
       const response = await axios.get(`http://localhost:5000/api/metrics/${uid}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('userToken')}`
@@ -82,7 +78,6 @@ export default function Progress() {
   };
 
   const addMetric = async () => {
-    // Validar entrada
     if (!newEntry.valor || isNaN(parseFloat(newEntry.valor))) {
       setError('Por favor ingresa un valor numérico válido');
       return;
@@ -97,7 +92,6 @@ export default function Progress() {
     setSaveSuccess(false);
     
     try {
-      // Preparar los datos para enviar
       const metricData = {
         userId: userId,
         tipo: activeMetric,
@@ -107,7 +101,6 @@ export default function Progress() {
       
       console.log('Enviando métrica:', metricData);
       
-      // Guardar la métrica en la base de datos
       const response = await axios.post('http://localhost:5000/api/metrics', metricData, {
         headers: {
           'Content-Type': 'application/json',
@@ -116,13 +109,10 @@ export default function Progress() {
       });
       
       if (response.status === 201 || response.status === 200) {
-        // Añadir la nueva métrica al estado
         setMetrics([...metrics, response.data]);
-        // Limpiar el formulario
         setNewEntry({ valor: '', fecha: new Date().toISOString().split('T')[0] });
         setSaveSuccess(true);
         
-        // Volver a cargar todas las métricas para asegurar datos actualizados
         fetchMetrics(userId);
       } else {
         throw new Error(`Error al guardar: ${response.status}`);

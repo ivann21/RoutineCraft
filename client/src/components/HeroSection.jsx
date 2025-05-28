@@ -6,7 +6,7 @@ export default function HeroSection() {
   const [activeQuestion, setActiveQuestion] = useState(null);
 
   const handleViewPlans = () => {
-    window.scrollTo(0, 0); // Asegurar que la página suba al inicio
+    window.scrollTo(0, 0); 
     navigate("/planes");
   };
 

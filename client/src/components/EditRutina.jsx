@@ -19,24 +19,19 @@ const EditRutina = () => {
   const [showEjercicioExistenteModal, setShowEjercicioExistenteModal] = useState(false);
   const [ejercicioExistente, setEjercicioExistente] = useState(null);
   
-  // Nuevos estados para filtro y búsqueda
-  const [filtroEjercicios, setFiltroEjercicios] = useState('todos'); // 'todos', 'comunes', 'personalizados'
-  const [searchTerm] = useState('');  // Search term for filtering exercises
+  const [filtroEjercicios, setFiltroEjercicios] = useState('todos'); 
+  const [searchTerm] = useState(''); 
   
-  // Utiliza una sola función fetchRutina para obtener la rutina específica
   useEffect(() => {
     const fetchRutina = async () => {
       try {
         setLoading(true);
         console.log(`Intentando obtener la rutina con ID: ${id}`);
         
-        // Obtener el usuario ID del localStorage
         const usuarioId = localStorage.getItem('usuarioId');
         
-        // Obtener todas las rutinas del usuario
         const response = await axios.get(`/api/rutinas/${usuarioId}`);
         
-        // Encontrar la rutina específica por ID
         const rutina = response.data.find(r => r.id === parseInt(id));
         
         if (rutina) {
@@ -45,7 +40,6 @@ const EditRutina = () => {
           setNombre(rutina.nombre || '');
           setDescripcion(rutina.descripcion || '');
           
-          // Procesar ejercicios si existen
           if (rutina.ejercicios && rutina.ejercicios.length > 0) {
             procesarEjercicios(rutina.ejercicios);
           }
@@ -60,7 +54,6 @@ const EditRutina = () => {
       }
     };
 
-    // Función auxiliar para procesar los ejercicios
     const procesarEjercicios = (ejerciciosData) => {
       if (!ejerciciosData || ejerciciosData.length === 0) {
         console.log("No hay ejercicios para procesar");
@@ -69,7 +62,6 @@ const EditRutina = () => {
       
       try {
         const ejerciciosFormateados = ejerciciosData.map(ej => {
-          // Manejar diferentes formatos de respuesta API
           const ejercicioObj = ej.ejercicio || ej;
           const ejercicioId = ejercicioObj.id || ej.ejercicioId;
           
@@ -113,9 +105,7 @@ const EditRutina = () => {
     if (!ejercicioSeleccionado) return;
     
     const ejercicio = ejercicios.find(e => e.id === parseInt(ejercicioSeleccionado));
-    // Verificar si el ejercicio ya existe en la lista por ejercicioId
     if (ejercicio && !ejerciciosSeleccionados.some(e => e.ejercicioId === ejercicio.id)) {
-      // Añadir el nuevo ejercicio sin ID de relación (se genera en el servidor)
       setEjerciciosSeleccionados([...ejerciciosSeleccionados, {
         ejercicioId: ejercicio.id,
         ejercicio: ejercicio,
@@ -128,7 +118,6 @@ const EditRutina = () => {
       }]);
       setEjercicioSeleccionado('');
     } else if (ejercicio) {
-      // Si el ejercicio ya existe, guardamos la información y mostramos el modal
       setEjercicioExistente(ejercicio);
       setShowEjercicioExistenteModal(true);
     }
@@ -149,7 +138,7 @@ const EditRutina = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Mostrar indicador de carga
+    setLoading(true); 
     
     try {
       if (!nombre.trim()) {
@@ -160,9 +149,8 @@ const EditRutina = () => {
         throw new Error('Debes añadir al menos un ejercicio a la rutina');
       }
 
-      // Preparamos los ejercicios correctamente, preservando los IDs para los ejercicios existentes
       const ejerciciosFormateados = ejerciciosSeleccionados.map(e => ({
-        id: e.id, // Conservar el ID solo para ejercicios existentes
+        id: e.id, 
         ejercicioId: e.ejercicioId,
         series: e.series || 3,
         repeticiones: e.repeticiones || 12,
@@ -170,7 +158,6 @@ const EditRutina = () => {
         orden: e.orden || 1
       }));
 
-      // Obtener el usuario ID del localStorage
       const usuarioId = localStorage.getItem('usuarioId');
 
       const rutinaData = {
@@ -182,7 +169,6 @@ const EditRutina = () => {
 
       console.log("Enviando datos a la API para actualizar rutina:", rutinaData);
 
-      // Actualizar la rutina
       try {
         const response = await axios.put(`/api/rutinas/${id}`, rutinaData);
         console.log("Rutina actualizada exitosamente:", response.data);
@@ -191,12 +177,9 @@ const EditRutina = () => {
       } catch (error) {
         console.error("Error al actualizar la rutina:", error);
         
-        // Si falla el PUT, intentar con recreación
         try {
-          // Eliminar la rutina existente
           await axios.delete(`/api/rutinas/${id}`);
           
-          // Crear una nueva rutina con los mismos datos
           await axios.post('/api/rutinas', rutinaData);
           
           alert('Rutina actualizada con éxito');
@@ -209,11 +192,10 @@ const EditRutina = () => {
       console.error('Error al actualizar la rutina:', err);
       alert(`Error al actualizar la rutina: ${err.message || 'Ocurrió un error desconocido'}`);
     } finally {
-      setLoading(false); // Ocultar indicador de carga
+      setLoading(false);
     }
   };
-
-  // Mostrar pantalla de carga mientras se obtienen los datos
+  // Mostrar spinner de carga mientras se obtienen los datos
   if (loading) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
@@ -262,7 +244,6 @@ const EditRutina = () => {
   const ejerciciosFiltrados = () => {
     let resultado = [];
     
-    // Primero filtrar por tipo de ejercicio
     if (filtroEjercicios === 'comunes') {
       resultado = ejercicios.filter(e => e.esComun);
     } else if (filtroEjercicios === 'personalizados') {
@@ -271,7 +252,6 @@ const EditRutina = () => {
       resultado = [...ejercicios];
     }
     
-    // Luego filtrar por término de búsqueda si existe
     if (searchTerm.trim() !== '') {
       const termLower = searchTerm.toLowerCase().trim();
       resultado = resultado.filter(e => 
@@ -284,14 +264,12 @@ const EditRutina = () => {
     return resultado;
   };
   
-  // Prepare options for the SearchableSelect component if you're using it
   const ejercicioOptions = ejerciciosFiltrados().map(ejercicio => ({
     value: ejercicio.id.toString(),
     label: `${ejercicio.nombre}${ejercicio.categoria ? ` - ${ejercicio.categoria}` : ''}`,
     customProp: !ejercicio.esComun ? 'Personalizado' : null
   }));
   
-  // Renderizar el formulario de edición
   return (
     <div className="relative bg-gray-900 overflow-hidden min-h-screen pb-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
@@ -525,7 +503,7 @@ const EditRutina = () => {
             
             <div className="flex justify-between items-center pt-4 border-t border-gray-600">
               <button
-                type="button"  // Asegúrate que sea type="button"
+                type="button"  
                 onClick={() => navigate('/rutinas')}
                 className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-3 rounded-md transition-colors flex items-center shadow-md"
               >
@@ -535,7 +513,7 @@ const EditRutina = () => {
                 Cancelar
               </button>
               <button
-                type="submit"  // Este sí debe ser type="submit"
+                type="submit"  
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-md transition-colors shadow-md flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

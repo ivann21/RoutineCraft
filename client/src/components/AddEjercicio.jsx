@@ -23,7 +23,7 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
       formData.append('nombre', nombre);
       formData.append('descripcion', descripcion);
       formData.append('categoria', categoria);
-      formData.append('usuarioId', usuarioId); // Crucial para asignar el ejercicio al usuario
+      formData.append('usuarioId', usuarioId); 
       
       const response = await axios.post('/api/ejercicios', formData, {
         headers: {
@@ -31,18 +31,14 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
         },
       });
 
-      // El nuevo ejercicio debería tener esComun = false si el API está configurado correctamente
       const nuevoEjercicio = response.data;
       
-      // Verificamos que esComun sea false antes de añadirlo a los ejercicios personalizados
       if (nuevoEjercicio.esComun) {
         console.warn('Advertencia: El API ha creado un ejercicio común en lugar de personalizado');
       }
-      
-      // Llamar a la función de callback del padre con el nuevo ejercicio
+    
       onSubmitSuccess(nuevoEjercicio);
       
-      // Resetear el formulario
       setNombre('');
       setDescripcion('');
       setCategoria('');

@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const app = express();
-// Usar el puerto proporcionado por el entorno (Render) o el 5000 como fallback
 const port = process.env.PORT || 5000;
 const { PrismaClient } = require('./prisma/generated/client');
 const prisma = new PrismaClient();
@@ -31,14 +30,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Middleware
-// Configuración de CORS para permitir solicitudes desde cualquier origen (ajustar en producción)
 app.use(cors({
   origin: [
     process.env.CLIENT_URL || '*',
     'https://routine-craft.vercel.app',
     'https://routinecraft.vercel.app',
-    'http://localhost:5173', // Añadir el origen de desarrollo local
-    /\.vercel\.app$/  // Permite cualquier subdominio de vercel.app
+    'http://localhost:5173',
+    /\.vercel\.app$/
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -46,7 +44,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Servir archivos estáticos desde la carpeta 'uploads'
+// Servir archivos estáticos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Ruta de prueba
@@ -54,9 +52,9 @@ app.get('/', (req, res) => {
   res.send('¡Hola, desde el servidor!');
 });
 
-// Constantes para los límites de planes
+// Límites de rutinas por plan
 const PLAN_LIMITS = {
-  free: 5,  // Cambiado de 10 a 5
+  free: 5,  
   basic: 50,
   premium: Infinity
 };
@@ -84,13 +82,12 @@ app.get('/api/rutinas', async (req, res) => {
 app.get('/api/rutinas/:usuarioId', async (req, res) => {
   let { usuarioId } = req.params;
   try {
-    // Validación y conversión segura
     usuarioId = Number(usuarioId);
     if (!usuarioId || isNaN(usuarioId)) {
       return res.status(400).json({ error: 'usuarioId inválido' });
     }
     const rutinas = await prisma.rutina.findMany({
-      where: { usuarioId }, // usuarioId es un número válido aquí
+      where: { usuarioId }, 
       include: {
         ejercicios: {
           include: {

@@ -23,21 +23,17 @@ export default function Login({ setUser }) {
       const response = await axios.post("/login", formData);
       const { token, user } = response.data;
 
-      // Save basic user data to localStorage
       localStorage.setItem("userToken", token);
       localStorage.setItem("usuarioId", user.id);
       localStorage.setItem("userName", user.nombre);
       localStorage.setItem("userEmail", user.email);
       
-      // Save the complete user object
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Update app state directly
       if (setUser) {
         setUser(user);
       }
       
-      // Navigate to routines page
       window.location.href = '/rutinas';
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

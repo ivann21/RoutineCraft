@@ -1,6 +1,6 @@
-// src/Rutinas.jsx
+
 import React, { useEffect, useState } from 'react';
-import axios from './api/axios'; // Importar la instancia configurada
+import axios from './api/axios';
 import { useNavigate } from 'react-router-dom';
 import RestTimer from './components/RestTimer';
 
@@ -15,7 +15,7 @@ const Rutinas = () => {
   const [rutinaToDelete, setRutinaToDelete] = useState(null);
   const [selectedRutina, setSelectedRutina] = useState(null);
   const [selectedExercise, setSelectedExercise] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para la búsqueda
+  const [searchTerm, setSearchTerm] = useState(''); 
   
   const openDeleteModal = (rutina) => {
     setRutinaToDelete(rutina);
@@ -27,7 +27,6 @@ const Rutinas = () => {
       await axios.delete(`/api/rutinas/${rutinaToDelete.id}`);
       setRutinas(rutinas.filter((rutina) => rutina.id !== rutinaToDelete.id));
       
-      // Update plan info after deletion to reflect the new count
       const usuarioId = localStorage.getItem('usuarioId');
       const planResponse = await axios.get(`/api/user-plan/${usuarioId}`);
       setPlanInfo(planResponse.data);
@@ -78,16 +77,12 @@ const Rutinas = () => {
           const response = await axios.get(`/api/rutinas/${usuarioId}`);
           setRutinas(response.data);
 
-          // Fetch plan information
           const planResponse = await axios.get(`/api/user-plan/${usuarioId}`);
           setPlanInfo(planResponse.data);
           
-          // Verificar si estamos llegando desde el calendario para mostrar detalles
           const rutinaIdToView = localStorage.getItem('viewRutinaDetails');
           if (rutinaIdToView) {
-            // Limpiar el localStorage
             localStorage.removeItem('viewRutinaDetails');
-            // Buscar la rutina específica
             const rutina = response.data.find(r => r.id === parseInt(rutinaIdToView));
             if (rutina) {
               setSelectedRutina(rutina);
@@ -132,7 +127,6 @@ const Rutinas = () => {
     return rutinas.filter(rutina => 
       rutina.nombre.toLowerCase().includes(termLower) ||
       (rutina.descripcion && rutina.descripcion.toLowerCase().includes(termLower)) ||
-      // Opcional: también buscar en los nombres de los ejercicios dentro de cada rutina
       (rutina.ejercicios && rutina.ejercicios.some(ej => 
         ej.ejercicio && ej.ejercicio.nombre.toLowerCase().includes(termLower)
       ))

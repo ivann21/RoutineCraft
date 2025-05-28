@@ -8,21 +8,18 @@ export default function Challenges() {
   const [loading, setLoading] = useState(true);
   const [userAchievements, setUserAchievements] = useState([]);
   const [userChallenges, setUserChallenges] = useState([]);
-  const [activeTab, setActiveTab] = useState('active'); // 'active', 'joined', 'completed'
+  const [activeTab, setActiveTab] = useState('active'); 
   const [error, setError] = useState(null);
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [progressModalValue, setProgressModalValue] = useState(0);
   const [progressModalChallenge, setProgressModalChallenge] = useState(null);
   
-  // Obtener el token de autenticación y el ID del usuario
   const getCurrentUser = () => {
-    // Usar las mismas claves de localStorage que en Login.jsx
     const id = localStorage.getItem('usuarioId');
     const token = localStorage.getItem('userToken');
     const nombre = localStorage.getItem('userName');
     const email = localStorage.getItem('userEmail');
     
-    // Verificar si existe el ID y token para determinar si hay sesión
     if (id && token) {
       return {
         id,
@@ -31,10 +28,9 @@ export default function Challenges() {
         email
       };
     }
-    return null;  // Retornar null en vez de objeto vacío para facilitar validación
+    return null;  
   };
   
-  // Configuración para las peticiones a la API
   const apiConfig = () => {
     const token = localStorage.getItem('userToken');
     return {
@@ -49,14 +45,12 @@ export default function Challenges() {
     fetchData();
   }, [activeTab]);
   
-  // Modificar la función fetchData para una mejor validación de sesión
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     const currentUser = getCurrentUser();
     
     try {
-      // Cargar diferentes datos según la pestaña activa
       if (activeTab === 'active') {
         await fetchActiveChallenges(); 
       } else if (activeTab === 'joined') {
@@ -71,12 +65,11 @@ export default function Challenges() {
           await fetchCompletedChallenges(currentUser.id);
         } else {
           setError("Inicia sesión para ver tus retos completados. Parece que tu sesión ha expirado.");
-          setChallenges([]); // Asegúrate de limpiar los retos si no hay usuario
+          setChallenges([]);
         }
       }
       
-      // Cargar logros del usuario en cualquier caso si el usuario está autenticado
-      if (currentUser?.id) { // Usar el operador de encadenamiento opcional
+      if (currentUser?.id) { 
         await fetchUserAchievements();
       } else {
         console.log("No hay sesión activa, no se cargarán logros");
@@ -89,12 +82,10 @@ export default function Challenges() {
     }
   };
   
-  // Modificar la función fetchActiveChallenges para manejar mejor la sesión
   const fetchActiveChallenges = async () => {
     try {
       console.log('Intentando obtener retos activos...');
       
-      // Verificar primero si el servidor está accesible
       try {
         await axios.get('http://localhost:5000');
         console.log('Servidor principal accesible');
@@ -114,15 +105,14 @@ export default function Challenges() {
         setError('La respuesta del servidor no tiene el formato esperado');
       }
       
-      // También necesitamos los retos del usuario para filtrar los que ya participa
       try {
         const currentUser = getCurrentUser();
-        if (currentUser?.id) { // Usar validación más robusta
+        if (currentUser?.id) { 
           const userResponse = await axios.get(`http://localhost:5000/api/challenges/user/${currentUser.id}`, apiConfig());
           console.log('Retos del usuario:', userResponse.data);
           setUserChallenges(userResponse.data);
         } else {
-          setUserChallenges([]); // No hay usuario, no hay retos de usuario
+          setUserChallenges([]); 
         }
       } catch (userError) {
         console.warn('Error al obtener retos del usuario:', userError.message);
@@ -164,7 +154,6 @@ export default function Challenges() {
       const response = await axios.get(`http://localhost:5000/api/challenges/completed/${userId}`, apiConfig());
       setChallenges(response.data);
 
-      // Calcular logros locales al cargar retos completados
       setUserAchievements(calculateAchievements(response.data));
     } catch (error) {
       console.error('Error al obtener retos completados:', error);
@@ -174,12 +163,10 @@ export default function Challenges() {
     }
   };
   
-  // Calcula logros locales basados en retos completados
   const calculateAchievements = (completedChallenges) => {
     const achievements = [];
     if (!completedChallenges || completedChallenges.length === 0) return achievements;
 
-    // 1. Completa tu primer reto
     if (completedChallenges.length >= 1) {
       achievements.push({
         id: 'first-challenge',
@@ -190,7 +177,6 @@ export default function Challenges() {
       });
     }
 
-    // 2. Completa 5 retos
     if (completedChallenges.length >= 5) {
       achievements.push({
         id: 'five-challenges',
@@ -201,7 +187,6 @@ export default function Challenges() {
       });
     }
 
-    // 3. Completa 5 retos de una misma categoría
     const categoryCount = {};
     completedChallenges.forEach((uc) => {
       const tipo = uc.challenge?.tipo || 'Otro';
@@ -239,40 +224,33 @@ export default function Challenges() {
     }
   };
   
-  // Actualizar la función joinChallenge para manejar correctamente la sesión
   const joinChallenge = async (challengeId) => {
     try {
       const currentUser = getCurrentUser();
-      if (!currentUser?.id) { // Usar validación más robusta
+      if (!currentUser?.id) {
         alert("Debes iniciar sesión para unirte a un reto. Tu sesión puede haber expirado.");
         return;
       }
 
-      // Mostrar indicador de carga mientras se procesa
-      const originalChallenges = [...challenges]; // Guardar el estado actual por si hay error
+      const originalChallenges = [...challenges]; 
       setChallenges(challenges.filter(c => c.id !== challengeId)); 
     
       const response = await axios.post('http://localhost:5000/api/challenges/join', 
-        { challengeId, userId: currentUser.id }, // Añadir userId al cuerpo
+        { challengeId, userId: currentUser.id }, 
         apiConfig()
       );
       
       if (response.data && response.data.userChallenge) {
-        // Actualizar la lista de retos del usuario con el nuevo reto
         setUserChallenges(prevChallenges => [...prevChallenges, response.data.userChallenge]);
         
-        // Notificar al usuario
         alert(`Te has unido al reto "${response.data.userChallenge.titulo}" con éxito`);
         
-        // Cambiar automáticamente a la pestaña "Mis retos"
         setActiveTab('joined');
         
-        // Si estamos viendo el detalle de este reto, actualizar la vista
         if (activeChallenge && activeChallenge.id === challengeId) {
-          setActiveChallenge(null); // Cerrar el detalle para mostrar la lista
+          setActiveChallenge(null); 
         }
       } else {
-        // Si la respuesta no contiene los datos esperados, restaurar el estado
         setChallenges(originalChallenges);
         alert('Te has unido al reto con éxito');
       }
@@ -306,12 +284,10 @@ export default function Challenges() {
         apiConfig()
       );
 
-      // Refresca la lista de retos del usuario tras actualizar el progreso
       await fetchUserChallenges(currentUser.id);
 
       if (newProgress === 100) {
         alert('¡Felicidades! Has completado el reto');
-        // Refresca también la pestaña de completados si está activa
         if (activeTab === 'completed') {
           await fetchCompletedChallenges(currentUser.id);
         }
@@ -343,8 +319,6 @@ export default function Challenges() {
     setShowProgressModal(false);
   };
 
-  // Agregar una depuración en el renderChallengesList
-  // Mejorar el renderChallengesList para un mejor filtrado
   const renderChallengesList = () => {
     console.log('Renderizando lista de retos. Retos disponibles:', challenges.length);
     console.log('Retos del usuario (userChallenges):', userChallenges.length);
@@ -352,23 +326,16 @@ export default function Challenges() {
     let displayChallenges = [];
     
     if (activeTab === 'active') {
-      // Mostrar solo retos activos en los que el usuario no participa
-      // `challenges` debe contener todos los retos activos del servidor
-      // `userChallenges` debe contener los retos en los que el usuario participa
       displayChallenges = challenges.filter(challenge => 
-        challenge.activo && !userChallenges.some(uc => uc.challengeId === challenge.id) // Comparar con uc.challengeId
+        challenge.activo && !userChallenges.some(uc => uc.challengeId === challenge.id) 
       );
       console.log('Retos activos filtrados para mostrar:', displayChallenges.length);
     } else if (activeTab === 'joined') {
-      // Mostrar retos en los que el usuario participa y no han terminado
-      // userChallenges ya contiene los retos del usuario con su progreso
       displayChallenges = userChallenges.filter(uc => 
         !uc.completado && new Date(uc.challenge.fechaFin) >= new Date()
-      ).map(uc => ({...uc.challenge, progreso: uc.progreso, userChallengeId: uc.id })); // Mapear para incluir progreso y el ID de UserChallenge
+      ).map(uc => ({...uc.challenge, progreso: uc.progreso, userChallengeId: uc.id })); 
       console.log('Retos participantes filtrados para mostrar:', displayChallenges.length);
     } else if (activeTab === 'completed') {
-      // `challenges` en este caso debería ser llenado por fetchCompletedChallenges
-      // que devuelve UserChallenge con el Challenge anidado.
       displayChallenges = challenges.map(uc => ({...uc.challenge, progreso: uc.progreso, userChallengeId: uc.id }));
       console.log('Retos completados filtrados para mostrar:', displayChallenges.length);
     }
@@ -460,6 +427,61 @@ export default function Challenges() {
       </div>
     );
   };
+  
+  const isLoggedIn = !!getCurrentUser(); 
+  
+  if (!isLoggedIn) {
+    return (
+      <div className="relative bg-gray-900 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto text-center py-16">
+          <div className="bg-gray-800/80 rounded-lg p-8 max-w-2xl mx-auto shadow-xl backdrop-blur">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-24 w-24 text-red-500 mx-auto mb-6" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-3a3 3 0 100-6 3 3 0 000 6zm-7.75 9.25a8.5 8.5 0 1117.5 0" 
+              />
+            </svg>
+            <h1 className="text-4xl font-bold text-white mb-6">Acceso Restringido</h1>
+            <p className="text-lg text-gray-300 mb-8">
+              Necesitas iniciar sesión para acceder a los retos. Por favor, inicia sesión o regístrate para continuar.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link 
+                to="/login" 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-all text-lg font-medium"
+              >
+                Iniciar Sesión
+              </Link>
+              <Link 
+                to="/register" 
+                className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg shadow-md transition-all text-lg font-medium"
+              >
+                Registrarse
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-10">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        <p className="mt-2 text-white">Cargando retos...</p>
+      </div>
+    );
+  }
   
   return (
     <div className="relative bg-gray-900 overflow-hidden min-h-screen">

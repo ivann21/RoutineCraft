@@ -6,8 +6,7 @@ export default function Navbar({ user, setUser }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const navigate = useNavigate();
-
-  // Enlaces simplificados - sin menús desplegables
+  
   const mainLinks = [
     { to: "/", text: "Inicio" },
     { to: "/rutinas", text: "Rutinas" },
@@ -24,7 +23,17 @@ export default function Navbar({ user, setUser }) {
     navigate('/');
   };
 
-  // Cargar usuario desde localStorage
+  useEffect(() => {
+    const closeMenusOnScroll = () => {
+      if (isMenuOpen) setIsMenuOpen(false);
+      if (userMenuOpen) setUserMenuOpen(false);
+    };
+    
+    window.addEventListener('scroll', closeMenusOnScroll);
+    
+    return () => window.removeEventListener('scroll', closeMenusOnScroll);
+  }, [isMenuOpen, userMenuOpen]);
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser && !user) {
@@ -33,12 +42,11 @@ export default function Navbar({ user, setUser }) {
         setUser(parsedUser);
       } catch (error) {
         console.error("Error parsing user from localStorage:", error);
-        localStorage.removeItem("user"); // Eliminar datos corruptos
+        localStorage.removeItem("user"); 
       }
     }
   }, [setUser, user]);
 
-  // Gestión de eventos de almacenamiento simplificada
   useEffect(() => {
     const handleStorageChange = () => {
       const userId = localStorage.getItem('usuarioId');
@@ -67,7 +75,6 @@ export default function Navbar({ user, setUser }) {
     };
   }, [setUser, user]);
 
-  // Cerrar menú de usuario al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
@@ -83,7 +90,9 @@ export default function Navbar({ user, setUser }) {
   }, []);
 
   return (
-    <nav className="bg-gray-800 border-b border-gray-700">
+    <nav 
+      className="bg-gray-800 border-b border-gray-700 fixed w-full top-0 z-50"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Barra de navegación principal */}
         <div className="flex justify-between h-16">

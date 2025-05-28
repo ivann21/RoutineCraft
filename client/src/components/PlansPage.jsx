@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function PlansPage() {
   const [planInfo, setPlanInfo] = useState(null);
@@ -9,7 +10,6 @@ export default function PlansPage() {
 
   const handlePlanChange = async (newPlan) => {
     try {
-      // Primero verificamos si el usuario está autenticado
       const usuarioId = localStorage.getItem('usuarioId');
       
       if (!usuarioId) {
@@ -20,7 +20,6 @@ export default function PlansPage() {
       setLoading(true);
       setError(null);
       
-      // Realizamos la solicitud para actualizar el plan
       const response = await fetch('http://localhost:5000/api/user-plan/update', {
         method: 'POST',
         headers: {
@@ -32,14 +31,12 @@ export default function PlansPage() {
         })
       });
 
-      // Leemos la respuesta como texto primero para evitar errores
       const responseText = await response.text();
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${responseText || response.statusText}`);
       }
       
-      // Si la respuesta es JSON válido, la parseamos
       let updatedPlanInfo;
       try {
         updatedPlanInfo = JSON.parse(responseText);
@@ -47,7 +44,6 @@ export default function PlansPage() {
         throw new Error('Respuesta del servidor no es JSON válido');
       }
       
-      // Actualizamos el estado con la nueva información
       setPlanInfo(updatedPlanInfo);
       alert(`Plan cambiado a ${newPlan.toUpperCase()} con éxito`);
     } catch (error) {
@@ -62,7 +58,6 @@ export default function PlansPage() {
     const fetchPlanInfo = async () => {
       try {
         setLoading(true);
-        // Obtenemos el ID del usuario desde localStorage
         const usuarioId = localStorage.getItem('usuarioId');
         
         if (!usuarioId) {
@@ -71,7 +66,6 @@ export default function PlansPage() {
           return;
         }
         
-        // Realizamos la solicitud para obtener la información del plan
         const response = await fetch(`http://localhost:5000/api/user-plan/${usuarioId}`);
         
         if (!response.ok) {
@@ -93,7 +87,6 @@ export default function PlansPage() {
   }, []);
 
   useEffect(() => {
-    // Verificar autenticación al cargar
     const checkAuth = () => {
       const userId = localStorage.getItem('usuarioId');
       setIsLoggedIn(!!userId);
@@ -113,20 +106,46 @@ export default function PlansPage() {
     };
   }, []);
 
-  // Manejar el caso de no autenticado
+  // Reemplazar el renderizado para usuarios no autenticados
   if (!isLoggedIn) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
-        <div className="relative z-10 p-6 max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-bold text-white mb-6">Acceso Restringido</h1>
-          <p className="text-lg text-gray-300 mb-4">Por favor, regístrate o inicia sesión para acceder a nuestros planes.</p>
-          <a
-            href="/login"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition-all"
-          >
-            Iniciar Sesión
-          </a>
+        <div className="relative z-10 p-6 max-w-7xl mx-auto text-center py-16">
+          <div className="bg-gray-800/80 rounded-lg p-8 max-w-2xl mx-auto shadow-xl backdrop-blur">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-24 w-24 text-red-500 mx-auto mb-6" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-3a3 3 0 100-6 3 3 0 000 6zm-7.75 9.25a8.5 8.5 0 1117.5 0" 
+              />
+            </svg>
+            <h1 className="text-4xl font-bold text-white mb-6">Acceso Restringido</h1>
+            <p className="text-lg text-gray-300 mb-8">
+              Necesitas iniciar sesión para acceder a los planes. Por favor, inicia sesión o regístrate para continuar.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link 
+                to="/login" 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-all text-lg font-medium"
+              >
+                Iniciar Sesión
+              </Link>
+              <Link 
+                to="/register" 
+                className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg shadow-md transition-all text-lg font-medium"
+              >
+                Registrarse
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );

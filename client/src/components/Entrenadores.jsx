@@ -12,13 +12,11 @@ const Entrenadores = () => {
   const [planSeleccionado, setPlanSeleccionado] = useState('mensual');
   const [error, setError] = useState(null);
   
-  // Nuevos estados para modales de notificación
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const [processingContratacion, setProcessingContratacion] = useState(false);
 
-  // Manejar cambios en el estado de login
   useEffect(() => {
     const handleStorageChange = () => {
       setIsLoggedIn(!!localStorage.getItem('usuarioId'));
@@ -26,7 +24,6 @@ const Entrenadores = () => {
 
     window.addEventListener('storage', handleStorageChange);
     
-    // También verificar al montar el componente
     setIsLoggedIn(!!localStorage.getItem('usuarioId'));
 
     return () => {
@@ -91,12 +88,10 @@ const Entrenadores = () => {
         fechaInicio: new Date().toISOString()
       });
 
-      // Mostrar modal de éxito en lugar de alerta
       setNotificationMessage('¡Has contratado al entrenador exitosamente!');
       setShowSuccessModal(true);
       setModalEntrenador(null);
       
-      // Recargar ambas listas para actualizar cambios
       await Promise.all([
         fetchEntrenadores(),
         fetchEntrenadoresContratados()
@@ -105,7 +100,6 @@ const Entrenadores = () => {
       console.error('Error al realizar la contratación:', error);
       const mensaje = error.response?.data?.error || 'Error al realizar la contratación';
       
-      // Mostrar modal de error en lugar de alerta
       setNotificationMessage(mensaje);
       setShowErrorModal(true);
     } finally {
@@ -116,8 +110,8 @@ const Entrenadores = () => {
   const calcularPrecio = (precioBase) => {
     const precios = {
       mensual: precioBase,
-      trimestral: precioBase * 3 * 0.9, // 10% descuento en el total
-      anual: precioBase * 12 * 0.83 // 17% descuento en el total
+      trimestral: precioBase * 3 * 0.9, 
+      anual: precioBase * 12 * 0.83 
     };
     const precioTotal = precios[planSeleccionado];
     

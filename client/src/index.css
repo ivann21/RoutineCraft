@@ -2,9 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Opcional: reemplaza bg-gray-50 con valor hexadecimal */
 body {
-  background-color: #1a202c; /* Cambiado a un gris oscuro para mejor contraste */
+  background-color: #1a202c; 
 }
 
 @keyframes fadeIn {
@@ -40,7 +39,6 @@ body {
   animation: bounceIn 0.4s ease-out;
 }
 
-/* Estilo para la barra de desplazamiento personalizada */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;

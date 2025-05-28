@@ -10,7 +10,6 @@ const SearchableSelect = ({ options, value, onChange, placeholder = "Seleccionar
     option.label.toLowerCase().includes(searchInput.toLowerCase())
   );
 
-  // Cierra el dropdown cuando se hace clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

@@ -39,7 +39,6 @@ const EditEjercicio = ({ ejercicio, onSubmitSuccess, onCancel }) => {
         },
       });
 
-      // Llamar a la función de callback del padre con los datos actualizados
       onSubmitSuccess({
         ...ejercicio,
         nombre,

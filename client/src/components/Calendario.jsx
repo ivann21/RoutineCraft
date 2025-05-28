@@ -31,7 +31,6 @@ const Calendario = () => {
       const response = await axios.get(`/api/rutinas/${usuarioId}`);
       setRutinas(response.data);
       
-      // Generar colores para cada rutina
       const colors = generateColorsForRutinas(response.data);
       setColorMap(colors);
     } catch (error) {
@@ -44,14 +43,12 @@ const Calendario = () => {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
       const response = await axios.get(`/api/calendario/${usuarioId}`);
-      // Filtrar eventos pasados
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const currentEvents = response.data.filter(evento => {
         const eventDate = new Date(evento.fecha);
         return eventDate >= today;
       });
-      // Eliminar eventos pasados de la base de datos
       const pastEvents = response.data.filter(evento => {
         const eventDate = new Date(evento.fecha);
         return eventDate < today;
@@ -69,7 +66,6 @@ const Calendario = () => {
     }
   };
 
-  // Función para generar colores únicos para cada rutina
   const generateColorsForRutinas = (rutinas) => {
     const colors = {};
     const predefinedColors = [
@@ -79,7 +75,6 @@ const Calendario = () => {
       'bg-violet-600', 'bg-fuchsia-600', 'bg-rose-600', 'bg-amber-600'
     ];
     
-    // Asignar un color a cada rutina
     rutinas.forEach((rutina, index) => {
       colors[rutina.id] = predefinedColors[index % predefinedColors.length];
     });
@@ -87,9 +82,8 @@ const Calendario = () => {
     return colors;
   };
 
-  // Función para obtener el color de una rutina específica
   const getColorForRutina = (rutinaId) => {
-    return colorMap[rutinaId] || 'bg-gray-600'; // Color por defecto si no hay asignación
+    return colorMap[rutinaId] || 'bg-gray-600'; 
   };
 
   useEffect(() => {
@@ -117,7 +111,7 @@ const Calendario = () => {
       });
 
       alert('Rutina programada con éxito');
-      fetchEventos(); // Recargar eventos
+      fetchEventos();
       setSelectedDate('');
       setSelectedRutina('');
     } catch (error) {
@@ -129,7 +123,7 @@ const Calendario = () => {
   const handleDeleteEvento = async (eventoId) => {
     try {
       await axios.delete(`/api/calendario/${eventoId}`);
-      fetchEventos(); // Recargar eventos
+      fetchEventos(); 
     } catch (error) {
       console.error('Error al eliminar el evento:', error);
       alert('Error al eliminar el evento');
@@ -177,12 +171,10 @@ const Calendario = () => {
     const firstDay = getFirstDayOfMonth(selectedMonth);
     const days = [];
 
-    // Agregar días vacíos al principio
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
 
-    // Agregar los días del mes
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(day);
     }
@@ -198,7 +190,6 @@ const Calendario = () => {
     setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1));
   };
 
-  // Modificamos esta función para almacenar la rutina seleccionada y redirigir a detalles
   const getEventosForDay = (day) => {
     if (!day) return [];
     const date = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), day);
@@ -212,11 +203,9 @@ const Calendario = () => {
     });
   };
 
-  // Añadimos esta nueva función para manejar la navegación a detalles
   const handleViewRutinaDetails = (rutinaId) => {
-    // En lugar de navegar directo a edit-rutina, guardamos en localStorage para mostrar detalles
     localStorage.setItem('viewRutinaDetails', rutinaId);
-    window.location.href = '/rutinas'; // Navegamos a la página de rutinas
+    window.location.href = '/rutinas'; 
   };
 
   return (

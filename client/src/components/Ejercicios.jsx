@@ -14,8 +14,8 @@ const Ejercicios = () => {
   const [selectedEjercicio, setSelectedEjercicio] = useState(null);
   const [ejerciciosComunes, setEjerciciosComunes] = useState([]);
   const [ejerciciosPersonalizados, setEjerciciosPersonalizados] = useState([]);
-  const [tipoFiltro, setTipoFiltro] = useState('todos'); // 'todos', 'comunes', 'personalizados'
-  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
+  const [tipoFiltro, setTipoFiltro] = useState('todos'); 
+  const [searchTerm, setSearchTerm] = useState(''); 
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -36,13 +36,12 @@ const Ejercicios = () => {
           const usuarioId = localStorage.getItem('usuarioId');
           const response = await axios.get(`/api/ejercicios?usuarioId=${usuarioId}`);
           
-          // Separar ejercicios comunes y personalizados
           const comunes = response.data.filter(e => e.esComun);
           const personalizados = response.data.filter(e => !e.esComun);
           
           setEjerciciosComunes(comunes);
           setEjerciciosPersonalizados(personalizados);
-          setEjercicios(response.data); // Mantener la lista completa para compatibilidad
+          setEjercicios(response.data); 
         } catch (error) {
           console.error('Error al obtener los ejercicios:', error);
         } finally {
@@ -56,11 +55,9 @@ const Ejercicios = () => {
     }
   }, [isLoggedIn]);
   
-  // Filtrar ejercicios según el tipo seleccionado y el término de búsqueda
   const ejerciciosFiltrados = () => {
     let resultado = [];
     
-    // Primero filtrar por tipo
     switch (tipoFiltro) {
       case 'comunes':
         resultado = ejerciciosComunes || [];
@@ -72,7 +69,6 @@ const Ejercicios = () => {
         resultado = ejercicios || [];
     }
     
-    // Luego filtrar por término de búsqueda si existe
     if (searchTerm.trim() !== '') {
       const termLower = searchTerm.toLowerCase().trim();
       resultado = resultado.filter(e => 
@@ -99,7 +95,6 @@ const Ejercicios = () => {
     try {
       await axios.delete(`/api/ejercicios/${ejercicioToDelete.id}`);
       
-      // Actualizar todas las listas de ejercicios
       const filteredEjercicios = ejercicios.filter(ej => ej.id !== ejercicioToDelete.id);
       setEjercicios(filteredEjercicios);
       
@@ -134,24 +129,18 @@ const Ejercicios = () => {
   };
 
   const handleAddSuccess = (newEjercicio) => {
-    // Asegurarse de que el nuevo ejercicio se añada a la lista correcta
     if (newEjercicio.esComun) {
-      // Esto no debería ocurrir normalmente
       setEjerciciosComunes([...ejerciciosComunes, newEjercicio]);
     } else {
-      // Lo normal es que el nuevo ejercicio sea personalizado
       setEjerciciosPersonalizados([...ejerciciosPersonalizados, newEjercicio]);
       
-      // También cambiar al filtro de personalizados para mostrar inmediatamente el nuevo ejercicio
       setTipoFiltro('personalizados');
     }
     
-    // Añadir a la lista completa también
     setEjercicios([...ejercicios, newEjercicio]);
   };
 
   const handleUpdateSuccess = (updatedEjercicio) => {
-    // Actualizar tanto las listas completas como las filtradas
     setEjercicios(prevEjercicios =>
       prevEjercicios.map(ej => 
         ej.id === updatedEjercicio.id ? updatedEjercicio : ej
@@ -175,7 +164,6 @@ const Ejercicios = () => {
     setEjercicioEditando(null);
   };
 
-  // Renderizar componentes basados en el estado actual
   if (!isLoggedIn) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">

@@ -5,15 +5,32 @@ const CookieBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    // Verificar si el usuario ya ha aceptado las cookies
-    const cookiesAccepted = localStorage.getItem('cookiesAccepted');
-    if (!cookiesAccepted) {
+    const cookiesAcceptedData = localStorage.getItem('cookiesAccepted');
+    
+    if (!cookiesAcceptedData) {
       setShowBanner(true);
+    } else {
+      try {
+        const { accepted, expiresAt } = JSON.parse(cookiesAcceptedData);
+        if (!accepted || new Date().getTime() > expiresAt) {
+          setShowBanner(true);
+        }
+      } catch {
+        setShowBanner(true);
+      }
     }
   }, []);
 
   const acceptCookies = () => {
-    localStorage.setItem('cookiesAccepted', 'true');
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 1); // Expira en 1 día
+    
+    const cookieData = {
+      accepted: true,
+      expiresAt: expirationDate.getTime()
+    };
+    
+    localStorage.setItem('cookiesAccepted', JSON.stringify(cookieData));
     setShowBanner(false);
   };
 

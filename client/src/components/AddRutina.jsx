@@ -10,13 +10,12 @@ const AddRutina = () => {
   const [ejercicios, setEjercicios] = useState([]);
   const [ejercicioSeleccionado, setEjercicioSeleccionado] = useState('');
   const [ejerciciosSeleccionados, setEjerciciosSeleccionados] = useState([]);
-  const [loading, setLoading] = useState(false);  // Declarado correctamente
-  const [error, setError] = useState(null);  // Declarado correctamente
+  const [loading, setLoading] = useState(false);  
+  const [error, setError] = useState(null); 
   const [showEjercicioExistenteModal, setShowEjercicioExistenteModal] = useState(false);
   const [ejercicioExistente, setEjercicioExistente] = useState(null);
-  const [filtroEjercicios, setFiltroEjercicios] = useState('todos'); // 'todos', 'comunes', 'personalizados'
+  const [filtroEjercicios, setFiltroEjercicios] = useState('todos');
   
-  // No necesitamos searchTerm si estamos usando SearchableSelect que maneja su propia búsqueda
   
   useEffect(() => {
     const fetchEjercicios = async () => {
@@ -36,7 +35,6 @@ const AddRutina = () => {
     fetchEjercicios();
   }, []);
 
-  // Función mejorada que filtra por tipo de ejercicio
   const ejerciciosFiltrados = () => {
     if (filtroEjercicios === 'comunes') {
       return ejercicios.filter(e => e.esComun);
@@ -51,7 +49,6 @@ const AddRutina = () => {
     if (!ejercicioSeleccionado) return;
     
     const ejercicio = ejercicios.find(e => e.id === parseInt(ejercicioSeleccionado));
-    // Verificar si el ejercicio ya existe en la lista por ejercicioId
     if (ejercicio && !ejerciciosSeleccionados.some(e => e.ejercicioId === ejercicio.id)) {
       setEjerciciosSeleccionados([...ejerciciosSeleccionados, {
         ejercicioId: ejercicio.id,
@@ -65,7 +62,6 @@ const AddRutina = () => {
       }]);
       setEjercicioSeleccionado('');
     } else if (ejercicio) {
-      // Si el ejercicio ya existe, guardamos la información y mostramos el modal
       setEjercicioExistente(ejercicio);
       setShowEjercicioExistenteModal(true);
     }
@@ -126,7 +122,6 @@ const AddRutina = () => {
     }
   };
 
-  // Preparamos las opciones para el SearchableSelect
   const ejercicioOptions = ejerciciosFiltrados().map(ejercicio => ({
     value: ejercicio.id.toString(),
     label: `${ejercicio.nombre}${ejercicio.categoria ? ` - ${ejercicio.categoria}` : ''}`,
@@ -162,7 +157,6 @@ const AddRutina = () => {
             {error}
           </div>
         ) : (
-          // Resto del contenido cuando los datos están cargados
           <>
             {/* Modal para ejercicio existente */}
             {showEjercicioExistenteModal && ejercicioExistente && (
@@ -248,21 +242,21 @@ const AddRutina = () => {
                     {/* Filtros para ejercicios - Agregar type="button" a cada botón */}
                     <div className="flex mb-4 bg-gray-700 p-2 rounded-lg">
                       <button 
-                        type="button"  // Asegúrate que sea type="button"
+                        type="button" 
                         onClick={() => setFiltroEjercicios('todos')} 
                         className={`px-4 py-2 mx-1 rounded-md ${filtroEjercicios === 'todos' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}
                       >
                         Todos
                       </button>
                       <button 
-                        type="button"  // Asegúrate que sea type="button"
+                        type="button"  
                         onClick={() => setFiltroEjercicios('comunes')} 
                         className={`px-4 py-2 mx-1 rounded-md ${filtroEjercicios === 'comunes' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}
                       >
                         Ejercicios comunes
                       </button>
                       <button 
-                        type="button"  // Asegúrate que sea type="button"
+                        type="button" 
                         onClick={() => setFiltroEjercicios('personalizados')} 
                         className={`px-4 py-2 mx-1 rounded-md ${filtroEjercicios === 'personalizados' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}
                       >
@@ -380,7 +374,7 @@ const AddRutina = () => {
 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-600">
                   <button
-                    type="button"  // Asegúrate que sea type="button"
+                    type="button" 
                     onClick={() => navigate('/rutinas')}
                     className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-3 rounded-md transition-colors flex items-center shadow-md"
                   >
@@ -390,7 +384,7 @@ const AddRutina = () => {
                     Cancelar
                   </button>
                   <button
-                    type="submit"  // Este sí debe ser type="submit"
+                    type="submit"  
                     className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-md transition-colors shadow-md flex items-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

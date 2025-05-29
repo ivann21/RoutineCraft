@@ -17,19 +17,19 @@ model Usuario {
   rutinas        Rutina[]
   calendario     Calendario[]
   fotoUrl        String?   // Campo opcional para almacenar la URL de la foto de perfil
-  contrataciones Contratacion[] // Relación inversa con Contratacion
-  plan            String    @default("free") // "free", "basic", "premium"
+  contrataciones Contratacion[] 
+  plan            String    @default("free") 
 
   // Nuevas relaciones
   userChallenges   UserChallenge[]
   userAchievements UserAchievement[]
 
   // Relaciones añadidas
-  comentarios Comentario[] // Relación con Comentario
+  comentarios Comentario[] 
 
-  metrics     Metric[]     // <-- Añade esta línea para la relación inversa
+  metrics     Metric[]    
 
-  ejercicios    Ejercicio[]  // Relación con los ejercicios personalizados
+  ejercicios    Ejercicio[] 
 }
 
 model Ejercicio {
@@ -55,7 +55,7 @@ model Rutina {
   usuario        Usuario           @relation(fields: [usuarioId], references: [id])
   usuarioId      Int
   ejercicios     RutinaEjercicio[]
-  calendario     Calendario[]      // 💡 Esta es la parte que faltaba
+  calendario     Calendario[]      
   fecha_creacion DateTime          @default(now())
   comentarios    Comentario[]
 
@@ -95,15 +95,15 @@ model Calendario {
 model Entrenador {
   id              Int            @id @default(autoincrement())
   nombre          String
-  especialidad    String         // por ejemplo: "Nutricionista", "Entrenador Personal", etc.
+  especialidad    String         
   descripcion     String
-  experiencia     Int            // años de experiencia
-  precio          Float          // precio por mes
+  experiencia     Int            
+  precio          Float         
   fotoUrl         String?
   disponible      Boolean        @default(true)
-  calificacion    Float?         // calificación promedio
+  calificacion    Float?         
   contrataciones  Contratacion[]
-  certificaciones String[]       // array de certificaciones
+  certificaciones String[]      
 }
 
 model Contratacion {
@@ -114,8 +114,8 @@ model Contratacion {
   entrenadorId  Int
   fechaInicio   DateTime
   fechaFin      DateTime?
-  estado        String      // "activa", "finalizada", "cancelada"
-  planSeleccionado String   // "mensual", "trimestral", "anual"
+  estado        String      
+  planSeleccionado String   
   precio        Float
 }
 
@@ -128,8 +128,8 @@ model Challenge {
   fechaInicio   DateTime
   fechaFin      DateTime
   participantes Int             @default(0)
-  nivel         String          // 'Principiante', 'Intermedio', 'Avanzado', 'Todos los niveles'
-  tipo          String          // 'Fuerza', 'Cardio', 'Flexibilidad', 'Resistencia', 'Equilibrio'
+  nivel         String         
+  tipo          String          
   objetivos     String[]
   recompensa    String
   createdAt     DateTime        @default(now())
@@ -160,7 +160,7 @@ model Achievement {
   descripcion     String
   tipo            String
   icono           String
-  criterio        String            // 'retos_completados', 'dias_activos', etc.
+  criterio        String           
   valorNecesario  Int
   userAchievements UserAchievement[]
 }

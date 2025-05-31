@@ -1370,6 +1370,166 @@ app.delete('/api/users/:id', async (req, res) => {
   }
 });
 
+// Nueva ruta para eliminar un reto completado por un usuario - ruta corregida
+app.delete('/api/challenges/delete/:userId/:challengeId', async (req, res) => {
+  const { userId, challengeId } = req.params;
+
+  try {
+    // Verificar que el reto existe para ese usuario
+    const userChallenge = await prisma.userChallenge.findUnique({
+      where: {
+        userId_challengeId: {
+          userId: parseInt(userId),
+          challengeId: parseInt(challengeId)
+        }
+      },
+      include: {
+        challenge: true
+      }
+    });
+
+    if (!userChallenge) {
+      return res.status(404).json({ message: 'No se encontró el reto para este usuario.' });
+    }
+
+    // Eliminar el reto del usuario
+    await prisma.userChallenge.delete({
+      where: {
+        userId_challengeId: {
+          userId: parseInt(userId),
+          challengeId: parseInt(challengeId)
+        }
+      }
+    });
+
+    // Decrementar el contador de participantes en el reto
+    // Solo si el reto sigue existiendo y es activo
+    if (userChallenge.challenge && userChallenge.challenge.activo) {
+      await prisma.challenge.update({
+        where: { id: parseInt(challengeId) },
+        data: {
+          participantes: {
+            decrement: 1
+          }
+        }
+      });
+    }
+
+    res.status(200).json({ message: 'Reto eliminado con éxito.' });
+
+  } catch (error) {
+    console.error('Error al eliminar el reto:', error);
+    res.status(500).json({ message: 'Error al eliminar el reto.', error: error.message });
+  }
+});
+
+// Nueva ruta para abandonar un reto
+app.post('/api/challenges/abandon', async (req, res) => {
+  const { userId, challengeId } = req.body;
+
+  if (!userId || !challengeId) {
+    return res.status(400).json({ message: 'userId y challengeId son requeridos.' });
+  }
+
+  try {
+    // Verificar que el reto existe para ese usuario
+    const userChallenge = await prisma.userChallenge.findUnique({
+      where: {
+        userId_challengeId: {
+          userId: parseInt(userId),
+          challengeId: parseInt(challengeId)
+        }
+      },
+      include: {
+        challenge: true
+      }
+    });
+
+    if (!userChallenge) {
+      return res.status(404).json({ message: 'No se encontró el reto para este usuario.' });
+    }
+
+    // Verificar que el reto no esté completado
+    if (userChallenge.completado) {
+      return res.status(400).json({ message: 'No puedes abandonar un reto que ya has completado.' });
+    }
+
+    // Eliminar la participación del usuario en el reto
+    await prisma.userChallenge.delete({
+      where: {
+        userId_challengeId: {
+          userId: parseInt(userId),
+          challengeId: parseInt(challengeId)
+        }
+      }
+    });
+
+    // Decrementar el contador de participantes en el reto
+    if (userChallenge.challenge && userChallenge.challenge.activo) {
+      await prisma.challenge.update({
+        where: { id: parseInt(challengeId) },
+        data: {
+          participantes: {
+            decrement: 1
+          }
+        }
+      });
+    }
+
+    res.status(200).json({ message: 'Reto abandonado con éxito.' });
+
+  } catch (error) {
+    console.error('Error al abandonar el reto:', error);
+    res.status(500).json({ message: 'Error al abandonar el reto.', error: error.message });
+  }
+});
+
+// Ruta para listar todas las rutas registradas
+app.get('/api/routes', (req, res) => {
+  const routes = [];
+  
+  // Obtener todas las rutas registradas
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      // Rutas directas
+      const path = middleware.route.path;
+      const methods = Object.keys(middleware.route.methods)
+        .filter(method => middleware.route.methods[method])
+        .map(method => method.toUpperCase());
+      
+      routes.push({
+        path,
+        methods,
+      });
+    } else if (middleware.name === 'router') {
+      // Rutas agrupadas en routers
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          const path = handler.route.path;
+          const methods = Object.keys(handler.route.methods)
+            .filter(method => handler.route.methods[method])
+            .map(method => method.toUpperCase());
+          
+          routes.push({
+            path: middleware.regexp.toString().includes('api') 
+              ? `/api${path}` 
+              : path,
+            methods,
+          });
+        }
+      });
+    }
+  });
+  
+  // Ordenar rutas alfabéticamente por path
+  routes.sort((a, b) => a.path.localeCompare(b.path));
+  
+  res.json({
+    totalRoutes: routes.length,
+    routes
+  });
+});
+
 // Iniciar servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en el puerto ${port}`);

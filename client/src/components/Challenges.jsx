@@ -13,6 +13,8 @@ export default function Challenges() {
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [progressModalValue, setProgressModalValue] = useState(0);
   const [progressModalChallenge, setProgressModalChallenge] = useState(null);
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState(false);
+  const [deletingChallengeId, setDeletingChallengeId] = useState(null);
   
   const getCurrentUser = () => {
     const id = localStorage.getItem('usuarioId');
@@ -319,6 +321,99 @@ export default function Challenges() {
     setShowProgressModal(false);
   };
 
+  // Nueva función para eliminar un reto completado
+  const deleteCompletedChallenge = async (challengeId) => {
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.id) {
+        alert("Debes iniciar sesión para eliminar un reto. Tu sesión puede haber expirado.");
+        return;
+      }
+
+      setDeletingChallengeId(challengeId);
+      setDeleteConfirmModal(true);
+    } catch (err) {
+      console.error('Error al preparar la eliminación del reto:', err);
+      alert('Hubo un problema al intentar eliminar el reto. Inténtalo de nuevo.');
+    }
+  };
+  
+  const confirmDeleteChallenge = async () => {
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.id || !deletingChallengeId) {
+        setDeleteConfirmModal(false);
+        return;
+      }
+
+      // Fix the API endpoint URL structure to match the server's route pattern
+      await axios.delete(`http://localhost:5000/api/challenges/delete/${currentUser.id}/${deletingChallengeId}`, apiConfig());
+      
+      // Actualizar la lista de retos completados
+      if (activeTab === 'completed') {
+        setChallenges(prev => prev.filter(challenge => challenge.challengeId !== deletingChallengeId));
+      }
+      
+      alert('Reto eliminado con éxito');
+      setDeleteConfirmModal(false);
+      
+      // Refrescar la lista de retos completados
+      if (activeTab === 'completed') {
+        await fetchCompletedChallenges(currentUser.id);
+      }
+    } catch (err) {
+      console.error('Error al eliminar el reto:', err);
+      alert('Hubo un problema al eliminar el reto. Inténtalo de nuevo.');
+      setDeleteConfirmModal(false);
+    }
+  };
+  
+  const abandonChallenge = async (challengeId) => {
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.id) {
+        alert("Debes iniciar sesión para abandonar un reto. Tu sesión puede haber expirado.");
+        return;
+      }
+
+      setDeletingChallengeId(challengeId);
+      setDeleteConfirmModal(true);
+    } catch (err) {
+      console.error('Error al preparar el abandono del reto:', err);
+      alert('Hubo un problema al intentar abandonar el reto. Inténtalo de nuevo.');
+    }
+  };
+  
+  const confirmAbandonChallenge = async () => {
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.id || !deletingChallengeId) {
+        setDeleteConfirmModal(false);
+        return;
+      }
+
+      await axios.post(`http://localhost:5000/api/challenges/abandon`, {
+        userId: currentUser.id,
+        challengeId: deletingChallengeId
+      }, apiConfig());
+      
+      // Actualizar la lista de retos del usuario
+      if (activeTab === 'joined') {
+        setUserChallenges(prev => prev.filter(uc => uc.challengeId !== deletingChallengeId));
+      }
+      
+      alert('Has abandonado el reto');
+      setDeleteConfirmModal(false);
+      
+      // Refrescar las listas de retos
+      await fetchData();
+    } catch (err) {
+      console.error('Error al abandonar el reto:', err);
+      alert('Hubo un problema al abandonar el reto. Inténtalo de nuevo.');
+      setDeleteConfirmModal(false);
+    }
+  };
+  
   const renderChallengesList = () => {
     console.log('Renderizando lista de retos. Retos disponibles:', challenges.length);
     console.log('Retos del usuario (userChallenges):', userChallenges.length);
@@ -336,7 +431,7 @@ export default function Challenges() {
       ).map(uc => ({...uc.challenge, progreso: uc.progreso, userChallengeId: uc.id })); 
       console.log('Retos participantes filtrados para mostrar:', displayChallenges.length);
     } else if (activeTab === 'completed') {
-      displayChallenges = challenges.map(uc => ({...uc.challenge, progreso: uc.progreso, userChallengeId: uc.id }));
+      displayChallenges = challenges.map(uc => ({...uc.challenge, progreso: uc.progreso, userChallengeId: uc.id, challengeId: uc.challengeId }));
       console.log('Retos completados filtrados para mostrar:', displayChallenges.length);
     }
 
@@ -417,9 +512,33 @@ export default function Challenges() {
               )}
               
               {activeTab === 'joined' && (
-                <span className="text-sm text-gray-400">
-                  Finaliza: {new Date(challenge.fechaFin).toLocaleDateString()}
-                </span>
+                <div className="flex gap-2 items-center">
+                  <span className="text-sm text-gray-400">
+                    {new Date(challenge.fechaFin).toLocaleDateString()}
+                  </span>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      abandonChallenge(challenge.challengeId);
+                    }}
+                    className="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700"
+                    title="Abandonar reto"
+                  >
+                    Abandonar
+                  </button>
+                </div>
+              )}
+              
+              {activeTab === 'completed' && (
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteCompletedChallenge(challenge.challengeId);
+                  }}
+                  className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                >
+                  Eliminar
+                </button>
               )}
             </div>
           </div>
@@ -767,6 +886,40 @@ export default function Challenges() {
                 className="flex-1 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
               >
                 Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de confirmación de eliminación/abandono */}
+      {deleteConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-8 w-full max-w-md">
+            <h3 className="text-lg font-bold text-white mb-4">
+              {activeTab === 'completed' ? 'Confirmar eliminación' : 'Confirmar abandono'}
+            </h3>
+            <p className="text-gray-300 mb-6">
+              {activeTab === 'completed' 
+                ? '¿Estás seguro de que deseas eliminar este reto de tu historial? Esta acción no puede deshacerse.'
+                : '¿Estás seguro de que deseas abandonar este reto? Perderás todo tu progreso actual.'}
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setDeleteConfirmModal(false)}
+                className="py-2 px-4 rounded bg-gray-700 text-gray-200 hover:bg-gray-600 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={activeTab === 'completed' ? confirmDeleteChallenge : confirmAbandonChallenge}
+                className={`py-2 px-4 rounded ${
+                  activeTab === 'completed' 
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'bg-yellow-600 hover:bg-yellow-700'
+                } text-white transition`}
+              >
+                {activeTab === 'completed' ? 'Eliminar' : 'Abandonar'}
               </button>
             </div>
           </div>

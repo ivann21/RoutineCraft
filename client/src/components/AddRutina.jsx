@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SearchableSelect from './SearchableSelect';
 
 const AddRutina = () => {
+  // Estados para manejar los datos del formulario
   const navigate = useNavigate();
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -16,7 +17,7 @@ const AddRutina = () => {
   const [ejercicioExistente, setEjercicioExistente] = useState(null);
   const [filtroEjercicios, setFiltroEjercicios] = useState('todos');
   
-  
+  // Cargar ejercicios disponibles al iniciar el componente
   useEffect(() => {
     const fetchEjercicios = async () => {
       try {
@@ -35,6 +36,7 @@ const AddRutina = () => {
     fetchEjercicios();
   }, []);
 
+  // Filtrar ejercicios según el filtro seleccionado (todos, comunes, personalizados)
   const ejerciciosFiltrados = () => {
     if (filtroEjercicios === 'comunes') {
       return ejercicios.filter(e => e.esComun);
@@ -45,32 +47,37 @@ const AddRutina = () => {
     }
   };
   
+  // Función para añadir un ejercicio a la rutina
   const handleAddEjercicio = () => {
     if (!ejercicioSeleccionado) return;
     
     const ejercicio = ejercicios.find(e => e.id === parseInt(ejercicioSeleccionado));
     if (ejercicio && !ejerciciosSeleccionados.some(e => e.ejercicioId === ejercicio.id)) {
+      // Añadir el ejercicio a la lista con valores predeterminados
       setEjerciciosSeleccionados([...ejerciciosSeleccionados, {
         ejercicioId: ejercicio.id,
         ejercicio: ejercicio,
-        series: 3,
-        repeticiones: 12,
-        descansoSegundos: 60,
+        series: 3,  // Valor predeterminado para series
+        repeticiones: 12,  // Valor predeterminado para repeticiones
+        descansoSegundos: 60,  // Valor predeterminado para descanso
         orden: ejerciciosSeleccionados.length > 0 
           ? Math.max(...ejerciciosSeleccionados.map(e => e.orden)) + 1 
-          : 1
+          : 1  // Asignar orden secuencial
       }]);
       setEjercicioSeleccionado('');
     } else if (ejercicio) {
+      // Mostrar modal si el ejercicio ya está en la lista
       setEjercicioExistente(ejercicio);
       setShowEjercicioExistenteModal(true);
     }
   };
 
+  // Función para eliminar un ejercicio de la rutina
   const handleRemoveEjercicio = (ejercicioId) => {
     setEjerciciosSeleccionados(ejerciciosSeleccionados.filter(e => e.ejercicioId !== ejercicioId));
   };
 
+  // Función para actualizar detalles de un ejercicio en la rutina (series, repeticiones, etc.)
   const handleUpdateEjercicioDetails = (ejercicioId, field, value) => {
     setEjerciciosSeleccionados(ejerciciosSeleccionados.map(e => {
       if (e.ejercicioId === ejercicioId) {
@@ -79,6 +86,8 @@ const AddRutina = () => {
       return e;
     }));
   };
+
+  // Función para enviar el formulario y crear la nueva rutina
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -87,6 +96,7 @@ const AddRutina = () => {
         throw new Error('No se encontró el ID del usuario');
       }
 
+      // Validaciones del formulario
       if (!nombre.trim()) {
         throw new Error('El nombre de la rutina es requerido');
       }
@@ -95,7 +105,7 @@ const AddRutina = () => {
         throw new Error('Debes añadir al menos un ejercicio a la rutina');
       }
 
-      // Validar y formatear los ejercicios
+      // Validar y formatear los ejercicios para enviar al servidor
       const ejerciciosFormateados = ejerciciosSeleccionados.map((e, index) => ({
         id: parseInt(e.ejercicioId),
         series: parseInt(e.series) || 3,
@@ -104,6 +114,7 @@ const AddRutina = () => {
         orden: parseInt(e.orden) || index + 1
       }));
 
+      // Crear objeto de rutina para enviar al servidor
       const nuevaRutina = {
         nombre,
         descripcion,
@@ -114,6 +125,7 @@ const AddRutina = () => {
       const response = await axios.post(`/api/rutinas`, { ...nuevaRutina, usuarioId });
       console.log('Respuesta del servidor:', response.data);
       
+      // Mostrar mensaje de éxito y navegar a la página de rutinas
       alert('Rutina añadida con éxito');
       navigate('/rutinas');
     } catch (error) {
@@ -122,6 +134,7 @@ const AddRutina = () => {
     }
   };
 
+  // Preparar opciones para el componente SearchableSelect
   const ejercicioOptions = ejerciciosFiltrados().map(ejercicio => ({
     value: ejercicio.id.toString(),
     label: `${ejercicio.nombre}${ejercicio.categoria ? ` - ${ejercicio.categoria}` : ''}`,

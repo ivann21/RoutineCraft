@@ -1441,7 +1441,7 @@ app.post('/api/challenges/abandon', async (req, res) => {
         }
       },
       include: {
-        challenge: true
+        challenge: true // Incluimos detalles del reto para verificar si sigue activo
       }
     });
 
@@ -1449,12 +1449,12 @@ app.post('/api/challenges/abandon', async (req, res) => {
       return res.status(404).json({ message: 'No se encontró el reto para este usuario.' });
     }
 
-    // Verificar que el reto no esté completado
+    // No permitimos abandonar retos ya completados
     if (userChallenge.completado) {
       return res.status(400).json({ message: 'No puedes abandonar un reto que ya has completado.' });
     }
 
-    // Eliminar la participación del usuario en el reto
+    // Eliminamos la participación del usuario en el reto
     await prisma.userChallenge.delete({
       where: {
         userId_challengeId: {
@@ -1464,13 +1464,13 @@ app.post('/api/challenges/abandon', async (req, res) => {
       }
     });
 
-    // Decrementar el contador de participantes en el reto
+    // Actualizamos el contador de participantes, decrementándolo en 1
     if (userChallenge.challenge && userChallenge.challenge.activo) {
       await prisma.challenge.update({
         where: { id: parseInt(challengeId) },
         data: {
           participantes: {
-            decrement: 1
+            decrement: 1 // Reducimos en uno el contador de participantes
           }
         }
       });

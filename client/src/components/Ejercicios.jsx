@@ -4,19 +4,21 @@ import AddEjercicio from './AddEjercicio';
 import EditEjercicio from './EditEjercicio';
 
 const Ejercicios = () => {
-  const [ejercicios, setEjercicios] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId'));
-  const [ejercicioEditando, setEjercicioEditando] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [ejercicioToDelete, setEjercicioToDelete] = useState(null);
-  const [deleteError, setDeleteError] = useState('');
-  const [selectedEjercicio, setSelectedEjercicio] = useState(null);
-  const [ejerciciosComunes, setEjerciciosComunes] = useState([]);
-  const [ejerciciosPersonalizados, setEjerciciosPersonalizados] = useState([]);
-  const [tipoFiltro, setTipoFiltro] = useState('todos'); 
-  const [searchTerm, setSearchTerm] = useState(''); 
+  // Estados para manejar los ejercicios y la interfaz de usuario
+  const [ejercicios, setEjercicios] = useState([]); // Todos los ejercicios
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId')); // Verificar si el usuario está logueado
+  const [ejercicioEditando, setEjercicioEditando] = useState(null); // Ejercicio que se está editando
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Controla la visibilidad del modal de confirmación
+  const [ejercicioToDelete, setEjercicioToDelete] = useState(null); // Ejercicio que se va a eliminar
+  const [deleteError, setDeleteError] = useState(''); // Error al eliminar ejercicio
+  const [selectedEjercicio, setSelectedEjercicio] = useState(null); // Ejercicio seleccionado para ver detalles
+  const [ejerciciosComunes, setEjerciciosComunes] = useState([]); // Ejercicios comunes predefinidos
+  const [ejerciciosPersonalizados, setEjerciciosPersonalizados] = useState([]); // Ejercicios personalizados del usuario
+  const [tipoFiltro, setTipoFiltro] = useState('todos'); // Filtro para mostrar tipos de ejercicios
+  const [searchTerm, setSearchTerm] = useState(''); // Término de búsqueda
 
+  // Detectar cambios en el estado de inicio de sesión (para navegación entre páginas)
   useEffect(() => {
     const handleStorageChange = () => {
       setIsLoggedIn(!!localStorage.getItem('usuarioId'));
@@ -29,6 +31,7 @@ const Ejercicios = () => {
     };
   }, []);
 
+  // Cargar ejercicios cuando el componente se monta
   useEffect(() => {
     if (isLoggedIn) {
       const fetchEjercicios = async () => {
@@ -36,12 +39,13 @@ const Ejercicios = () => {
           const usuarioId = localStorage.getItem('usuarioId');
           const response = await axios.get(`/api/ejercicios?usuarioId=${usuarioId}`);
           
+          // Separar ejercicios comunes y personalizados
           const comunes = response.data.filter(e => e.esComun);
           const personalizados = response.data.filter(e => !e.esComun);
           
           setEjerciciosComunes(comunes);
           setEjerciciosPersonalizados(personalizados);
-          setEjercicios(response.data); 
+          setEjercicios(response.data); // Todos los ejercicios
         } catch (error) {
           console.error('Error al obtener los ejercicios:', error);
         } finally {
@@ -55,9 +59,11 @@ const Ejercicios = () => {
     }
   }, [isLoggedIn]);
   
+  // Filtrar ejercicios según el tipo seleccionado (todos, comunes, personalizados) y el término de búsqueda
   const ejerciciosFiltrados = () => {
     let resultado = [];
     
+    // Filtrar por tipo de ejercicio
     switch (tipoFiltro) {
       case 'comunes':
         resultado = ejerciciosComunes || [];
@@ -69,6 +75,7 @@ const Ejercicios = () => {
         resultado = ejercicios || [];
     }
     
+    // Filtrar por término de búsqueda
     if (searchTerm.trim() !== '') {
       const termLower = searchTerm.toLowerCase().trim();
       resultado = resultado.filter(e => 
@@ -81,33 +88,41 @@ const Ejercicios = () => {
     return resultado;
   };
 
+  // Función para entrar en modo edición de un ejercicio
   const handleEditEjercicio = (ejercicio) => {
     setEjercicioEditando(ejercicio);
   };
 
+  // Función para abrir el modal de confirmación al eliminar un ejercicio
   const openDeleteModal = (ejercicio) => {
     setEjercicioToDelete(ejercicio);
     setDeleteError('');
     setShowDeleteModal(true);
   };
 
+  // Función para eliminar un ejercicio
   const handleDeleteEjercicio = async () => {
     try {
+      // Enviar solicitud para eliminar el ejercicio
       await axios.delete(`/api/ejercicios/${ejercicioToDelete.id}`);
       
+      // Actualizar estado local: eliminar de la lista general
       const filteredEjercicios = ejercicios.filter(ej => ej.id !== ejercicioToDelete.id);
       setEjercicios(filteredEjercicios);
       
+      // Actualizar listas filtradas
       if (ejercicioToDelete.esComun) {
         setEjerciciosComunes(ejerciciosComunes.filter(ej => ej.id !== ejercicioToDelete.id));
       } else {
         setEjerciciosPersonalizados(ejerciciosPersonalizados.filter(ej => ej.id !== ejercicioToDelete.id));
       }
       
+      // Cerrar modal y limpiar ejercicio a eliminar
       setShowDeleteModal(false);
       setEjercicioToDelete(null);
     } catch (error) {
       console.error('Error al eliminar el ejercicio:', error);
+      // Mostrar mensaje de error si el ejercicio está siendo usado en rutinas
       if (error.response && error.response.status === 409) {
         setDeleteError("Este ejercicio está siendo usado en una o más rutinas y no puede ser eliminado.");
       } else {
@@ -116,37 +131,45 @@ const Ejercicios = () => {
     }
   };
 
+  // Función para cancelar la edición de un ejercicio
   const handleCancelEdit = () => {
     setEjercicioEditando(null);
   };
 
+  // Función para ver los detalles de un ejercicio
   const handleViewDetails = (ejercicio) => {
     setSelectedEjercicio(ejercicio);
   };
 
+  // Función para cerrar la vista de detalles de un ejercicio
   const closeDetails = () => {
     setSelectedEjercicio(null);
   };
 
+  // Función para manejar cuando se añade un nuevo ejercicio
   const handleAddSuccess = (newEjercicio) => {
     if (newEjercicio.esComun) {
       setEjerciciosComunes([...ejerciciosComunes, newEjercicio]);
     } else {
       setEjerciciosPersonalizados([...ejerciciosPersonalizados, newEjercicio]);
-      
+      // Cambiar automáticamente a la vista de ejercicios personalizados
       setTipoFiltro('personalizados');
     }
     
+    // Añadir a la lista general de ejercicios
     setEjercicios([...ejercicios, newEjercicio]);
   };
 
+  // Función para manejar cuando se actualiza un ejercicio existente
   const handleUpdateSuccess = (updatedEjercicio) => {
+    // Actualizar en la lista general
     setEjercicios(prevEjercicios =>
       prevEjercicios.map(ej => 
         ej.id === updatedEjercicio.id ? updatedEjercicio : ej
       )
     );
 
+    // Actualizar en la lista específica según el tipo de ejercicio
     if (updatedEjercicio.esComun) {
       setEjerciciosComunes(prevComunes => 
         prevComunes.map(ej => 
@@ -161,6 +184,7 @@ const Ejercicios = () => {
       );
     }
 
+    // Salir del modo edición
     setEjercicioEditando(null);
   };
 

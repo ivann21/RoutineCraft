@@ -4,44 +4,51 @@ import axios from '../api/axios';
 import defaultProfilePic from "/default-profile.png?url";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
+// URL de la API según el entorno (desarrollo local o producción)
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? 'http://localhost:5000' 
   : 'https://routinecraft.onrender.com';
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState({ nombre: "", email: "", contraseña: "", foto: "" });
-  const [planInfo, setPlanInfo] = useState(null);
-  const [contrataciones, setContrataciones] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteError, setDeleteError] = useState(null);
-  const navigate = useNavigate();
+  // Estados para manejar datos y UI del perfil de usuario
+  const [user, setUser] = useState(null);         // Datos del usuario
+  const [editing, setEditing] = useState(false);  // Estado de edición del perfil
+  const [formData, setFormData] = useState({ nombre: "", email: "", contraseña: "", foto: "" }); // Datos del formulario
+  const [planInfo, setPlanInfo] = useState(null); // Información del plan de suscripción
+  const [contrataciones, setContrataciones] = useState([]); // Entrenadores contratados
+  const [loading, setLoading] = useState(true);   // Estado de carga
+  const [error, setError] = useState(null);       // Errores en la carga/actualización del perfil
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Control del modal de eliminación
+  const [deleteError, setDeleteError] = useState(null); // Error durante la eliminación de cuenta
+  const navigate = useNavigate(); // Hook para navegación programática
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
+        // Obtener información básica del usuario desde localStorage
         const userId = localStorage.getItem("usuarioId");
         const userName = localStorage.getItem("userName");
         const userEmail = localStorage.getItem("userEmail");
         
+        // Verificar que existe un usuario en sesión
         if (!userId) {
           setError("No se encontró información de usuario. Por favor, inicie sesión de nuevo.");
           setLoading(false);
           return;
         }
 
+        // Crear objeto con datos básicos del usuario
         const basicUser = {
           id: userId,
           nombre: userName || "",
           email: userEmail || ""
         };
         
+        // Establecer usuario con información básica
         setUser(basicUser);
         
+        // Inicializar formulario con datos básicos
         setFormData({
           nombre: basicUser.nombre,
           email: basicUser.email,
@@ -50,23 +57,28 @@ export default function Profile() {
         });
 
         try {
+          // Obtener información completa del perfil desde la API
           const response = await axios.get(`/api/profile/${userId}`);
           const userData = response.data;
           setUser(userData);
           
+          // Manejar la URL de la foto de perfil
           if (userData.fotoUrl) {
             const fullPhotoUrl = userData.fotoUrl.startsWith('http') 
               ? userData.fotoUrl 
               : `${API_URL}${userData.fotoUrl}`;
               
+            // Guardar la URL de la foto en localStorage para uso global
             localStorage.setItem("userProfilePic", fullPhotoUrl);
             
+            // Notificar a los componentes que escuchan este evento
             try {
               window.dispatchEvent(new Event('userLogin'));
             } catch (e) {
               console.error("Error al notificar cambio de foto:", e);
             }
             
+            // Actualizar formulario con datos completos incluyendo foto
             setFormData({
               nombre: userData.nombre,
               email: userData.email,
@@ -74,6 +86,7 @@ export default function Profile() {
               foto: fullPhotoUrl,
             });
           } else {
+            // Si no hay foto, usar la imagen por defecto
             setFormData({
               nombre: userData.nombre,
               email: userData.email,
@@ -82,13 +95,14 @@ export default function Profile() {
             });
           }
           
+          // Cargar información adicional: plan y contrataciones
           await Promise.all([
             fetchPlanInfo(userId),
             fetchContrataciones(userId)
           ]);
         } catch (error) {
           console.error("Error al cargar el perfil completo:", error);
- 
+          // No establece error general para permitir continuar con datos básicos
         }
       } catch (error) {
         console.error("Error al cargar datos del usuario:", error);
@@ -100,6 +114,7 @@ export default function Profile() {
 
     const fetchPlanInfo = async (userId) => {
       try {
+        // Obtener información del plan de suscripción
         const response = await axios.get(`/api/user-plan/${userId}`);
         setPlanInfo(response.data);
       } catch (error) {
@@ -109,6 +124,7 @@ export default function Profile() {
 
     const fetchContrataciones = async (userId) => {
       try {
+        // Obtener entrenadores contratados por el usuario
         const response = await axios.get(`/api/contrataciones/usuario/${userId}`);
         setContrataciones(response.data);
       } catch (error) {
@@ -119,11 +135,13 @@ export default function Profile() {
     fetchUserData();
   }, []);
 
+  // Manejar cambios en el formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Manejar cambios de foto de perfil
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -135,7 +153,9 @@ export default function Profile() {
     }
   };
 
+  // Guardar cambios en el perfil
   const handleSave = async () => {
+    // Crear objeto con datos actualizados
     const updatedUser = {
       ...user,
       nombre: formData.nombre,
@@ -143,6 +163,7 @@ export default function Profile() {
       foto: formData.foto,
     };
 
+    // Manejo de subida de nueva foto de perfil
     const fileInput = document.getElementById("foto");
     if (fileInput && fileInput.files && fileInput.files.length > 0) {
       const file = fileInput.files[0];
@@ -151,6 +172,7 @@ export default function Profile() {
       formDataToSend.append("userId", user.id); 
 
       try {
+        // Enviar la nueva foto al servidor
         const response = await axios.post("/upload-profile-pic", formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
@@ -160,6 +182,7 @@ export default function Profile() {
         const data = response.data;
         updatedUser.foto = data.imageUrl; 
         
+        // Actualizar URL de foto en localStorage
         const fullPhotoUrl = data.imageUrl.startsWith('http') 
           ? data.imageUrl 
           : `${API_URL}${data.imageUrl}`;
@@ -172,10 +195,11 @@ export default function Profile() {
     }
 
     try {
-      
+      // Actualizar datos en localStorage para mantenerlos sincronizados
       localStorage.setItem("userName", formData.nombre);
       localStorage.setItem("userEmail", formData.email);
       
+      // Actualizar URL de foto en localStorage si existe
       if (updatedUser.foto) {
         const fullPhotoUrl = updatedUser.foto.startsWith('http') 
           ? updatedUser.foto 
@@ -183,20 +207,26 @@ export default function Profile() {
         localStorage.setItem("userProfilePic", fullPhotoUrl);
       }
       
+      // Guardar el objeto de usuario completo
       localStorage.setItem("user", JSON.stringify(updatedUser));
       
+      // Actualizar estado del usuario y salir del modo edición
       setUser(updatedUser);
       setEditing(false);
       
+      // Notificar a los componentes que escuchan cambios en localStorage
       window.dispatchEvent(new Event('storage'));
       
+      // Notificar evento de login (para actualizar UI que muestra foto/nombre)
       window.dispatchEvent(new Event('userLogin'));
 
+      // Mostrar notificación de éxito
       const successMessage = document.createElement('div');
       successMessage.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50';
       successMessage.textContent = 'Perfil actualizado con éxito';
       document.body.appendChild(successMessage);
       
+      // Eliminar la notificación después de 3 segundos
       setTimeout(() => {
         document.body.removeChild(successMessage);
       }, 3000);
@@ -204,9 +234,11 @@ export default function Profile() {
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
       
+      // Actualizar localStorage incluso si hay error en el servidor
       localStorage.setItem("userName", formData.nombre);
       localStorage.setItem("userEmail", formData.email);
       
+      // Intentar actualizar la foto si existe
       if (updatedUser.foto) {
         try {
           const photoUrl = updatedUser.foto.startsWith('http') 
@@ -218,15 +250,18 @@ export default function Profile() {
         }
       }
       
+      // Guardar el objeto de usuario completo
       try {
         localStorage.setItem("user", JSON.stringify(updatedUser));
       } catch (e) {
         console.error("Error guardando el usuario completo:", e);
       }
       
+      // Actualizar estado del usuario y salir del modo edición
       setUser(updatedUser);
       setEditing(false);
       
+      // Notificar a otros componentes
       try {
         window.dispatchEvent(new Event('storage'));
         window.dispatchEvent(new Event('userLogin'));
@@ -234,6 +269,7 @@ export default function Profile() {
         console.error("Error al disparar evento storage:", e);
       }
       
+      // Mostrar notificación de actualización local
       try {
         const successMessage = document.createElement('div');
         successMessage.className = 'fixed top-4 right-4 bg-yellow-600 text-white px-6 py-3 rounded shadow-lg z-50';
@@ -253,6 +289,7 @@ export default function Profile() {
     }
   };
 
+  // Función para eliminar la cuenta de usuario
   const handleDeleteAccount = async () => {
     try {
       setDeleteError(null);
@@ -263,19 +300,23 @@ export default function Profile() {
       
       console.log("Enviando solicitud para eliminar usuario:", userId);
       
+      // Solicitud para eliminar la cuenta con un timeout generoso
       await axios({
         method: 'DELETE',
         url: `/api/users/${userId}`,
         timeout: 15000 
       });
 
+      // Limpiar todos los datos de localStorage
       localStorage.clear();
       
+      // Mostrar mensaje de éxito
       const successMessage = document.createElement('div');
       successMessage.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50';
       successMessage.textContent = 'Cuenta eliminada correctamente';
       document.body.appendChild(successMessage);
       
+      // Redireccionar al inicio después de 2 segundos
       setTimeout(() => {
         document.body.removeChild(successMessage);
         navigate('/');

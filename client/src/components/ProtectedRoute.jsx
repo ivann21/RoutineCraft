@@ -2,13 +2,17 @@ import React, { useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
+  // Verificar si el usuario está autenticado según localStorage
   const isLoggedIn = !!localStorage.getItem('usuarioId');
   
+  // Efectuar verificación de sesión al montar el componente
   useEffect(() => {
     const checkSession = () => {
+      // Obtener datos de autenticación de localStorage
       const usuarioId = localStorage.getItem('usuarioId');
       const userToken = localStorage.getItem('userToken');
       
+      // Si falta alguna información de autenticación, limpiar todos los datos de sesión
       if (!usuarioId || !userToken) {
         localStorage.removeItem('usuarioId');
         localStorage.removeItem('userToken');
@@ -22,6 +26,7 @@ const ProtectedRoute = ({ children }) => {
     checkSession();
   }, []);
 
+  // Si no hay sesión iniciada, mostrar pantalla de acceso restringido
   if (!isLoggedIn) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
@@ -66,6 +71,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
   
+  // Si hay sesión iniciada, renderizar el contenido protegido (children)
   return children;
 };
 

@@ -1,36 +1,40 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from './api/axios';
 import { useNavigate } from 'react-router-dom';
 import RestTimer from './components/RestTimer';
 
 const Rutinas = () => {
+  // Estados para la navegación y gestión de datos
   const navigate = useNavigate();
-  const [rutinas, setRutinas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId'));
-  const [planInfo, setPlanInfo] = useState(null);
-  const [showLimitModal, setShowLimitModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [rutinaToDelete, setRutinaToDelete] = useState(null);
-  const [selectedRutina, setSelectedRutina] = useState(null);
-  const [selectedExercise, setSelectedExercise] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(''); 
+  const [rutinas, setRutinas] = useState([]); // Lista de rutinas del usuario
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId')); // Estado de autenticación
+  const [planInfo, setPlanInfo] = useState(null); // Información del plan de suscripción
+  const [showLimitModal, setShowLimitModal] = useState(false); // Modal para límite de plan
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Modal para confirmar eliminación
+  const [rutinaToDelete, setRutinaToDelete] = useState(null); // Rutina a eliminar
+  const [selectedRutina, setSelectedRutina] = useState(null); // Rutina seleccionada para ver detalles
+  const [selectedExercise, setSelectedExercise] = useState(null); // Ejercicio seleccionado para temporizador
+  const [searchTerm, setSearchTerm] = useState(''); // Término de búsqueda para filtrar rutinas
   
+  // Función para abrir el modal de confirmación de eliminación
   const openDeleteModal = (rutina) => {
     setRutinaToDelete(rutina);
     setShowDeleteModal(true);
   };
 
+  // Función para eliminar una rutina después de confirmar
   const handleDeleteRutina = async () => {
     try {
       await axios.delete(`/api/rutinas/${rutinaToDelete.id}`);
       setRutinas(rutinas.filter((rutina) => rutina.id !== rutinaToDelete.id));
       
+      // Actualizar información del plan después de eliminar
       const usuarioId = localStorage.getItem('usuarioId');
       const planResponse = await axios.get(`/api/user-plan/${usuarioId}`);
       setPlanInfo(planResponse.data);
       
+      // Cerrar modal y limpiar estado
       setShowDeleteModal(false);
       setRutinaToDelete(null);
     } catch (error) {
@@ -39,6 +43,7 @@ const Rutinas = () => {
     }
   };
 
+  // Efecto para verificar estado de autenticación y manejar cambios en localStorage
   useEffect(() => {
     // Verificar autenticación al cargar el componente y en cada cambio de almacenamiento
     const checkAuth = () => {
@@ -69,17 +74,23 @@ const Rutinas = () => {
     };
   }, []);
 
+  // Efecto para cargar rutinas e información del plan cuando el usuario está autenticado
   useEffect(() => {
     if (isLoggedIn) {
       const fetchRutinas = async () => {
         try {
+          // Obtener ID del usuario desde localStorage
           const usuarioId = localStorage.getItem('usuarioId');
+          
+          // Cargar rutinas del usuario
           const response = await axios.get(`/api/rutinas/${usuarioId}`);
           setRutinas(response.data);
 
+          // Cargar información del plan del usuario
           const planResponse = await axios.get(`/api/user-plan/${usuarioId}`);
           setPlanInfo(planResponse.data);
           
+          // Verificar si hay una rutina específica a mostrar (desde navegación externa)
           const rutinaIdToView = localStorage.getItem('viewRutinaDetails');
           if (rutinaIdToView) {
             localStorage.removeItem('viewRutinaDetails');
@@ -101,7 +112,9 @@ const Rutinas = () => {
     }
   }, [isLoggedIn]);
 
+  // Función para manejar clic en botón "Añadir rutina"
   const handleAddRutinaClick = () => {
+    // Verificar si el usuario ha alcanzado el límite de rutinas de su plan
     if (planInfo && !planInfo.puedeCrearMas) {
       setShowLimitModal(true);
     } else {
@@ -109,10 +122,12 @@ const Rutinas = () => {
     }
   };
 
+  // Función para ver detalles de una rutina
   const handleViewDetails = (rutina) => {
     setSelectedRutina(rutina);
   };
   
+  // Función para cerrar vista de detalles
   const closeDetails = () => {
     setSelectedRutina(null);
   };
@@ -133,6 +148,7 @@ const Rutinas = () => {
     );
   };
 
+  // Renderizar pantalla de acceso restringido si el usuario no está autenticado
   if (!isLoggedIn) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
@@ -151,6 +167,7 @@ const Rutinas = () => {
     );
   }
 
+  // Mostrar indicador de carga mientras se cargan las rutinas
   if (loading) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
@@ -168,6 +185,7 @@ const Rutinas = () => {
     );
   }
 
+  // Renderizado principal del componente
   return (
     <div className="relative bg-gray-900 overflow-hidden min-h-screen pb-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>

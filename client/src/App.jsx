@@ -21,6 +21,7 @@ import CookiesPage from "./components/CookiesPage";
 import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { handleLoginTransition } from './utils/userUtils';
+import CookieBanner from './components/CookieBanner';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -132,6 +133,8 @@ export default function App() {
         </Routes>
       </div>
       <Footer />
+      {/* Banner de cookies - siempre visible a menos que se acepte */}
+      <CookieBanner />
     </div>
   );
 }

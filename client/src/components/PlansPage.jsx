@@ -2,16 +2,19 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function PlansPage() {
-  const [planInfo, setPlanInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showLimitModal, setShowLimitModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId'));
+  // Estados para manejar la información de planes y UI
+  const [planInfo, setPlanInfo] = useState(null);         // Información del plan actual
+  const [loading, setLoading] = useState(true);           // Estado de carga
+  const [error, setError] = useState(null);               // Mensajes de error
+  const [showLimitModal, setShowLimitModal] = useState(false); // Control del modal de límite
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId')); // Estado de autenticación
 
+  // Función para cambiar de plan
   const handlePlanChange = async (newPlan) => {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
       
+      // Verificar que el usuario está autenticado
       if (!usuarioId) {
         setError('Usuario no encontrado. Por favor, inicia sesión.');
         return;
@@ -20,6 +23,7 @@ export default function PlansPage() {
       setLoading(true);
       setError(null);
       
+      // Enviar solicitud para actualizar el plan
       const response = await fetch('http://localhost:5000/api/user-plan/update', {
         method: 'POST',
         headers: {
@@ -33,10 +37,12 @@ export default function PlansPage() {
 
       const responseText = await response.text();
       
+      // Verificar si la respuesta es correcta
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${responseText || response.statusText}`);
       }
       
+      // Parsear la respuesta JSON
       let updatedPlanInfo;
       try {
         updatedPlanInfo = JSON.parse(responseText);
@@ -44,6 +50,7 @@ export default function PlansPage() {
         throw new Error('Respuesta del servidor no es JSON válido');
       }
       
+      // Actualizar estado con la nueva información del plan
       setPlanInfo(updatedPlanInfo);
       alert(`Plan cambiado a ${newPlan.toUpperCase()} con éxito`);
     } catch (error) {
@@ -54,18 +61,21 @@ export default function PlansPage() {
     }
   };
 
+  // Efecto para cargar información del plan al montar componente
   useEffect(() => {
     const fetchPlanInfo = async () => {
       try {
         setLoading(true);
         const usuarioId = localStorage.getItem('usuarioId');
         
+        // Verificar que el usuario está autenticado
         if (!usuarioId) {
           setError('Usuario no encontrado. Por favor, inicia sesión.');
           setLoading(false);
           return;
         }
         
+        // Obtener información del plan actual
         const response = await fetch(`http://localhost:5000/api/user-plan/${usuarioId}`);
         
         if (!response.ok) {
@@ -86,6 +96,7 @@ export default function PlansPage() {
     fetchPlanInfo();
   }, []);
 
+  // Efecto para verificar estado de autenticación
   useEffect(() => {
     const checkAuth = () => {
       const userId = localStorage.getItem('usuarioId');
@@ -94,13 +105,14 @@ export default function PlansPage() {
     
     checkAuth();
     
-    // Escuchar eventos de storage
+    // Escuchar eventos de cambios en localStorage
     const handleStorageChange = () => {
       checkAuth();
     };
     
     window.addEventListener('storage', handleStorageChange);
     
+    // Limpieza al desmontar componente
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };

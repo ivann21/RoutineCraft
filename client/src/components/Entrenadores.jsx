@@ -3,20 +3,23 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const Entrenadores = () => {
-  const [entrenadores, setEntrenadores] = useState([]);
-  const [entrenadoresContratados, setEntrenadoresContratados] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filtroEspecialidad, setFiltroEspecialidad] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId'));
-  const [modalEntrenador, setModalEntrenador] = useState(null);
-  const [planSeleccionado, setPlanSeleccionado] = useState('mensual');
-  const [error, setError] = useState(null);
+  // Estados para manejar los entrenadores y la interfaz
+  const [entrenadores, setEntrenadores] = useState([]); // Lista de todos los entrenadores
+  const [entrenadoresContratados, setEntrenadoresContratados] = useState([]); // Entrenadores contratados por el usuario
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [filtroEspecialidad, setFiltroEspecialidad] = useState(''); // Filtro por especialidad
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId')); // Estado de autenticación
+  const [modalEntrenador, setModalEntrenador] = useState(null); // Entrenador seleccionado para contratar
+  const [planSeleccionado, setPlanSeleccionado] = useState('mensual'); // Plan de contratación
+  const [error, setError] = useState(null); // Mensajes de error
   
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const [processingContratacion, setProcessingContratacion] = useState(false);
+  // Estados para modales de notificación
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // Modal de éxito
+  const [showErrorModal, setShowErrorModal] = useState(false); // Modal de error
+  const [notificationMessage, setNotificationMessage] = useState(''); // Mensaje de notificación
+  const [processingContratacion, setProcessingContratacion] = useState(false); // Estado de procesamiento
 
+  // Efecto para detectar cambios en el estado de autenticación
   useEffect(() => {
     const handleStorageChange = () => {
       setIsLoggedIn(!!localStorage.getItem('usuarioId'));
@@ -31,6 +34,7 @@ const Entrenadores = () => {
     };
   }, []);
 
+  // Función para obtener todos los entrenadores disponibles
   const fetchEntrenadores = async () => {
     try {
       const response = await axios.get('/api/entrenadores');
@@ -44,6 +48,7 @@ const Entrenadores = () => {
     }
   };
 
+  // Función para obtener los entrenadores contratados por el usuario
   const fetchEntrenadoresContratados = async () => {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
@@ -55,6 +60,7 @@ const Entrenadores = () => {
     }
   };
 
+  // Cargar datos cuando el componente se monta
   useEffect(() => {
     if (isLoggedIn) {
       Promise.all([
@@ -68,8 +74,10 @@ const Entrenadores = () => {
     }
   }, [isLoggedIn]);
 
+  // Extraer lista de especialidades únicas para el filtro
   const especialidades = [...new Set(entrenadores.map(e => e.especialidad))];  
 
+  // Función para iniciar el proceso de contratación
   const handleContratacion = async (entrenadorId) => {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
@@ -81,6 +89,7 @@ const Entrenadores = () => {
 
       setProcessingContratacion(true);
 
+      // Enviar solicitud para contratar al entrenador
       await axios.post('/api/contrataciones', {
         entrenadorId,
         usuarioId,
@@ -88,10 +97,12 @@ const Entrenadores = () => {
         fechaInicio: new Date().toISOString()
       });
 
+      // Mostrar notificación de éxito
       setNotificationMessage('¡Has contratado al entrenador exitosamente!');
       setShowSuccessModal(true);
       setModalEntrenador(null);
       
+      // Actualizar listas de entrenadores
       await Promise.all([
         fetchEntrenadores(),
         fetchEntrenadoresContratados()
@@ -107,21 +118,22 @@ const Entrenadores = () => {
     }
   };
 
+  // Función para calcular precio según el plan seleccionado
   const calcularPrecio = (precioBase) => {
     const precios = {
       mensual: precioBase,
-      trimestral: precioBase * 3 * 0.9, 
-      anual: precioBase * 12 * 0.83 
+      trimestral: precioBase * 3 * 0.9, // 10% descuento
+      anual: precioBase * 12 * 0.83 // 17% descuento
     };
     const precioTotal = precios[planSeleccionado];
     
     switch (planSeleccionado) {
       case 'trimestral':
-        return (precioTotal / 3).toFixed(2);
+        return (precioTotal / 3).toFixed(2); // Precio mensual en plan trimestral
       case 'anual':
-        return (precioTotal / 12).toFixed(2);
+        return (precioTotal / 12).toFixed(2); // Precio mensual en plan anual
       default:
-        return precioTotal.toFixed(2);
+        return precioTotal.toFixed(2); // Precio plan mensual
     }
   };
 

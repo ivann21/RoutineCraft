@@ -3,27 +3,31 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Register() {
+  // Estados para manejar el formulario y la interacción del usuario
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
     contraseña: "",
     confirmarContraseña: "",
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");         // Mensaje de error
+  const [loading, setLoading] = useState(false);  // Estado de carga durante el proceso de registro
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook para navegación programática
 
+  // Manejar cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Manejar el envío del formulario de registro
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    // Validar que las contraseñas coincidan
     if (formData.contraseña !== formData.confirmarContraseña) {
       setError("Las contraseñas no coinciden");
       setLoading(false);
@@ -31,22 +35,27 @@ export default function Register() {
     }
 
     try {
+      // Enviar petición de registro al servidor
       const response = await axios.post("/register", formData);
       console.log('Registro exitoso:', response.data);
 
       try {
+        // Iniciar sesión automáticamente después del registro
         const loginResponse = await axios.post("/login", {
           email: formData.email,
           contraseña: formData.contraseña,
         });
 
+        // Guardar datos de autenticación en localStorage
         localStorage.setItem("userToken", loginResponse.data.token);
         localStorage.setItem("usuarioId", loginResponse.data.user.id);
         localStorage.setItem("userName", loginResponse.data.user.nombre);
         localStorage.setItem("userEmail", loginResponse.data.user.email);
 
+        // Notificar a otros componentes del cambio en localStorage
         window.dispatchEvent(new Event("storage"));
 
+        // Redireccionar a la página de rutinas
         navigate("/rutinas");
       } catch (loginError) {
         console.error("Error al iniciar sesión automáticamente:", loginError);

@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const EditEjercicio = ({ ejercicio, onSubmitSuccess, onCancel }) => {
+  // Estados para manejar el formulario y los datos del ejercicio
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [categoria, setCategoria] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cargar datos iniciales del ejercicio
+  // Cargar datos iniciales del ejercicio cuando el componente se monta o el ejercicio cambia
   useEffect(() => {
     if (ejercicio) {
       setNombre(ejercicio.nombre || '');
@@ -17,8 +18,10 @@ const EditEjercicio = ({ ejercicio, onSubmitSuccess, onCancel }) => {
     }
   }, [ejercicio]);
 
+  // Manejar el envío del formulario para actualizar el ejercicio
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validar que tengamos un ID de ejercicio para actualizar
     if (!ejercicio || !ejercicio.id) {
       setError('No se encontró el ID del ejercicio a editar');
       return;
@@ -28,17 +31,20 @@ const EditEjercicio = ({ ejercicio, onSubmitSuccess, onCancel }) => {
     setError(null);
 
     try {
+      // Crear un FormData para enviar los datos del ejercicio actualizado
       const formData = new FormData();
       formData.append('nombre', nombre);
       formData.append('descripcion', descripcion);
       formData.append('categoria', categoria);
 
+      // Enviar solicitud PUT al servidor para actualizar el ejercicio
       await axios.put(`/api/ejercicios/${ejercicio.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      // Notificar al componente padre del éxito y los datos actualizados
       onSubmitSuccess({
         ...ejercicio,
         nombre,

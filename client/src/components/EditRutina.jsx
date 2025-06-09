@@ -7,8 +7,11 @@ import SearchableSelect from './SearchableSelect';
 axios.defaults.baseURL = 'http://localhost:5000';
 
 const EditRutina = () => {
+  // Obtener el ID de la rutina de los parámetros de URL
   const { id } = useParams();
   const navigate = useNavigate();
+  
+  // Estados para manejar el formulario
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [ejercicios, setEjercicios] = useState([]);
@@ -23,6 +26,7 @@ const EditRutina = () => {
   const [searchTerm] = useState(''); 
   
   useEffect(() => {
+    // Función para cargar la rutina que se va a editar
     const fetchRutina = async () => {
       try {
         setLoading(true);
@@ -30,6 +34,7 @@ const EditRutina = () => {
         
         const usuarioId = localStorage.getItem('usuarioId');
         
+        // Obtener todas las rutinas del usuario y filtrar la que se quiere editar
         const response = await axios.get(`/api/rutinas/${usuarioId}`);
         
         const rutina = response.data.find(r => r.id === parseInt(id));
@@ -37,9 +42,11 @@ const EditRutina = () => {
         if (rutina) {
           console.log("Rutina encontrada:", rutina);
           
+          // Establecer los datos básicos de la rutina
           setNombre(rutina.nombre || '');
           setDescripcion(rutina.descripcion || '');
           
+          // Procesar los ejercicios de la rutina si existen
           if (rutina.ejercicios && rutina.ejercicios.length > 0) {
             procesarEjercicios(rutina.ejercicios);
           }
@@ -54,6 +61,7 @@ const EditRutina = () => {
       }
     };
 
+    // Función para formatear los ejercicios recibidos del servidor
     const procesarEjercicios = (ejerciciosData) => {
       if (!ejerciciosData || ejerciciosData.length === 0) {
         console.log("No hay ejercicios para procesar");
@@ -61,6 +69,7 @@ const EditRutina = () => {
       }
       
       try {
+        // Transformar los datos de ejercicios al formato esperado por el componente
         const ejerciciosFormateados = ejerciciosData.map(ej => {
           const ejercicioObj = ej.ejercicio || ej;
           const ejercicioId = ejercicioObj.id || ej.ejercicioId;
@@ -86,6 +95,7 @@ const EditRutina = () => {
       }
     };
 
+    // Función para cargar todos los ejercicios disponibles
     const fetchEjercicios = async () => {
       try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -97,15 +107,18 @@ const EditRutina = () => {
       }
     };
 
+    // Ejecutar las funciones para cargar los datos
     fetchRutina();
     fetchEjercicios();
-  }, [id]);
+  }, [id]); // Ejecutar solo cuando cambie el ID
 
+  // Función para añadir un ejercicio a la rutina
   const handleAddEjercicio = () => {
     if (!ejercicioSeleccionado) return;
     
     const ejercicio = ejercicios.find(e => e.id === parseInt(ejercicioSeleccionado));
     if (ejercicio && !ejerciciosSeleccionados.some(e => e.ejercicioId === ejercicio.id)) {
+      // Añadir el ejercicio a la lista con valores por defecto
       setEjerciciosSeleccionados([...ejerciciosSeleccionados, {
         ejercicioId: ejercicio.id,
         ejercicio: ejercicio,
@@ -118,15 +131,18 @@ const EditRutina = () => {
       }]);
       setEjercicioSeleccionado('');
     } else if (ejercicio) {
+      // Si el ejercicio ya está en la rutina, mostrar modal de advertencia
       setEjercicioExistente(ejercicio);
       setShowEjercicioExistenteModal(true);
     }
   };
 
+  // Función para eliminar un ejercicio de la rutina
   const handleRemoveEjercicio = (ejercicioId) => {
     setEjerciciosSeleccionados(ejerciciosSeleccionados.filter(e => e.ejercicioId !== ejercicioId));
   };
 
+  // Función para actualizar los detalles de un ejercicio (series, repeticiones, etc.)
   const handleUpdateEjercicioDetails = (ejercicioId, field, value) => {
     setEjerciciosSeleccionados(ejerciciosSeleccionados.map(e => {
       if (e.ejercicioId === ejercicioId) {
@@ -136,11 +152,13 @@ const EditRutina = () => {
     }));
   };
 
+  // Función para enviar el formulario y actualizar la rutina
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); 
     
     try {
+      // Validar datos del formulario
       if (!nombre.trim()) {
         throw new Error('El nombre de la rutina es requerido');
       }
@@ -149,6 +167,7 @@ const EditRutina = () => {
         throw new Error('Debes añadir al menos un ejercicio a la rutina');
       }
 
+      // Formatear los ejercicios para enviarlos al servidor
       const ejerciciosFormateados = ejerciciosSeleccionados.map(e => ({
         id: e.id, 
         ejercicioId: e.ejercicioId,
@@ -160,6 +179,7 @@ const EditRutina = () => {
 
       const usuarioId = localStorage.getItem('usuarioId');
 
+      // Crear el objeto con los datos de la rutina
       const rutinaData = {
         nombre,
         descripcion,
@@ -170,6 +190,7 @@ const EditRutina = () => {
       console.log("Enviando datos a la API para actualizar rutina:", rutinaData);
 
       try {
+        // Intentar actualizar la rutina con una solicitud PUT
         const response = await axios.put(`/api/rutinas/${id}`, rutinaData);
         console.log("Rutina actualizada exitosamente:", response.data);
         alert('Rutina actualizada con éxito');
@@ -177,6 +198,7 @@ const EditRutina = () => {
       } catch (error) {
         console.error("Error al actualizar la rutina:", error);
         
+        // Si falla la actualización, intentamos eliminar y recrear la rutina
         try {
           await axios.delete(`/api/rutinas/${id}`);
           
@@ -195,6 +217,7 @@ const EditRutina = () => {
       setLoading(false);
     }
   };
+
   // Mostrar spinner de carga mientras se obtienen los datos
   if (loading) {
     return (

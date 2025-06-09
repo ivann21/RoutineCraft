@@ -39,17 +39,19 @@ export default function Progress() {
     { key: 'cadera', label: 'Cadera (cm)' }
   ];
 
+  // Verificar y cargar datos de usuario cuando el componente se monta
   useEffect(() => {
     const uid = localStorage.getItem('usuarioId');
     if (uid) {
       setUserId(uid);
-      fetchMetrics(uid);
+      fetchMetrics(uid); // Cargar métricas del usuario
     } else {
       setLoading(false);
       setError('Usuario no identificado. Por favor, inicia sesión nuevamente.');
     }
   }, []);
 
+  // Función para cargar métricas del usuario desde el servidor
   const fetchMetrics = async (uid) => {
     setLoading(true);
     try {
@@ -57,12 +59,14 @@ export default function Progress() {
         setMetrics([]);
         return;
       }
+      // Realizar solicitud HTTP para obtener métricas con token de autorización
       const response = await axios.get(`http://localhost:5000/api/metrics/${uid}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('userToken')}`
         }
       });
       
+      // Procesar respuesta exitosa
       if (response.status === 200) {
         setMetrics(response.data);
       } else {
@@ -77,7 +81,9 @@ export default function Progress() {
     }
   };
 
+  // Función para añadir una nueva métrica de progreso
   const addMetric = async () => {
+    // Validar entrada del usuario
     if (!newEntry.valor || isNaN(parseFloat(newEntry.valor))) {
       setError('Por favor ingresa un valor numérico válido');
       return;
@@ -88,10 +94,12 @@ export default function Progress() {
       return;
     }
     
+    // Reiniciar estados de UI
     setError('');
     setSaveSuccess(false);
     
     try {
+      // Preparar datos para enviar al servidor
       const metricData = {
         userId: userId,
         tipo: activeMetric,
@@ -101,6 +109,7 @@ export default function Progress() {
       
       console.log('Enviando métrica:', metricData);
       
+      // Enviar solicitud POST para guardar la nueva métrica
       const response = await axios.post('http://localhost:5000/api/metrics', metricData, {
         headers: {
           'Content-Type': 'application/json',
@@ -108,6 +117,7 @@ export default function Progress() {
         }
       });
       
+      // Procesar respuesta exitosa
       if (response.status === 201 || response.status === 200) {
         setMetrics([...metrics, response.data]);
         setNewEntry({ valor: '', fecha: new Date().toISOString().split('T')[0] });

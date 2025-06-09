@@ -3,17 +3,21 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const Calendario = () => {
-  const [eventos, setEventos] = useState([]);
-  const [rutinas, setRutinas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId'));
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedRutina, setSelectedRutina] = useState('');
-  const [error, setError] = useState(null);  const currentDate = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
-  const [weekDays] = useState(['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']);
-  const [colorMap, setColorMap] = useState({});
+  // Estados para el calendario y las rutinas
+  const [eventos, setEventos] = useState([]); // Eventos programados
+  const [rutinas, setRutinas] = useState([]); // Rutinas disponibles
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('usuarioId')); // Estado de autenticación
+  const [selectedDate, setSelectedDate] = useState(''); // Fecha seleccionada para programar
+  const [selectedRutina, setSelectedRutina] = useState(''); // Rutina seleccionada para programar
+  const [error, setError] = useState(null);  // Mensajes de error
+  
+  const currentDate = new Date(); // Fecha actual
+  const [selectedMonth, setSelectedMonth] = useState(new Date()); // Mes seleccionado para visualizar
+  const [weekDays] = useState(['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']); // Nombres de días
+  const [colorMap, setColorMap] = useState({}); // Mapa de colores para rutinas
 
+  // Efecto para detectar cambios en el estado de inicio de sesión
   useEffect(() => {
     const handleStorageChange = () => {
       setIsLoggedIn(!!localStorage.getItem('usuarioId'));
@@ -25,12 +29,14 @@ const Calendario = () => {
     };
   }, []);
 
+  // Función para obtener rutinas del usuario
   const fetchRutinas = async () => {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
       const response = await axios.get(`/api/rutinas/${usuarioId}`);
       setRutinas(response.data);
       
+      // Generar colores para cada rutina
       const colors = generateColorsForRutinas(response.data);
       setColorMap(colors);
     } catch (error) {
@@ -39,23 +45,33 @@ const Calendario = () => {
     }
   };
 
+  // Función para obtener eventos programados en el calendario
   const fetchEventos = async () => {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
       const response = await axios.get(`/api/calendario/${usuarioId}`);
+      
+      // Filtrar eventos pasados y actuales
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      
+      // Eventos actuales (hoy o futuros)
       const currentEvents = response.data.filter(evento => {
         const eventDate = new Date(evento.fecha);
         return eventDate >= today;
       });
+      
+      // Eventos pasados (se eliminarán automáticamente)
       const pastEvents = response.data.filter(evento => {
         const eventDate = new Date(evento.fecha);
         return eventDate < today;
       });
+      
+      // Eliminar eventos pasados de la base de datos
       for (const evento of pastEvents) {
         await axios.delete(`/api/calendario/${evento.id}`);
       }
+      
       setEventos(currentEvents);
       setError(null);
     } catch (error) {
@@ -66,8 +82,10 @@ const Calendario = () => {
     }
   };
 
+  // Función para generar colores para cada rutina
   const generateColorsForRutinas = (rutinas) => {
     const colors = {};
+    // Lista de colores predefinidos para asignar a rutinas
     const predefinedColors = [
       'bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-pink-600', 
       'bg-yellow-600', 'bg-indigo-600', 'bg-red-600', 'bg-orange-600',
@@ -75,6 +93,7 @@ const Calendario = () => {
       'bg-violet-600', 'bg-fuchsia-600', 'bg-rose-600', 'bg-amber-600'
     ];
     
+    // Asignar un color a cada rutina
     rutinas.forEach((rutina, index) => {
       colors[rutina.id] = predefinedColors[index % predefinedColors.length];
     });
@@ -82,10 +101,12 @@ const Calendario = () => {
     return colors;
   };
 
+  // Obtener color para una rutina específica
   const getColorForRutina = (rutinaId) => {
-    return colorMap[rutinaId] || 'bg-gray-600'; 
+    return colorMap[rutinaId] || 'bg-gray-600'; // Color por defecto si no hay asignación
   };
 
+  // Cargar datos cuando el componente se monta
   useEffect(() => {
     if (isLoggedIn) {
       fetchRutinas();
@@ -95,6 +116,7 @@ const Calendario = () => {
     }
   }, [isLoggedIn]);
 
+  // Función para añadir un nuevo evento al calendario
   const handleAddEvento = async (e) => {
     e.preventDefault();
     if (!selectedDate || !selectedRutina) {
@@ -111,7 +133,9 @@ const Calendario = () => {
       });
 
       alert('Rutina programada con éxito');
-      fetchEventos();
+      fetchEventos(); // Recargar eventos
+      
+      // Limpiar selecciones
       setSelectedDate('');
       setSelectedRutina('');
     } catch (error) {
@@ -120,16 +144,18 @@ const Calendario = () => {
     }
   };
 
+  // Función para eliminar un evento del calendario
   const handleDeleteEvento = async (eventoId) => {
     try {
       await axios.delete(`/api/calendario/${eventoId}`);
-      fetchEventos(); 
+      fetchEventos(); // Recargar eventos después de eliminar
     } catch (error) {
       console.error('Error al eliminar el evento:', error);
       alert('Error al eliminar el evento');
     }
   };
 
+  // Redireccionar al login si no hay sesión iniciada
   if (!isLoggedIn) {
     return (
       <div className="relative bg-gray-900 overflow-hidden min-h-screen">
@@ -148,6 +174,7 @@ const Calendario = () => {
     );
   }
 
+  // Mostrar indicador de carga mientras se obtienen los datos
   if (loading) {
     return (
       <div className="relative bg-gray-900 min-h-screen">
@@ -158,23 +185,31 @@ const Calendario = () => {
       </div>
     );
   }
+
+  // Funciones auxiliares para el calendario
+  
+  // Obtener el número de días en un mes
   const getDaysInMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
+  // Obtener el día de la semana del primer día del mes (0 = domingo, 1 = lunes, etc.)
   const getFirstDayOfMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
+  // Generar array de días para el calendario
   const generateCalendarDays = () => {
     const daysInMonth = getDaysInMonth(selectedMonth);
     const firstDay = getFirstDayOfMonth(selectedMonth);
     const days = [];
 
+    // Agregar celdas vacías para los días antes del primer día del mes
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
 
+    // Agregar días del mes
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(day);
     }
@@ -182,6 +217,7 @@ const Calendario = () => {
     return days;
   };
 
+  // Navegación entre meses
   const handlePrevMonth = () => {
     setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1));
   };
@@ -190,9 +226,13 @@ const Calendario = () => {
     setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1));
   };
 
+  // Obtener eventos para un día específico
   const getEventosForDay = (day) => {
-    if (!day) return [];
+    if (!day) return []; // Si es una celda vacía
+    
     const date = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), day);
+    
+    // Filtrar eventos que ocurren en la fecha especificada
     return eventos.filter(evento => {
       const eventDate = new Date(evento.fecha);
       return (
@@ -203,11 +243,13 @@ const Calendario = () => {
     });
   };
 
+  // Función para ver detalles de una rutina
   const handleViewRutinaDetails = (rutinaId) => {
     localStorage.setItem('viewRutinaDetails', rutinaId);
-    window.location.href = '/rutinas'; 
+    window.location.href = '/rutinas'; // Navegar a la página de rutinas
   };
 
+  // Renderizado principal del calendario
   return (
     <div className="relative bg-gray-900 min-h-screen pb-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 to-gray-900"></div>
@@ -219,6 +261,7 @@ const Calendario = () => {
           <div className="lg:col-span-2">
             {/* Calendario Visual */}
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+              {/* Encabezado y navegación del calendario */}
               <div className="flex justify-between items-center mb-6">
                 <button
                   onClick={handlePrevMonth}
@@ -237,14 +280,21 @@ const Calendario = () => {
                 </button>
               </div>
 
+              {/* Rejilla del calendario */}
               <div className="grid grid-cols-7 gap-2">
+                {/* Nombres de los días de la semana */}
                 {weekDays.map((day) => (
                   <div key={day} className="text-center text-gray-300 font-medium py-2 bg-gray-700/50 rounded">
                     {day}
                   </div>
                 ))}
+                
+                {/* Días del mes con eventos */}
                 {generateCalendarDays().map((day, index) => {
+                  // Obtener eventos para este día
                   const eventos = getEventosForDay(day);
+                  
+                  // Verificar si es hoy
                   const isToday = day === currentDate.getDate() && 
                                 selectedMonth.getMonth() === currentDate.getMonth() && 
                                 selectedMonth.getFullYear() === currentDate.getFullYear();
@@ -261,9 +311,11 @@ const Calendario = () => {
                     >
                       {day && (
                         <>
+                          {/* Número del día */}
                           <div className={`text-sm mb-1 font-medium ${isToday ? 'text-blue-400' : 'text-gray-400'}`}>
                             {day}
                           </div>
+                          {/* Eventos del día */}
                           <div className="space-y-1 max-h-[60px] overflow-y-auto pr-1 custom-scrollbar">
                             {eventos.map((evento) => (
                               <button
@@ -295,6 +347,8 @@ const Calendario = () => {
                 </svg>
                 Rutinas Programadas
               </h2>
+              
+              {/* Mostrar error o lista de eventos */}
               {error ? (
                 <div className="text-red-500 text-center p-4 bg-red-100/10 rounded-lg">
                   {error}
@@ -309,6 +363,7 @@ const Calendario = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
+                  {/* Listar todos los eventos programados */}
                   {eventos.map(evento => (
                     <div
                       key={evento.id}
@@ -329,6 +384,7 @@ const Calendario = () => {
                         </div>
                       </div>
                       <div className="flex space-x-2">
+                        {/* Botones de acción para cada evento */}
                         <button
                           onClick={() => handleViewRutinaDetails(evento.rutina.id)}
                           className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md shadow-sm transition-colors flex items-center text-sm"
@@ -367,17 +423,19 @@ const Calendario = () => {
                 Programar Rutina
               </h3>
               <form onSubmit={handleAddEvento} className="space-y-4">
+                {/* Selector de fecha */}
                 <div>
                   <label className="block text-white mb-2 font-medium">Fecha</label>
                   <input
                     type="date"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
+                    min={new Date().toISOString().split('T')[0]} // No permitir fechas pasadas
                     className="w-full px-4 py-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                     required
                   />
                 </div>
+                {/* Selector de rutina */}
                 <div>
                   <label className="block text-white mb-2 font-medium">Rutina</label>
                   <select
@@ -394,6 +452,7 @@ const Calendario = () => {
                     ))}
                   </select>
                 </div>
+                {/* Botón para programar */}
                 <button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors shadow-sm hover:shadow flex items-center justify-center"
@@ -416,6 +475,7 @@ const Calendario = () => {
                   Leyenda de Rutinas
                 </h3>
                 <div className="grid grid-cols-1 gap-2">
+                  {/* Mostrar todas las rutinas con sus colores asignados */}
                   {rutinas.map(rutina => (
                     <div 
                       key={rutina.id} 

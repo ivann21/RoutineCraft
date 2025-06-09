@@ -16,6 +16,7 @@ export default function Challenges() {
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(false);
   const [deletingChallengeId, setDeletingChallengeId] = useState(null);
   
+  // Función utilitaria para obtener el usuario actual de localStorage
   const getCurrentUser = () => {
     const id = localStorage.getItem('usuarioId');
     const token = localStorage.getItem('userToken');
@@ -33,6 +34,7 @@ export default function Challenges() {
     return null;  
   };
   
+  // Helper para proporcionar encabezados de autenticación para llamadas API
   const apiConfig = () => {
     const token = localStorage.getItem('userToken');
     return {
@@ -47,6 +49,7 @@ export default function Challenges() {
     fetchData();
   }, [activeTab]);
   
+  // Función principal para cargar datos de retos según la pestaña activa
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -84,6 +87,7 @@ export default function Challenges() {
     }
   };
   
+  // Cargar retos activos disponibles para unirse
   const fetchActiveChallenges = async () => {
     try {
       console.log('Intentando obtener retos activos...');
@@ -140,6 +144,7 @@ export default function Challenges() {
     }
   };
   
+  // Cargar retos en los que el usuario actual está participando
   const fetchUserChallenges = async (userId) => {
     try {
       const response = await axios.get(`http://localhost:5000/api/challenges/user/${userId}`, apiConfig());
@@ -226,6 +231,7 @@ export default function Challenges() {
     }
   };
   
+  // Función para unirse a un nuevo reto
   const joinChallenge = async (challengeId) => {
     try {
       const currentUser = getCurrentUser();
@@ -268,7 +274,7 @@ export default function Challenges() {
     }
   };
   
-  // Función para actualizar el progreso de un reto
+  // Actualizar el progreso de un reto en el que el usuario está trabajando
   const updateProgress = async (challengeId, newProgress) => {
     try {
       const currentUser = getCurrentUser();
@@ -300,6 +306,7 @@ export default function Challenges() {
     }
   };
 
+  // Manejar la interacción de UI para actualizar el progreso del reto
   const updateProgressUI = (challengeId) => {
     const challenge = userChallenges.find(c => c.challengeId === challengeId);
     if (!challenge) return;
@@ -321,7 +328,7 @@ export default function Challenges() {
     setShowProgressModal(false);
   };
 
-  // Nueva función para eliminar un reto completado
+  // Función para eliminar un reto completado del historial
   const deleteCompletedChallenge = async (challengeId) => {
     try {
       const currentUser = getCurrentUser();
@@ -338,6 +345,7 @@ export default function Challenges() {
     }
   };
   
+  // Función para confirmar la eliminación de un reto completado
   const confirmDeleteChallenge = async () => {
     try {
       const currentUser = getCurrentUser();
@@ -368,6 +376,7 @@ export default function Challenges() {
     }
   };
   
+  // Función para iniciar el proceso de abandono de un reto en curso
   const abandonChallenge = async (challengeId) => {
     try {
       const currentUser = getCurrentUser();
@@ -376,6 +385,7 @@ export default function Challenges() {
         return;
       }
 
+      // Guardar el ID del reto a abandonar y mostrar el modal de confirmación
       setDeletingChallengeId(challengeId);
       setDeleteConfirmModal(true);
     } catch (err) {
@@ -384,6 +394,7 @@ export default function Challenges() {
     }
   };
   
+  // Manejar la confirmación del abandono del reto
   const confirmAbandonChallenge = async () => {
     try {
       const currentUser = getCurrentUser();
@@ -392,12 +403,13 @@ export default function Challenges() {
         return;
       }
 
+      // Llamar a la API para abandonar el reto
       await axios.post(`http://localhost:5000/api/challenges/abandon`, {
         userId: currentUser.id,
         challengeId: deletingChallengeId
       }, apiConfig());
       
-      // Actualizar la lista de retos del usuario
+      // Actualizar la UI eliminando el reto abandonado
       if (activeTab === 'joined') {
         setUserChallenges(prev => prev.filter(uc => uc.challengeId !== deletingChallengeId));
       }
@@ -405,7 +417,7 @@ export default function Challenges() {
       alert('Has abandonado el reto');
       setDeleteConfirmModal(false);
       
-      // Refrescar las listas de retos
+      // Recargar datos para mostrar listas actualizadas
       await fetchData();
     } catch (err) {
       console.error('Error al abandonar el reto:', err);

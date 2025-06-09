@@ -1,31 +1,37 @@
 import React, { useState, useEffect } from 'react';
 
 const RestTimer = ({ initialSeconds = 60, onClose }) => {
-  const [seconds, setSeconds] = useState(initialSeconds);
-  const [isActive, setIsActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  // Estados para manejar el temporizador y la interfaz de usuario
+  const [seconds, setSeconds] = useState(initialSeconds);  // Tiempo restante en segundos
+  const [isActive, setIsActive] = useState(false);         // Estado activo del temporizador
+  const [isPaused, setIsPaused] = useState(false);         // Estado pausado
+  const [showCompletionModal, setShowCompletionModal] = useState(false); // Modal de completado
 
+  // Resetear temporizador cuando cambia initialSeconds
   useEffect(() => {
     setSeconds(initialSeconds);
   }, [initialSeconds]);
 
+  // Efecto principal para controlar el temporizador
   useEffect(() => {
     let interval = null;
 
     if (isActive && !isPaused) {
+      // Si el temporizador está activo y no pausado, reducir segundos cada segundo
       interval = setInterval(() => {
         setSeconds(seconds => {
           if (seconds <= 1) {
-            clearInterval(interval);
+            clearInterval(interval); // Detener el intervalo al finalizar
             setIsActive(false);
             
-            setShowCompletionModal(true);
+            setShowCompletionModal(true); // Mostrar modal de completado
             
             try {
+              // Reproducir sonido de notificación
               const audio = new Audio('/notification.mp3');
               audio.play().catch(e => console.log("Error reproduciendo audio:", e));
               
+              // Mostrar notificación del navegador si está permitido
               if ("Notification" in window && Notification.permission === "granted") {
                 new Notification("¡Tiempo de descanso completado!", {
                   body: "¡Es hora de continuar con tu entrenamiento!",
@@ -36,28 +42,32 @@ const RestTimer = ({ initialSeconds = 60, onClose }) => {
               console.log("Notificación no disponible:", error);
             }
             
-            return 0;
+            return 0; // Llegar a cero
           }
-          return seconds - 1;
+          return seconds - 1; // Decrementar segundos
         });
       }, 1000);
     } else {
-      clearInterval(interval);
+      clearInterval(interval); // Limpiar intervalo si está inactivo o pausado
     }
     
+    // Limpiar intervalo al desmontar componente
     return () => clearInterval(interval);
   }, [isActive, isPaused]);
 
+  // Funciones para manejar eventos de UI
   const handleCloseCompletionModal = () => {
     setShowCompletionModal(false);
   };
 
+  // Función para formatear el tiempo en formato MM:SS
   const formatTime = (secs) => {
     const minutes = Math.floor(secs / 60);
     const remainingSeconds = secs % 60;
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
+  // Iniciar el temporizador y solicitar permisos de notificación
   const handleStart = () => {
     if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
       Notification.requestPermission();
@@ -66,14 +76,17 @@ const RestTimer = ({ initialSeconds = 60, onClose }) => {
     setIsPaused(false);
   };
 
+  // Pausar el temporizador
   const handlePause = () => {
     setIsPaused(true);
   };
 
+  // Reanudar el temporizador desde pausa
   const handleResume = () => {
     setIsPaused(false);
   };
 
+  // Reiniciar el temporizador a su valor inicial
   const handleReset = () => {
     setSeconds(initialSeconds);
     setIsActive(false);

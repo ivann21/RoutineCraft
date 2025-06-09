@@ -2,29 +2,34 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
+  // Estados para manejar el formulario y su envío
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [categoria, setCategoria] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     try {
+      // Obtener ID de usuario del almacenamiento local
       const usuarioId = localStorage.getItem('usuarioId');
       if (!usuarioId) {
         throw new Error('No se encontró el ID de usuario. Por favor, inicia sesión nuevamente.');
       }
 
+      // Crear FormData para enviar la información
       const formData = new FormData();
       formData.append('nombre', nombre);
       formData.append('descripcion', descripcion);
       formData.append('categoria', categoria);
       formData.append('usuarioId', usuarioId); 
       
+      // Enviar solicitud al servidor
       const response = await axios.post('/api/ejercicios', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -33,12 +38,15 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
 
       const nuevoEjercicio = response.data;
       
+      // Verificar si el ejercicio se creó como común en lugar de personalizado
       if (nuevoEjercicio.esComun) {
         console.warn('Advertencia: El API ha creado un ejercicio común en lugar de personalizado');
       }
     
+      // Notificar éxito al componente padre
       onSubmitSuccess(nuevoEjercicio);
       
+      // Limpiar el formulario
       setNombre('');
       setDescripcion('');
       setCategoria('');
@@ -59,6 +67,7 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
           </svg>
           Añadir Nuevo Ejercicio Personalizado
         </h2>
+        {/* Botón de cancelar - solo se muestra si se proporciona la función onCancel */}
         {onCancel && (
           <button
             onClick={onCancel}
@@ -72,14 +81,17 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
         )}
       </div>
       
+      {/* Mostrar mensajes de error si ocurren */}
       {error && (
         <div className="mb-6 bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-md">
           {error}
         </div>
       )}
       
+      {/* Formulario para añadir ejercicio */}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Campo para nombre del ejercicio */}
           <div>
             <label className="block text-white mb-2 font-medium">Nombre del Ejercicio</label>
             <input
@@ -91,6 +103,7 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
               required
             />
           </div>
+          {/* Campo para categoría del ejercicio */}
           <div>
             <label className="block text-white mb-2 font-medium">Categoría</label>
             <input
@@ -103,6 +116,7 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
             />
           </div>
         </div>
+        {/* Campo para la descripción del ejercicio */}
         <div>
           <label className="block text-white mb-2 font-medium">Descripción</label>
           <textarea
@@ -113,6 +127,7 @@ const AddEjercicio = ({ onSubmitSuccess, onCancel }) => {
             placeholder="Describe cómo realizar este ejercicio correctamente"
           ></textarea>
         </div>
+        {/* Botón de envío con estados de carga */}
         <div className="flex justify-end pt-3">
           <button
             type="submit"
